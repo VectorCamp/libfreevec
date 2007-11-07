@@ -1,0 +1,15 @@
+libfreevec (0.81)
+
+  * Apparently strlen was buggy, thanks for Santiago Gala <sgala@apache.org>
+    for the testing and debugging that helped nail the bug :-)
+  * Some routines have been rewritten using a new technique by Holger Bettag,
+    as found in :
+
+
+ -- Konstantinos Margaritis Fri, 26 Aug 2005 22:12:41 -0400
+
+libfreevec (0.80)
+
+  * Initial public release.
+
+ -- Konstantinos Margaritis <markos@debian.org>  Fri,  +0300

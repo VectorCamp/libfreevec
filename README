@@ -1,0 +1,67 @@
+About libfreevec 
+
+libfreevec is a free (LGPL) library with hand-optimized replacement routines 
+for GLIBC, such as memcpy(), strlen(), etc. These routines have been written 
+specifically to take advantage of the AltiVec (a.k.a Velocity Engine or VMX), 
+and will only work on processors that include this unit. This means they will 
+not work on older processors, such as 603, 604, 750 (G3) or the POWER family 
+of CPUs. 
+
+Check the Features (http://www.freevec.org/features.php) page for more details
+on the exact set of functions that are included, with comments and rough 
+speed gain estimates, and the FAQ for additional information about using 
+the library itself. 
+
+
+The author writes on the history of libfreevec: 
+
+
+"I have been a PowerPC user for many years, but I had never had the opportunity 
+to work with a G4 processor until late September 2004. At that time, I attended 
+various AltiVec tutorials/seminars at the Euro SNDF show which were held by Dr 
+Sergei Larkin and Chuck Corley from Freescale. I would like to thank both of 
+them as they provided myself with the inspiration to work on the AltiVec engine. 
+During said seminars, I was shown how much performance is hidden in this small 
+and underestimated CPU. In times when everyone seems to be focused on 64-bit 
+technology, it is no surprise that some people dismiss the G4 processor as 
+outdated technology. If only you knew... 
+
+Thanks to the support by Genesi and Freescale, I was given an Open Desktop 
+Workstation for development purposes at the show and was highly motivated 
+to do software development on this platform. Soon after the seminars ended, 
+I started researching for source code on programming the AltiVec unit and 
+its applications. To my surprise, I discovered that the G4 vector engine 
+is basically unused by Linux itself which happens to be my platform of choice 
+whereas it speeds up many system components in MacOS X. 
+
+Why is this so? I have not found a definite answer to this question. One 
+possible reason could be that AltiVec was originally designed as a multimedia 
+extension and for processing media data. While this simple fact cannot be 
+denied, it is still no convincing argument why this exciting technology has 
+been neglected and not been used for more ordinary tasks which might increase 
+the performance of the whole system. 
+
+For example, did you know that you can do byte swapping with AltiVec 7 times 
+faster than with scalar code? Or that it is possible to sort integers and 
+floats 4 times faster with the help of AltiVec? Were you aware that it helps 
+to do string searching faster? Memory hashing gets upto 7 times faster. The 
+list could just go on and on... 
+
+With these things in mind, I was determined to take an active role in allowing 
+Linux and other operating systems to profit from AltiVec on a system wide 
+scale. With the financial help of Genesi, I was able to start work on 
+libfreevec which is presented to you on this website. libfreevec is a library 
+with many common glibc routines, rewritten and optimized to use the vector 
+engine found in the G4/G4+ PowerPC CPUs by Freescale. These processors are 
+most commonly used in Apple Mac computers and the Genesi Pegasos II Open 
+Desktop Workstation (ODW). In addition to the glibc routines, it also 
+includes custom routines which were designed to speed up various other 
+performance-critical tasks. For example, it includes special AltiVec 
+optimized versions of various string and memory functions from libstring 
+which is part of the MySQL package. 
+
+Eventually, I hope to see the code being integrated in glibc so that the 
+whole Linux system may benefit from AltiVec when run on the right hardware. 
+The current version is released under the terms of the free LGPL license and 
+I sincerly hope that it will enable many interested developers to give a 
+performance boost to their applications for the PowerPC platform."

@@ -1,0 +1,149 @@
+A collection of Frequently Asked Questions about libfreevec. 
+
+Q: Who should use libfreevec? 
+
+A: libfreevec is targeted for use in applications that are destined to run in
+the G4 PowerPC family of CPUs, or any PowerPC that includes an AltiVec unit,
+and could benefit from a speed up in commonly used routines, such as memory
+and string routines. It's more fitted for use in larger cpu-intensive apps
+rather than the custom 100-line C program that takes 1 second to run. 
+
+Q: What about the G5 CPUs? 
+
+A: Well, in theory these should run, or at least with slight modifications, 
+but there is no guarrantee that they will perform as well as on the G4. One 
+reason is that the G5 has a slightly different Altivec unit (I will not say
+'crippled' because it isn't, it's just different). The other, more important,
+reason is that the G5 has a very capable 64-bit unit, and a much faster FSB
+which in some cases more than makes up for the less capable AltiVec unit.
+Preliminary tests on the G5 using very early versions of the library, have
+shown that if there is to be any gain from using AltiVec for such function
+replacements, then these will have to be modified specifically for the G5.
+It won't do to just take the 32-bit versions and expect them to work 
+top-speed. 
+
+Q: Who can use it and under what License? 
+
+A: Anyone really. The license chosen is the LGPL. This means that you are
+free to use it in free software projects, and you're most welcome to use it
+even in closed-source/proprietary software, albeit with a few not irrational
+restrictions. Read the license text for details. 
+
+Q: Why libfreevec? There is already libmotovec by Freescale! 
+
+A: Indeed. And much to their credit I'm still struggling to reach the
+performance of this library. These guys really knew what they did :-)
+
+Seriously, the fact is that libmotovec is not really free software, there are
+difficulties in getting it incorporated into major distributions, eg. Debian
+will never include it under this current license. Plus, it's written in ppc
+assembly, which although is great for performance, it's really difficult to
+maintain/debug/whatever. Not many people are that proficient with ppc asm, I
+know I am not. libfreevec is written in C, using the AltiVec intrinsics
+available in GCC. This means that as GCC gets better instruction scheduling
+for the G4, so libfreevec might benefit from this as well. In addition, the
+way it's written right now, it allows for easy expansion with new functions,
+or even optimization of the existing ones, with just fiddling with a couple
+of macro modules. And lastly, libfreevec offers more AltiVec optimized
+functions than libmotovec, plus a consistent cache-prefetching mechanism
+used in all of the available functions. Plus, if I might say so myself, some
+of the libfreevec functions are even faster than the libmotovec
+equivalents.:-) 
+
+Q: Why can't you just copy parts of libmotovec into libfreevec? 
+
+A: That's not really a solution. To be truthful, I actually have looked at
+the source code of the libmotovec's functions. But my knowledge of ppc asm
+is very minimal, I barely understood the reason of the particular choice of
+instructions, and their sequence. I'm sure others will probably find it as
+obvious as sunlight, but I assure you I didn't. Anyway, the thing is that I
+can't just copy them, due to license issues. Even if it was possible, I don't
+think it would be nice, at least not without extensive comments, which I can't
+add anyway. And as an AltiVec guru, Holger Bettag, says quite often, "AltiVec
+asm might give you an extra 2% performance, but why bother?". Holger, I
+paraphrased it a little bit, I hope you don't mind! And anyway, the fact that
+it would be written in ppc asm, would also mean that I would not be able to
+get as much feedback from users as I would like, as again not many people are
+experienced in PowerPC assembly. 
+
+Q: There is already liboil, why don't you put your code there? 
+
+A: Actually I intend to, but not this particular code. The goal for liboil is
+slightly different, it offers its own API, and a whole lot of highly optimized
+routines to perform various algorithms. On the other hand, I wanted to
+optimize existing functions from GLIBC, libstring (which is heavily used in
+MySQL), etc. I do plan to write some code for liboil at a later stage, but not
+at this particular moment. 
+
+Q: Will my program run faster with this library? And how much faster? 
+
+A: It depends. If your program does 1 million memcpy(), of 5 bytes each, the
+library will not benefit you at all. It might even be slower, due to the a
+slightly bigger overhead. Actually, in truth it's quite bad design to do a
+memcpy for such a small buffer. On the other hand, depending on what your
+application does, you might enjoy significant benefit from using such a
+library. Eg. the AltiVec version of swab() in this library is ~7x faster than
+the scalar code. But it won't make a difference to your program if you only
+call it at the initialization code for a 100 byte buffer. Also, does your app
+use mainly aligned or unaligned buffers? So far, I can say that the
+performance hit from unaligned addresses is mostly minimized, but it's of
+course a penalty. For actual results, please check the Features and Benchmarks
+pages. 
+
+Q: But AltiVec is useless/not good on small buffers? 
+
+A: Quite true. AltiVec is a very powerful beast but it needs lots of data to
+feed. Throughout the library I try to use AltiVec only where it's useful and
+needed. Most of the times, I just redesign an algorithm to be more efficient,
+and after a particular size threshold, AltiVec kicks in. That way I try to get
+the best of both worlds. 
+
+Q: I noticed that some of the functions are even faster for small sizes, how 
+is that possible? 
+
+A: Well, for certain AltiVec is not used in these cases. Most probably the
+original algorithm was quite dumb (ie. not optimized). When I was writing the
+replacement functions, I always had in mind that they have to be equally fast,
+if not faster, to the originals, for small sizes. It would look bad if a
+program that uses memcpy(), but only on smaller sizes, became slower for that
+reason. I tried to achieve this as much as possible, though I might have missed
+something. That's why user and developer feedback is so important, so send them
+patches :-) 
+
+Q: Why does the speed drop so much with very big sizes? 
+
+A: Assuming you refer to the memory functions, it's because data has to be
+fetched from the actual memory rather than the L1 or L2 caches. And AltiVec
+has an 128-bit bus but to the L1 and L2 caches not to the main memory. Still,
+I use cache prefetching in most of the functions and the performance will
+still be better than the original functions. Don't expect miracles though,
+in these cases a 20-30% performance gain is more likely rather than a 10x. 
+
+Q: How can I make sure I get the most of it? 
+
+A: Try to use as much aligned data as possible. eg using well known tricks
+like the following: 
+
+unsigned char __attribute__ ((aligned(16))) *buffer; 
+
+instead of just declaring a variable. That way, you'll skip the time spent
+on handling unaligned data. Also, try to avoid useless invocations of
+memcpy() or similar functions for tiny buffers. Though GCC is supposed to
+inline copying code for some cases, this is not guaranteed and should not
+be taken for granted all of the time. Instead try to organize your data
+into bigger structures. It's better in the long run anyway. Q: How does
+it work? 
+
+A: Please see the Docs section and the actual Source code for details. 
+
+Q: Ok, let's say that it's nice, what's next? 
+
+A: Well, the ultimate goal is to get as much user feedback for these
+functions, optimize them as much as possible and then incorporate them
+into the actual GLIBC and perhaps even the kernel. That way, Linux/powerpc
+will have what MacOS X users have enjoyed for years :-) 
+
+Q: Are there any mailing lists to discuss about its development? 
+
+A: There is a project on Alioth, which offers a mailing list, plus the
+Forums on PPCZone. Also, great discussions on AltiVec are taking place on simdtech.org.
