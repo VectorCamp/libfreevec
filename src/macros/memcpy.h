@@ -8,53 +8,51 @@
 
 #include "libfreevec.h"
 
-#define MYNIBBLE_COPY_FWD(dst, src, len)	\
-    if (len == 3) {                 		\
-		*dst++ = *src++;            		\
-		*dst++ = *src++;            		\
-		*dst = *src;               			\
-	} else if (len == 2) {					\
-		*dst++ = *src++;            		\
-		*dst = *src;               			\
-	} else if (len == 1) {					\
-		*dst = *src;                		\
-    }
-    
+#define MYNIBBLE_COPY_FWD(dst, src, len)  \
+  switch(len) {                           \
+  case 3:                                 \
+    *dst++ = *src++;                      \
+  case 2:                                 \
+    *dst++ = *src++;                      \
+  case 1:                                 \
+    *dst = *src;                          \
+  }
+
 
 #define MYCOPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED(dst, src, len)    \
-	{															\
-		int dstal = ((uint32_t)dst) % sizeof(uint32_t);			\
-		if (dstal == 1) {										\
-			*dst++ = *src++;                                	\
-			*dst++ = *src++;                                	\
-			*dst++ = *src++;                                	\
-			len -= 3;                                       	\
-		} else if (dstal == 2) {								\
-			*dst++ = *src++;                                	\
-			*dst++ = *src++;                                	\
-			len -= 2;                                       	\
-		} else if (dstal == 3) {								\
-			*dst++ = *src++;                                	\
-			len--;                                          	\
-		}														\
-	}
+  {                                                             \
+    int dstal = ((uint32_t)dst) % sizeof(uint32_t);             \
+    if (dstal == 1) {                                           \
+      *dst++ = *src++;                                          \
+      *dst++ = *src++;                                          \
+      *dst++ = *src++;                                          \
+      len -= 3;                                                 \
+    } else if (dstal == 2) {                                    \
+      *dst++ = *src++;                                          \
+      *dst++ = *src++;                                          \
+      len -= 2;                                                 \
+    } else if (dstal == 3) {                                    \
+      *dst++ = *src++;                                          \
+      len--;                                                    \
+    }                                                           \
+  }
 
 #define MYCOPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, src, len, srcofst) \
-	while (len >= sizeof(uint32_t) && ((uint32_t)(dst) & 15)) {    	\
-		if (srcofst == 0) {                                         \
-			*dst++ = *src++;                                    	\
-		} else if (srcofst == 3) {									\
-			*dst++ = (*(src) << 24) | (*(src+1) >> 8);          	\
-			src++;                                              	\
-		} else if (srcofst == 2) {									\
-			*dst++ = (*(src) << 16) | (*(src+1) >> 16);         	\
-			src++;                                              	\
-		} else if (srcofst == 1) {									\
-			*dst++ = (*(src) << 8) | (*(src+1) >> 24);          	\
-			src++;                                              	\
-		}                                                           \
-		len -= sizeof(uint32_t);                                    \
-	}
+  while (len >= sizeof(uint32_t) && ((uint32_t)(dst) & 15)) {     \
+    if (srcofst == 0) {                                         \
+      *dst++ = *src++;                                      \
+    } else if (srcofst == 3) {                  \
+      *dst++ = (*(src) << 24) | (*(src+1) >> 8);            \
+      src++;                                                \
+    } else if (srcofst == 2) {                  \
+      *dst++ = (*(src) << 16) | (*(src+1) >> 16);           \
+      src++;                                                \
+    } else if (srcofst == 1) {                  \
+      *dst++ = (*(src) << 8) | (*(src+1) >> 24);            \
+      src++;                                                \
+    }                                                           \
+    len -= sizeof(uint32_t);                                    \
+  }
 
 #define MYCOPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(dst, src, step)       \
     vec_st((vector uint8_t) vec_ld(step, (uint8_t *)src),           \
@@ -98,16 +96,16 @@
 #define MYCOPY_FWD_REST_WORDS(dst, src, len, srcofst)           \
     while (len >= sizeof(uint32_t)) {                           \
         if (srcofst == 0) {                                     \
-			*dst++ = *src++;                                	\
-		} else if (srcofst == 3) {                              \
-			*dst++ = (*(src) << 24) | (*(src+1) >> 8);      	\
-			src++;                                          	\
-		} else if (srcofst == 2) {                              \
-			*dst++ = (*(src) << 16) | (*(src+1) >> 16);     	\
-			src++;                                          	\
-		} else if (srcofst == 1) {                              \
-			*dst++ = (*(src) << 8) | (*(src+1) >> 24);      	\
-			src++;                                          	\
+      *dst++ = *src++;                                  \
+    } else if (srcofst == 3) {                              \
+      *dst++ = (*(src) << 24) | (*(src+1) >> 8);        \
+      src++;                                            \
+    } else if (srcofst == 2) {                              \
+      *dst++ = (*(src) << 16) | (*(src+1) >> 16);       \
+      src++;                                            \
+    } else if (srcofst == 1) {                              \
+      *dst++ = (*(src) << 8) | (*(src+1) >> 24);        \
+      src++;                                            \
         }                                                       \
         len -= sizeof(uint32_t);                                \
     }
@@ -118,15 +116,15 @@
     }
 
 #define MYMEMCCPY_SRC_TO_SRC_ALIGNED(src, srct, srcoffset)  \
-	if (srcoffset == 0) {                                   \
-		srct = *srcl;                                       \
-	} else if (srcoffset == 3) {                            \
-		srct = (*(srcl) << 24) | (*(srcl+1) >> 8);          \
-	} else if (srcoffset == 2) {                            \
-		srct = (*(srcl) << 16) | (*(srcl+1) >> 16);         \
-	} else if (srcoffset == 1) {                            \
-		srct = (*(srcl) << 8) | (*(srcl+1) >> 24);          \
-	}                                                       
+  if (srcoffset == 0) {                                   \
+    srct = *srcl;                                       \
+  } else if (srcoffset == 3) {                            \
+    srct = (*(srcl) << 24) | (*(srcl+1) >> 8);          \
+  } else if (srcoffset == 2) {                            \
+    srct = (*(srcl) << 16) | (*(srcl+1) >> 16);         \
+  } else if (srcoffset == 1) {                            \
+    srct = (*(srcl) << 8) | (*(srcl+1) >> 24);          \
+  }
 
 #define MYMEMCCPY_SINGLE_WORD_FWD(dst, dstl, src, srcl, srct, srcoffset, mask, c)      \
     {                                                                                  \
@@ -150,7 +148,7 @@
         MYMEMCCPY_SRC_TO_SRC_ALIGNED(src, srct, srcoffset);                         \
         MYMEMCCPY_SINGLE_WORD_FWD(dst, dstl, src, srcl, srct, srcoffset, mask, c);  \
     }
-    
+
 #define MYMEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcoffset, mask, c)  \
     while (((uint32_t)(dstl) % ALTIVECWORD_SIZE) && len >= sizeof(uint32_t)) {                  \
         uint32_t srct = 0;                                                                      \
@@ -206,7 +204,7 @@
         vec_dst(src, DST_CTRL(2,2,16), DST_CHAN_SRC);                                               \
         vec_dstst(dst, DST_CTRL(2,2,16), DST_CHAN_DEST);                                            \
     }
-    
+
 #define MYMEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcoffset, mask, c)         \
     while (len >= sizeof(uint32_t)) {                                               \
         uint32_t srct = 0;                                                          \
@@ -215,14 +213,12 @@
         len -= sizeof(uint32_t);                                                    \
     }
 
-#define MYNIBBLE_MEMCCPY_FWD(dst, src, c, len)          \
-    if (len == 3) {										\
-		if ((*dst++ = *src++) == c) return dst;     	\
-		if ((*dst++ = *src++) == c) return dst;     	\
-		if ((*dst++ = *src++) == c) return dst;     	\
-	} else if (len == 2) {								\
-		if ((*dst++ = *src++) == c) return dst;     	\
-		if ((*dst++ = *src++) == c) return dst;     	\
-	} else if (len == 1) {								\
-		if ((*dst++ = *src++) == c) return dst;     	\
-	}
+#define MYNIBBLE_MEMCCPY_FWD(dst, src, c, len)    \
+  switch (len) {                                  \
+  case 3:                                         \
+    if ((*dst++ = *src++) == c) return dst;       \
+  case 2:                                         \
+    if ((*dst++ = *src++) == c) return dst;       \
+  case 1:                                         \
+    if ((*dst++ = *src++) == c) return dst;       \
+  }
