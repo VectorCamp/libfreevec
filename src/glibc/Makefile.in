@@ -55,7 +55,7 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libfreevec_glibc_la_LIBADD =
-am_libfreevec_glibc_la_OBJECTS = common.lo memcpy.lo
+am_libfreevec_glibc_la_OBJECTS = common.lo memchr.lo memcpy.lo
 libfreevec_glibc_la_OBJECTS = $(am_libfreevec_glibc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -180,7 +180,7 @@ METASOURCES = AUTO
 AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_glibc.la
 libfreevec_glibc_la_LDFLAGS = -module
-libfreevec_glibc_la_SOURCES = common.c libfreevec.h memcpy.c
+libfreevec_glibc_la_SOURCES = common.c libfreevec.h memchr.c memcpy.c
 all: all-am
 
 .SUFFIXES:
@@ -251,6 +251,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memchr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memcpy.Plo@am__quote@
 
 .c.o:

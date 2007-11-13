@@ -30,23 +30,11 @@
 }
 
 #define MYMEMCHR_SINGLE_WORD(ptr32, c, mask, lw)          \
-  lw = ((*ptr32 ^ mask) - lomagic) & himagic;                 \
-  printf("lw = %08x\n", lw);                                  \
-  if (lw) {                                                   \
-    uint32_t pos = find_leftfirst_in_word(lw);                \
-    return ((uint8_t *)(ptr32)+ pos);                         \
-  }                                                           \
-  ptr32++;
-
-#define MYMEMCHR_SINGLE_WORD_old(ptr32, c, mask, lw)        \
-  lw = *ptr32 ^ mask;                                 \
-  if ((( lw + magic_bits32) ^ ~lw) & magic_bits32) {  \
-    uint8_t *cptr = (uint8_t *) ptr32;              \
-    if (cptr[0] == c ) return &cptr[0];             \
-    if (cptr[1] == c ) return &cptr[1];             \
-    if (cptr[2] == c ) return &cptr[2];             \
-    if (cptr[3] == c ) return &cptr[3];             \
-  }                                                   \
+  lw = ((*ptr32 ^ mask) - lomagic) & himagic;             \
+  if (lw) {                                               \
+    uint32_t pos = find_first_nonzero_char(lw);           \
+    return ((uint8_t *)(ptr32)+ pos);                     \
+  }                                                       \
   ptr32++;
 
 #define MYMEMCHR_LOOP_WORD(ptr32, c, mask, len, lw) \
@@ -76,16 +64,9 @@
   }                                                                         \
 }
 
-#define MYMEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED_old(ptr32, c, mask, len)    \
-  while ((uint32_t)(ptr32) % ALTIVECWORD_SIZE) {                    \
-    uint32_t lw;                                                \
-    MYMEMCHR_SINGLE_WORD(ptr32, c, mask, lw);                   \
-    len -= sizeof(uint32_t);                                    \
-  }
-
 #define MYMEMCHR_SINGLE_ALTIVEC_WORD(vec, vmask, ptr32, c, mask)    \
   vec = vec_ld(0, (uint8_t *)ptr32);                          \
-  if (vec_any_eq(vec, vmask)) {                              \
+  if (!vec_all_ne(vec, vmask)) {                              \
     MYMEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);           \
     MYMEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);           \
     MYMEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);           \

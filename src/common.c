@@ -40,12 +40,14 @@ size_t find_rightfirst_in_word(uint32_t x)
 	return (sum);
 }
 
-size_t find_leftfirst_in_word_new(uint32_t x)
-{
-	//(x - lobits) & ~x & hibits
-	//do cntlz on it, shift right by 3, done
-
-	printf("x = %08x\n", x);
-	printf("x = %08x\n", x);
-	return 0;
+uint32_t inline find_first_nonzero_char( uint32_t x) {
+        uint32_t tmp = 0;
+        asm(
+          "cntlzw %0, %1\n\t"
+          "srawi  %0, %0, 3"
+          : "+r" (tmp)  /* output */
+          : "r" (x)     /* input */
+          : "0"
+        );
+        return tmp;
 }
