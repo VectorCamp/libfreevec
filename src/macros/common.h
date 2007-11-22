@@ -32,3 +32,7 @@ size_t find_leftfirst_in_word(uint32_t x);
 size_t find_rightfirst_in_word(uint32_t x);
 uint32_t inline find_leftfirst_nonzero_char( uint32_t x);
 uint32_t inline find_rightfirst_nonzero_char( uint32_t x);
+
+uint32_t inline find_leftfirst_nzb( uint32_t x);
+uint32_t inline find_rightfirst_nzb( uint32_t x);
+

@@ -36,7 +36,7 @@
 #define MYMEMCHR_SINGLE_WORD(ptr32, c, mask, lw)          \
   lw = ((*ptr32 ^ mask) - lomagic) & himagic;             \
   if (lw) {                                               \
-    uint32_t pos = find_leftfirst_nonzero_char(lw);       \
+    uint32_t pos = find_leftfirst_nzb(lw);                \
     return ((uint8_t *)(ptr32)+ pos);                     \
   }                                                       \
   ptr32++;
