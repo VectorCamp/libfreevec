@@ -36,7 +36,7 @@
 #define MYMEMCHR_SINGLE_WORD(ptr32, c, mask, lw)          \
   lw = ((*ptr32 ^ mask) - lomagic) & himagic;             \
   if (lw) {                                               \
-    uint32_t pos = find_first_nonzero_char(lw);           \
+    uint32_t pos = find_leftfirst_nonzero_char(lw);       \
     return ((uint8_t *)(ptr32)+ pos);                     \
   }                                                       \
   ptr32++;
@@ -99,19 +99,31 @@
  * memrchr() macros, backward searching                                    *
  **************************************************************************/
 
+#define MYMEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED(ptr, c, len, al)   \
+{                                                                 \
+  int l = MIN( len, al );                                         \
+  switch (l) {                                                    \
+  case 3:                                                         \
+    ptr--;                                                        \
+    if (*ptr == c) return ptr;                                    \
+  case 2:                                                         \
+    ptr--;                                                        \
+    if (*ptr == c) return ptr;                                    \
+  case 1:                                                         \
+    ptr--;                                                        \
+    if (*ptr == c) return ptr;                                    \
+    len -= l;                                                     \
+  }                                                               \
+}
 
-#define MYMEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED(ptr, c, len,al)  \
-  while (len-- && ((uint32_t)(ptr) % sizeof(uint32_t))) {       \
-    ptr--;                                                      \
-    if (*ptr == c) return ptr;                                  \
-  }
-
-#define MYMEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, mask, lw)     \
-  ptr32--;                                                      \
-  lw = ((*ptr32 ^ mask) - lomagic) & himagic;                   \
-  if (lw) {                                                     \
-    return ((uint8_t *)(ptr32)+ find_rightfirst_in_word(lw));   \
-  }
+#define MYMEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, mask, lw)       \
+  ptr32--;                                                        \
+  lw = ((*ptr32 ^ mask) - lomagic) & himagic;                     \
+  if (lw) {                                                       \
+    uint32_t pos = find_rightfirst_nonzero_char(lw);              \
+    return ((uint8_t *)(ptr32)+ pos);                             \
+  }                                                               \
+  ptr32++;
 
 #define MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, mask, len, lw)  \
   while (len >= sizeof(uint32_t)) {                             \

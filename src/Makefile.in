@@ -58,14 +58,17 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 libfreevec_la_LIBADD =
 am_libfreevec_la_OBJECTS = bcmp.lo bcopy.lo bmove512.lo bzero.lo \
-	memccpy.lo memchr.lo memcmp.lo memcpy.lo memfrob.lo memmove.lo \
-	mempcpy.lo memrchr.lo memset.lo strcmp.lo strcpy.lo strfill.lo \
-	strfry.lo strlen.lo strncmp.lo strnlen.lo swab.lo printvec.lo \
-	common.lo
+	common.lo findfirst.lo memccpy.lo memchr.lo memcmp.lo \
+	memcpy.lo memfrob.lo memmove.lo mempcpy.lo memrchr.lo \
+	memset.lo printvec.lo strcmp.lo strcpy.lo strfill.lo strfry.lo \
+	strlen.lo strncmp.lo strnlen.lo swab.lo
 libfreevec_la_OBJECTS = $(am_libfreevec_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
+CCASCOMPILE = $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
+LTCCASCOMPILE = $(LIBTOOL) --mode=compile $(CCAS) $(AM_CCASFLAGS) \
+	$(CCASFLAGS)
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
@@ -97,6 +100,8 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
+CCAS = @CCAS@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -198,17 +203,17 @@ noinst_HEADERS = libfreevec.h macros/memchr.h macros/memcmp.h macros/memcpy.h ma
                     macros/memset.h macros/strcmp.h macros/strcpy.h macros/strlen.h macros/swab.h
 
 pkglib_LTLIBRARIES = libfreevec.la
-libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c memccpy.c memchr.c \
-		memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c memset.c strcmp.c \
-		strcpy.c strfill.c strfry.c strlen.c strncmp.c strnlen.c swab.c printvec.c \
-	common.c
+libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
+	memccpy.c memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c \
+	memset.c printvec.c strcmp.c strcpy.c strfill.c strfry.c strlen.c strncmp.c \
+	strnlen.c swab.c
 
 libfreevec_la_LDFLAGS = -module
 SUBDIRS = glibc
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .S .c .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -218,9 +223,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/Makefile
+	  $(AUTOMAKE) --foreign  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -297,6 +302,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strnlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swab.Plo@am__quote@
+
+.S.o:
+	$(CCASCOMPILE) -c $<
+
+.S.obj:
+	$(CCASCOMPILE) -c `$(CYGPATH_W) '$<'`
+
+.S.lo:
+	$(LTCCASCOMPILE) -c -o $@ $<
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

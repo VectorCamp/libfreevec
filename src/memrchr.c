@@ -51,12 +51,11 @@ void *vec_memrchr(void const *str, int c, size_t len) {
     vector uint8_t v1;
 
     while ( len >= ALTIVECWORD_SIZE ) {
-      MYMEMCHR_SINGLE_ALTIVEC_WORD( v1, vc.v, ptr32, c, charmask );
+      MYMEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD( v1, vc.v, ptr32, c, charmask );
       vec_dst( ptr32, DST_CTRL( 2,2,16 ), DST_CHAN_SRC );
     }
   }
 
-  MYMEMCHR_LOOP_WORD( ptr32, c, charmask, len, lw );
   MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, charmask, len, lw);
 
   ptr = ( uint8_t * ) ptr32;
