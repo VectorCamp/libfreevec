@@ -26,41 +26,42 @@ void *memrchr(void const *str, int c, size_t len) {
 #else
 void *vec_memrchr(void const *str, int c, size_t len) {
 #endif
-    
-    uint8_t *ptr = (uint8_t *)(str + len);
-    uint32_t *ptr32, lw;
-    uint32_t charmask = charmask32(c);
 
-    MYMEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED(ptr, c, len);
-    
-    ptr32 = (uint32_t *)(ptr);
-    
-    if (len >= ALTIVECWORD_SIZE) {
-        MYMEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, charmask, len);
-        vec_dst(ptr-32, DST_CTRL(2,2,16), DST_CHAN_SRC);
-        union {
-            vector uint8_t v; 
-            uint8_t c[16]; 
-        } vc;
-        vc.c[0] = c;
-        vc.v = vec_splat(vc.v, 0);
-        vector uint8_t v1;
+  uint8_t *ptr = (uint8_t *)(str + len);
+  uint32_t al = (uint32_t)(ptr) % sizeof(uint32_t);
+  if (al)
+    MYMEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED(ptr, c, len, al);
 
-        while (len >= ALTIVECWORD_SIZE) {
-            MYMEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD(v1, vc.v, ptr32, c, charmask);
-            vec_dst(ptr32-32, DST_CTRL(2,2,16), DST_CHAN_SRC);
-        }
-        ptr = (uint8_t *) ptr32;
-        
-        MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, charmask, len);
-        ptr = (uint8_t *) ptr32;
-        MYMEMRCHR_BACKWARDS_REST_BYTES(ptr, c, len);
-    } else {
-        MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, charmask, len);
-        ptr = (uint8_t *) ptr32;
-        MYMEMRCHR_BACKWARDS_REST_BYTES(ptr, c, len);
-	}
-           
-    return 0;
+  uint32_t lw, *ptr32 = ( uint32_t * )( ptr );
+  uint32_t charmask = charmask32( c );
+
+  if ( len >= ALTIVECWORD_SIZE ) {
+    al = (uint32_t)ptr32 % ALTIVECWORD_SIZE;
+    if ( al )
+      MYMEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, charmask, len, lw, al);
+    ptr = ( uint8_t * ) ptr32;
+
+    vec_dst( ptr, DST_CTRL( 2,2,16 ), DST_CHAN_SRC );
+    union {
+      vector uint8_t v;
+      uint8_t c[16];
+    } vc;
+    vc.c[0] = c;
+    vc.v = vec_splat( vc.v, 0 );
+    vector uint8_t v1;
+
+    while ( len >= ALTIVECWORD_SIZE ) {
+      MYMEMCHR_SINGLE_ALTIVEC_WORD( v1, vc.v, ptr32, c, charmask );
+      vec_dst( ptr32, DST_CTRL( 2,2,16 ), DST_CHAN_SRC );
+    }
+  }
+
+  MYMEMCHR_LOOP_WORD( ptr32, c, charmask, len, lw );
+  MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, charmask, len, lw);
+
+  ptr = ( uint8_t * ) ptr32;
+  MYMEMRCHR_BACKWARDS_REST_BYTES(ptr, c, len);
+
+  return 0;
 }
 #endif
