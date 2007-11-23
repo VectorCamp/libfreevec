@@ -25,14 +25,14 @@
       <useactivetarget>true</useactivetarget>
     </general>
     <run>
-      <mainprogram/>
+      <mainprogram>/home/markos/Development/AltiVec/freevec/optimized</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
-      <programargs/>
+      <programargs></programargs>
       <autocompile>true</autocompile>
       <envvars/>
-      <globaldebugarguments/>
+      <globaldebugarguments></globaldebugarguments>
       <globalcwd>/home/markos/Development/AltiVec/freevec/optimized</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <autoinstall>false</autoinstall>
@@ -44,7 +44,7 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O2 -Wall -Werror -g0 -maltivec -mabi=altivec</cflags>
+        <cflags>-O2 -Wall -Werror -g0 -maltivec -mabi=altivec -mregnames</cflags>
         <envvars/>
         <configargs></configargs>
         <topsourcedir></topsourcedir>
@@ -82,7 +82,7 @@
       <abortonerror>true</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <prio>0</prio>
       <runmultiplejobs>false</runmultiplejobs>
     </make>
@@ -152,7 +152,7 @@
     <tree>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
-      <showvcsfields>false</showvcsfields>
+      <showvcsfields>true</showvcsfields>
     </tree>
   </kdevfileview>
   <kdevdocumentation>
@@ -266,7 +266,8 @@
   </kdevvisualadvance>
   <ctagspart>
     <customArguments/>
-    <customTagfilePath/>
+    <customTagfilePath>/home/markos/Development/AltiVec/freevec/tags</customTagfilePath>
+    <activeTagsFiles/>
   </ctagspart>
   <dist>
     <custom>false</custom>
