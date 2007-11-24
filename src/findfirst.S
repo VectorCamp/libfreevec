@@ -10,6 +10,10 @@
 #define rTMPa     r4
 #define rTMPb     r5
 
+.text                       /* section declaration - begin code */
+
+.globl find_leftfirst_nzb
+.globl find_rightfirst_nzb
 
 find_leftfirst_nzb:
     /* count zero bits in r3 (argument) before the first non-zero bit */
@@ -28,4 +32,8 @@ find_rightfirst_nzb:
     /* do the same as find_leftfirst_nzb() */
     cntlzw        rTMPa, rTMPb
     srawi         rRTN, rTMPa, 3
+    /* we have to make sure that we subtract 4 from the result, because we byte-reversed
+      the input */
+    li            rTMPa, 3
+    sub           rRTN, rTMPa, rRTN
     blr           /* return back to caller */

@@ -120,10 +120,9 @@
   ptr32--;                                                        \
   lw = ((*ptr32 ^ mask) - lomagic) & himagic;                     \
   if (lw) {                                                       \
-    uint32_t pos = find_rightfirst_nonzero_char(lw);              \
+    uint32_t pos = find_rightfirst_nzb(&lw);                      \
     return ((uint8_t *)(ptr32)+ pos);                             \
-  }                                                               \
-  ptr32++;
+  }
 
 #define MYMEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, mask, len, lw)  \
   while (len >= sizeof(uint32_t)) {                             \
@@ -152,9 +151,12 @@
 #define MYMEMRCHR_BACKWARDS_REST_BYTES(ptr, c, len) \
   switch (len) {                                    \
   case 3:                                           \
-    if (*--ptr == c) return ptr;                    \
+    --ptr;                                          \
+    if (*ptr == c) return ptr;                      \
   case 2:                                           \
-    if (*--ptr == c) return ptr;                    \
+    --ptr;                                          \
+    if (*ptr == c) return ptr;                      \
   case 1:                                           \
-    if (*--ptr == c) return ptr;                    \
+    --ptr;                                          \
+    if (*ptr == c) return ptr;                      \
   }
