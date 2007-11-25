@@ -29,11 +29,11 @@ void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len) {
         
     if (len >= sizeof(uint32_t)) {
         // Prefetch some stuff
-        vec_dst(src, DST_CTRL(2,1,16), DST_CHAN_SRC);
-        vec_dstst(dst, DST_CTRL(2,1,16), DST_CHAN_DEST);
+        READ_PREFETCH_START(src);
+      	WRITE_PREFETCH_START(dst);
 
         // Copy until dst is word aligned
-        MYCOPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED(dst, src, len);
+        COPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED(dst, src, len);
         
         // Now dst is word aligned. We'll continue by word copying, but 
         // for this we have to know the word-alignment of src also.
@@ -44,7 +44,7 @@ void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len) {
         const uint32_t *srcl = (uint32_t *)(src -srcoffset4);
 
         // While we're not 16-byte aligned, move in 4-byte long steps.
-        MYCOPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4);
+        COPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4);
         
         // Now, dst is 16byte aligned. We can use Altivec if len >= 32
         src = (uint8_t *) srcl +srcoffset4;
@@ -52,43 +52,43 @@ void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len) {
         if (len >= ALTIVEC_BIGLOOP) {
             if (((uint32_t)(src) & 15) == 0) {
                 int blocks = (len >> 6);
-                MYCOPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED(dstl, src, blocks);
+                COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED(dstl, src, blocks);
                 srcl = (uint32_t *)(src -srcoffset4);
             } else {
                 int blocks = (len >> 6);
-                MYCOPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED(dstl, src, blocks);
+                COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED(dstl, src, blocks);
                 srcl = (uint32_t *)(src -srcoffset4);
             }
         }
         while (len >= ALTIVECWORD_SIZE) {
             if (((uint32_t)(src) & 15) == 0) {
-                MYCOPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(dstl, src, 0);
+                COPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(dstl, src, 0);
                 dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
                 srcl = (uint32_t *)(src -srcoffset4);
             } else {
                 vector uint8_t MSQ, LSQ, mask;
-                MYCOPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED(dstl, src, 0);
+                COPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED(dstl, src, 0);
                 dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
                 srcl = (uint32_t *)(src -srcoffset4);
             }
         }
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
-        MYCOPY_FWD_REST_WORDS(dstl, srcl, len, srcoffset4);
+        COPY_FWD_REST_WORDS(dstl, srcl, len, srcoffset4);
         
         // For the end copy we have to use char * pointers.
         dst = (uint8_t *) dstl;
         src = (uint8_t *) srcl +srcoffset4;
 
         // Copy the remaining bytes
-        MYNIBBLE_COPY_FWD(dst, src, len);
+        COPY_FWD_NIBBLE(dst, src, len);
         
-        vec_dss(DST_CHAN_SRC);
-        vec_dss(DST_CHAN_DEST);
+        READ_PREFETCH_STOP;
+      	WRITE_PREFETCH_STOP;
 
         return dstlast;
     } else {
- 		MYNIBBLE_COPY_FWD(dst, src, len);
+ 		COPY_FWD_NIBBLE(dst, src, len);
         return dstlast;
 	}
 }
