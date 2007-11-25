@@ -44,13 +44,13 @@
         if (( srct - lomagic) & himagic) {										\
             src = (uint8_t *) srcl +srcoffset;									\
             dst = (uint8_t *) dstl;												\
-            if ((*dst = *src) == '\0' ) { VEC_DSS(); return dstpp; }			\
+            if ((*dst = *src) == '\0' ) { READ_PREFETCH_STOP; return dstpp; }			\
             dst++; src++;														\
-            if ((*dst = *src) == '\0' ) { VEC_DSS(); return dstpp; }			\
+            if ((*dst = *src) == '\0' ) { READ_PREFETCH_STOP; return dstpp; }			\
             dst++; src++;														\
-            if ((*dst = *src) == '\0' ) { VEC_DSS(); return dstpp; }			\
+            if ((*dst = *src) == '\0' ) { READ_PREFETCH_STOP; return dstpp; }			\
             dst++; src++;														\
-            if ((*dst = *src) == '\0' ) { VEC_DSS(); return dstpp; }			\
+            if ((*dst = *src) == '\0' ) { READ_PREFETCH_STOP; return dstpp; }			\
             dst++; src++;														\
         }                                                                       \
     }                                                                           \

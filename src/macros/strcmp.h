@@ -29,10 +29,10 @@
     if ((( *src1l - lomagic) & himagic) || *src1l != src2t) {                                       \
         src2 = (uint8_t *) src2l +src2offset;                                                       \
         src1 = (uint8_t *) src1l;                                                                   \
-        if (src1[0] == '\0' || (src1[0] != src2[0])) { VEC_DSS(); return DIFF(src1[0], src2[0]); }  \
-        if (src1[1] == '\0' || (src1[1] != src2[1])) { VEC_DSS(); return DIFF(src1[1], src2[1]); }  \
-        if (src1[2] == '\0' || (src1[2] != src2[2])) { VEC_DSS(); return DIFF(src1[2], src2[2]); }  \
-        if (src1[3] == '\0' || (src1[3] != src2[3])) { VEC_DSS(); return DIFF(src1[3], src2[3]); }  \
+        if (src1[0] == '\0' || (src1[0] != src2[0])) { READ_PREFETCH_STOP; return DIFF(src1[0], src2[0]); }  \
+        if (src1[1] == '\0' || (src1[1] != src2[1])) { READ_PREFETCH_STOP; return DIFF(src1[1], src2[1]); }  \
+        if (src1[2] == '\0' || (src1[2] != src2[2])) { READ_PREFETCH_STOP; return DIFF(src1[2], src2[2]); }  \
+        if (src1[3] == '\0' || (src1[3] != src2[3])) { READ_PREFETCH_STOP; return DIFF(src1[3], src2[3]); }  \
     }                                                                                               \
     src1l++; src2l++;
 
@@ -125,10 +125,10 @@
     if ((( *src1l - lomagic) & himagic) || *src1l != src2t) {                                       \
         src2 = (uint8_t *) src2l +src2offset;                                                       \
         src1 = (uint8_t *) src1l;                                                                   \
-        if (src1[0] == '\0' || (src1[0] != src2[0])) { VEC_DSS(); return DIFF(src1[0], src2[0]); }  \
-        if (src1[1] == '\0' || (src1[1] != src2[1])) { VEC_DSS(); return DIFF(src1[1], src2[1]); }  \
-        if (src1[2] == '\0' || (src1[2] != src2[2])) { VEC_DSS(); return DIFF(src1[2], src2[2]); }  \
-        if (src1[3] == '\0' || (src1[3] != src2[3])) { VEC_DSS(); return DIFF(src1[3], src2[3]); }  \
+        if (src1[0] == '\0' || (src1[0] != src2[0])) { READ_PREFETCH_STOP; return DIFF(src1[0], src2[0]); }  \
+        if (src1[1] == '\0' || (src1[1] != src2[1])) { READ_PREFETCH_STOP; return DIFF(src1[1], src2[1]); }  \
+        if (src1[2] == '\0' || (src1[2] != src2[2])) { READ_PREFETCH_STOP; return DIFF(src1[2], src2[2]); }  \
+        if (src1[3] == '\0' || (src1[3] != src2[3])) { READ_PREFETCH_STOP; return DIFF(src1[3], src2[3]); }  \
     }                                                                                               \
     src1l++; src2l++;
 

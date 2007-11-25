@@ -62,9 +62,7 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
                 src2l = (uint32_t *)(src2 -src2offset4);
             }
 		}
-        
-		VEC_DSS();
-
+    READ_PREFETCH_STOP;
         MYMEMCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2offset4);
         src1 = (uint8_t *) src1l;
         src2 = (uint8_t *) src2l +src2offset4;

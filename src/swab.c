@@ -65,7 +65,7 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
                 MYSWAB_LOOP_ALTIVEC_UNALIGNED_HAS_CARRY(vdst_permute_mask, dst16, src, len, carry);
             }
             // Stop prefetching.
-            VEC_DSS();
+            READ_PREFETCH_STOP;
         }
     
         // Copy the remaining bytes using word-copying
@@ -94,7 +94,7 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
                 MYSWAB_LOOP_ALTIVEC_UNALIGNED_NO_CARRY(vdst_permute_mask, dst16, src, len);
             }
             // Stop prefetching.
-            VEC_DSS();
+            READ_PREFETCH_STOP;
         }
     
         // Copy the remaining bytes using word-copying

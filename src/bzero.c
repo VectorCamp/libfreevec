@@ -15,6 +15,6 @@
 
 void bzero(void *s, size_t len)
 {
-    memset(s, '\0', len);
-    return;
+  memset(s, '\0', len);
+  return;
 }

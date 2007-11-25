@@ -25,7 +25,10 @@
 
 #define DST_CTRL(size, count, stride) (((size) << 24) | ((count) << 16) | (stride))
 
-#define VEC_DSS()   vec_dss(DST_CHAN_SRC);
+#define READ_PREFETCH_START(addr)   vec_dst(addr, DST_CTRL(2,1,16), DST_CHAN_SRC)
+#define WRITE_PREFETCH_START(addr)  vec_dstst(addr, DST_CTRL(2,1,16), DST_CHAN_DEST)
+#define READ_PREFETCH_STOP          vec_dss(DST_CHAN_SRC)
+#define WRITE_PREFETCH_STOP         vec_dss(DST_CHAN_DEST)
 
 #define ptrdiff_t(a, b)     ((uint32_t)(a)-(uint32_t)(b))
 
