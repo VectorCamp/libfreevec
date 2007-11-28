@@ -152,7 +152,7 @@
 
 #define MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, mask, len, lw, al)   \
 {                                                                                   \
-  int l = al / sizeof(uint32_t);                                                   \
+  int l = al / sizeof(uint32_t);                                                    \
   switch (l) {                                                                      \
     case 3:                                                                         \
       MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, mask, lw);                            \

@@ -34,7 +34,8 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len)
   if (len >= sizeof(uint32_t))
     {
       uint32_t charmask = charmask32(c);
-      uint8_t srcoffset4 = ((uint32_t)(src) & (sizeof(uint32_t)-1));
+      uint8_t srcoffset4 = (uint32_t)(src) % sizeof(uint32_t);
+
       uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);
       MEMCCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, c, len, al);
 
@@ -46,7 +47,8 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len)
       uint32_t *dstl = (uint32_t *)(dst);
       const uint32_t *srcl = (uint32_t *)(src -srcoffset4);
 
-      MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcoffset4, charmask, c);
+      al = (uint32_t)dstl % ALTIVECWORD_SIZE;
+      MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcoffset4, charmask, c, al);
 
       // Now dst is word aligned. If possible (ie if there are enough bytes left)
       // we want to align it to 16-byte boundaries as well.
@@ -60,13 +62,12 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len)
       if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0)
         {
           // Now, both buffers are 16-byte aligned, just copy everything directly
-          MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, srcoffset4, charmask, vc, c);
-          srcl = (uint32_t *)(src -srcoffset4);
+          MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, len, charmask, vc, c);
         }
       else
         {
           // src is not 16-byte aligned so we have to a little trick with Altivec.
-          MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcoffset4, charmask, vc, c);
+          MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcoffset4, charmask, vc, c);
           srcl = (uint32_t *)(src -srcoffset4);
         }
 
