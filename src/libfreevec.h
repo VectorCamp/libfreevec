@@ -4,7 +4,7 @@
  *                                                                         *
  *   This code is distributed under a BSD-type license                     *
  ***************************************************************************/
- 
+
 #ifndef LIBFREEVEC_H
 #define LIBFREEVEC_H
 
@@ -17,9 +17,9 @@
 #include <stdint.h>
 
 #define ALTIVECWORD_SIZE    16
-#define ALTIVEC_BIGLOOP		64
+#define ALTIVEC_BIGLOOP   64
 
-// This portion was stolen from SDL Altivec patches by Ryan C. Gordon :-) 
+// This portion was stolen from SDL Altivec patches by Ryan C. Gordon :-)
 #define DST_CHAN_SRC 1
 #define DST_CHAN_DEST 2
 
@@ -47,11 +47,11 @@
 #define charmask32(c)   (uint32_t)((charmask16(c)) | (charmask16(c) << 16))
 #define charmask64(c)   (uint64_t)((charmask32(c)) | (charmask32(c) << 32))
 
-void printbuf16(char *label, uint8_t *buf);
-void printbuf4(char *label, uint32_t *buf);
-void printvec_text(char *label, vector uint8_t vc);
-void printvec_char(char *label, vector uint8_t vc);
-void printvec_short(char *label, vector uint16_t vs);
-void printvec_long(char *label, vector uint32_t vl);
+void printbuf16 ( char *label, uint8_t *buf );
+void printbuf4 ( char *label, uint32_t *buf );
+void printvec_text ( char *label, vector uint8_t vc );
+void printvec_char ( char *label, vector uint8_t vc );
+void printvec_short ( char *label, vector uint16_t vs );
+void printvec_long ( char *label, vector uint32_t vl );
 
 #endif
