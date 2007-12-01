@@ -38,7 +38,7 @@ void *vec_memset ( void *s, int p, size_t len ) {
   uint32_t *ptr32 = (uint32_t *)(ptr);
 
   if ( len >= ALTIVECWORD_SIZE ) {
-	  MYFILL_VECTOR ( p128, p );
+	  FILL_VECTOR ( p128, p );
   
 	  // ptr is now 32-bit aligned, memset until ptr is altivec aligned
 	  al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;

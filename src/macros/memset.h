@@ -19,7 +19,7 @@
     lenvar -= len;                          \
   }
 
-#define MEMSET_UNTIL_WORD_ALIGNED ( ptr, p, len, al )  \
+#define MEMSET_UNTIL_WORD_ALIGNED( ptr, p, len, al )  \
 {                                                      \
   int l = MIN( len, sizeof(uint32_t) - al );           \
   switch (l) {                                         \
@@ -31,8 +31,9 @@
     *ptr++ = p;                                        \
     len -= l;                                          \
   }                                                    \
+}
 
-#define MEMSET_WORD_UNTIL_ALTIVEC_ALIGNED ( ptr32, p32, len )  \
+#define MEMSET_WORD_UNTIL_ALTIVEC_ALIGNED( ptr32, p32, len )  \
 {                                                              \
   int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);          \
   switch (l) {                                                 \
@@ -44,6 +45,7 @@
       *ptr32++ = p32;                                          \
       len -= l*sizeof(uint32_t);                               \
   }                                                            \
+}
 
 #define MEMSET_ALTIVECWORD(ptr32, vc, len)  \
 {                                           \

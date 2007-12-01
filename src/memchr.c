@@ -44,7 +44,7 @@ void *vec_memchr ( void const *str, int c, size_t len ) {
     FILL_VECTOR ( vc, c );
 
     while ( len >= ALTIVECWORD_SIZE ) {
-      MEMCHR_SINGLE_ALTIVEC_WORD ( vc.v, ptr32, c, charmask );
+      MEMCHR_SINGLE_ALTIVEC_WORD ( vc, ptr32, c, charmask );
       READ_PREFETCH_START ( ptr32 );
     }
   }
