@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
  *   This code is distributed under the LGPL license                       *
  *   See http://www.gnu.org/copyleft/lesser.html                           *
@@ -42,25 +42,19 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   COPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, 0 );
   src = ( uint8_t * ) srcl;
 
-  int blocks = len >> 6;
-  if ( ( ( uint32_t ) ( src ) & 15 ) == 0 ) {
-    COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, blocks );
+  if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
+    COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, len );
   } else {
-    COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, blocks );
+    COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, len );
   }
 
   while ( len >= ALTIVECWORD_SIZE ) {
-    if ( ( ( uint32_t ) ( src ) & 15 ) == 0 ) {
+    if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
       COPY_SINGLEQUADWORD_ALTIVEC_ALIGNED ( dstl, src, 0 );
-      dstl += sizeof ( uint32_t );
-      src += ALTIVECWORD_SIZE;
-      len -= ALTIVECWORD_SIZE;
+      dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
     } else {
-      vector uint8_t MSQ, LSQ, mask;
       COPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED ( dstl, src, 0 );
-      dstl += sizeof ( uint32_t );
-      src += ALTIVECWORD_SIZE;
-      len -= ALTIVECWORD_SIZE;
+      dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
     }
   }
 

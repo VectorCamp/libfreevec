@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
  *   This code is distributed under the LGPL license                       *
  *   See http://www.gnu.org/copyleft/lesser.html                           *
@@ -41,7 +41,7 @@
   }                                                 \
   ptr32++;
 
-#define MEMCHR_LOOP_WORD(ptr32, c, mask, len, lw)   \
+#define MEMCHR_REST_WORDS(ptr32, c, mask, len, lw)  \
 {                                                   \
   int l = len / sizeof(uint32_t);                   \
   switch (l) {                                      \
@@ -69,16 +69,19 @@
   }                                                                     \
 }
 
-#define MEMCHR_SINGLE_ALTIVEC_WORD(vec, vmask, ptr32, c, mask)  \
-  vec = vec_ld(0, (uint8_t *)ptr32);                            \
-  if (!vec_all_ne(vec, vmask)) {                                \
-    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);                 \
-    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);                 \
-    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);                 \
-    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);                 \
-  }                                                             \
-  ptr32 += 4;                                                   \
-  len -= 16;
+#define MEMCHR_SINGLE_ALTIVEC_WORD(vmask, ptr32, c, mask)  \
+{                                                          \
+  vector uint8_t vec;                                      \
+  vec = vec_ld(0, (uint8_t *)ptr32);                       \
+  if (!vec_all_ne(vec, vmask)) {                           \
+    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);            \
+    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);            \
+    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);            \
+    MEMCHR_SINGLE_WORD(ptr32, c, charmask, lw);            \
+  }                                                        \
+  ptr32 += 4;                                              \
+  len -= ALTIVECWORD_SIZE;                                               \
+}
 
 #define MEMCHR_REST_BYTES(ptr, c, len)  \
   switch (len) {                        \
@@ -125,7 +128,7 @@
     return ((uint8_t *)(ptr32)+ pos);                         \
   }
 
-#define MEMRCHR_BACKWARDS_LOOP_WORD(ptr32, c, mask, len, lw)  \
+#define MEMRCHR_BACKWARDS_REST_WORDS(ptr32, c, mask, len, lw)  \
 {                                                             \
   int l = len / sizeof(uint32_t);                             \
   switch (l) {                                                \
@@ -139,16 +142,19 @@
   }                                                           \
 }
 
-#define MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD(vec, vmask, ptr32, c, mask)   \
-  v1 = vec_ld(0, (uint8_t *)(ptr32) -16 );                                  \
-  if (vec_any_eq(vec, vmask)) {                                             \
-    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);                  \
-    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);                  \
-    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);                  \
-    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);                  \
-  }                                                                         \
-  ptr32 -= 4;                                                               \
-  len -= 16;
+#define MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD( vmask, ptr32, c, mask)  \
+{                                                                      \
+  vector uint8_t vec;                                                  \
+  vec = vec_ld(0, (uint8_t *)(ptr32) -16 );                            \
+  if (vec_any_eq(vec, vmask)) {                                        \
+    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
+    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
+    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
+    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
+  }                                                                    \
+  ptr32 -= 4;                                                          \
+  len -= ALTIVECWORD_SIZE;                                             \
+}
 
 #define MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, mask, len, lw, al)   \
 {                                                                                   \
@@ -163,13 +169,6 @@
       len -= l*sizeof(uint32_t);                                                    \
   }                                                                                 \
 }
-
-#define MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED2(ptr32, c, mask, len, lw, al)   \
-  while ((uint32_t)(ptr32) % ALTIVECWORD_SIZE) {                                    \
-    uint32_t lw;                                                                    \
-    MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, mask, lw);                              \
-    len -= sizeof(uint32_t);                                                        \
-  }
 
 #define MEMRCHR_BACKWARDS_REST_BYTES(ptr, c, len)    \
   switch (len) {                                     \

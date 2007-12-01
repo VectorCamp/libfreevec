@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
  *   This code is distributed under the LGPL license                       *
  *   See http://www.gnu.org/copyleft/lesser.html                           *
@@ -19,6 +19,7 @@
 
 #include "libfreevec.h"
 #include "macros/memcpy.h"
+#include "macros/common.h"
 
 #ifdef VEC_GLIBC
 void *memccpy ( void *dstpp, const void *srcpp, int c, size_t len ) {

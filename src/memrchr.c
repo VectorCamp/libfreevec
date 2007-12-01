@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
  *   This code is distributed under the LGPL license                       *
  *   See http://www.gnu.org/copyleft/lesser.html                           *
@@ -39,24 +39,16 @@ void *vec_memrchr ( void const *str, int c, size_t len ) {
     al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
     if ( al )
       MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, charmask, len, lw, al );
-    ptr = ( uint8_t * ) ptr32;
 
-    vec_dst ( ptr, DST_CTRL ( 2,2,16 ), DST_CHAN_SRC );
-    union {
-      vector uint8_t v;
-      uint8_t c[16];
-    } vc;
-    vc.c[0] = c;
-    vc.v = vec_splat ( vc.v, 0 );
-    vector uint8_t v1;
+    READ_PREFETCH_START ( ptr32 );
+    FILL_VECTOR ( vc, c );
 
     while ( len >= ALTIVECWORD_SIZE ) {
-      MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD ( v1, vc.v, ptr32, c, charmask );
-      vec_dst ( ptr32, DST_CTRL ( 2,2,16 ), DST_CHAN_SRC );
+      MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD ( vc.v, ptr32, c, charmask );
+      READ_PREFETCH_START ( ptr32 );
     }
   }
-
-  MEMRCHR_BACKWARDS_LOOP_WORD ( ptr32, c, charmask, len, lw );
+  MEMRCHR_BACKWARDS_REST_WORDS ( ptr32, c, charmask, len, lw );
 
   ptr = ( uint8_t * ) ptr32;
   MEMRCHR_BACKWARDS_REST_BYTES ( ptr, c, len );

@@ -1,8 +1,9 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
- *   This code is distributed under a BSD-type license                     *
+ *   This code is distributed under the LGPL license                       *
+ *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -53,30 +54,23 @@ void *vec_memcpy ( void *dstpp, const void *srcpp, size_t len ) {
     // Now, dst is 16byte aligned. We can use Altivec if len >= 32
     src = ( uint8_t * ) srcl +srcoffset4;
 
-    if ( len >= ALTIVEC_BIGLOOP ) {
-      if ( ( ( uint32_t ) ( src ) & 15 ) == 0 ) {
-        int blocks = ( len >> 6 );
-        COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, blocks );
+    if ( len >= QUAD_ALTIVECWORD ) {
+      if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
+        COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, len );
         srcl = ( uint32_t * ) ( src -srcoffset4 );
       } else {
-        int blocks = ( len >> 6 );
-        COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, blocks );
+        COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, len );
         srcl = ( uint32_t * ) ( src -srcoffset4 );
       }
     }
     while ( len >= ALTIVECWORD_SIZE ) {
-      if ( ( ( uint32_t ) ( src ) & 15 ) == 0 ) {
+      if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
         COPY_SINGLEQUADWORD_ALTIVEC_ALIGNED ( dstl, src, 0 );
-        dstl += 4;
-        src += ALTIVECWORD_SIZE;
-        len -= ALTIVECWORD_SIZE;
+        dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
         srcl = ( uint32_t * ) ( src -srcoffset4 );
       } else {
-        vector uint8_t MSQ, LSQ, mask;
         COPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED ( dstl, src, 0 );
-        dstl += 4;
-        src += ALTIVECWORD_SIZE;
-        len -= ALTIVECWORD_SIZE;
+        dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
         srcl = ( uint32_t * ) ( src -srcoffset4 );
       }
     }

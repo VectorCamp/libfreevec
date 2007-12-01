@@ -1,8 +1,9 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
- *   This code is distributed under a BSD-type license                     *
+ *   This code is distributed under the LGPL license                       *
+ *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
 #ifndef LIBFREEVEC_H
@@ -17,7 +18,9 @@
 #include <stdint.h>
 
 #define ALTIVECWORD_SIZE    16
-#define ALTIVEC_BIGLOOP   64
+#define QUAD_ALTIVECWORD    64
+// log2(64) = 6
+#define LOG_ALTIVECQUAD     6
 
 // This portion was stolen from SDL Altivec patches by Ryan C. Gordon :-)
 #define DST_CHAN_SRC 1

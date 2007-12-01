@@ -1,8 +1,9 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Konstantinos Margaritis                         *
- *   markos@debian.gr                                                      *
+ *   Copyright (C) 2005-2007 by CODEX                                      *
+ *   Konstantinos Margaritis <markos@codex.gr>                             *
  *                                                                         *
- *   This code is distributed under a BSD-type license                     *
+ *   This code is distributed under the LGPL license                       *
+ *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -14,107 +15,54 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef HAVE_ALTIVEC_H 
+#ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
 
 #include "libfreevec.h"
 #include "macros/memset.h"
+#include "macros/common.h"
 
 #ifdef VEC_GLIBC
-void *memset(void *s, int p, size_t len) {
+void *memset ( void *s, int p, size_t len ) {
 #else
-void *vec_memset(void *s, int p, size_t len) {
+void *vec_memset ( void *s, int p, size_t len ) {
 #endif
 
-    uint8_t* ptr = s;
+  uint8_t* ptr = s;
+  uint32_t p32 = charmask32(p);
     
-    // Handle sizes < 4 bytes
-    if (len < sizeof(uint32_t)) {
-        MYSET_NIBBLE(ptr, p, len, len);
-        return s;
-    } else if (len < ALTIVECWORD_SIZE) {
-        // Set 'offset' bytes, so that ptr is 32-bit aligned.
-        uint32_t offset = ((uint32_t)ptr) % sizeof(uint32_t);
-        MYSET_NIBBLE(ptr, p, len, offset);
-        
-        // ptr is now 32-bit aligned, proceed with seting words.
-        int loops = len >> 2; //  divide by sizeof(uint32_t)
-        if (loops) {
-            MYSET_WORDS(ptr, p, len, loops);
-        }
-        
-        // Handle the remaining bytes
-        MYSET_NIBBLE(ptr, p, len, len);
-        return s;
-    } else if (len < 2*ALTIVECWORD_SIZE) {
-        MYFILL_VECTOR(p128, p);
-        
-        // Set 'offset' bytes, so that ptr is 32-bit aligned.
-        int offset = ((uint32_t)ptr) % sizeof(uint32_t);
-        if (offset) {
-            offset = sizeof(uint32_t) -offset;
-            MYSET_NIBBLE(ptr, p, len, offset);
-        }
-        // ptr is now 32-bit aligned, set words until ptr is 128-bit aligned
-        offset = ((uint32_t)(ptr) & 15);
-        int loops;
-        if (offset) {
-            loops = (16-offset) >> 2; //  divide by sizeof(uint32_t)
-            MYSET_WORDS(ptr, p, len, loops);
-        }
-        offset = ((uint32_t)(ptr) & 15);
-        
-        // ptr is now 128-bit aligned, proceed with seting words.
-        if (len >= ALTIVECWORD_SIZE) {
-            MYSET_ALTIVECWORD(ptr, p, len);
-        }
-        
-        // We have no vectors left, but we know that ptr is 32-bit aligned, 
-        // again proceed with seting words.
-        loops = len >> 2; //  divide by sizeof(uint32_t)
-        if (loops) {
-            MYSET_WORDS(ptr, p, len, loops);
-        }
-        
-        // Handle the remaining bytes
-        MYSET_NIBBLE(ptr, p, len, len);
-        
-        return s;
-    } else {
-        MYFILL_VECTOR(p128, p);
-        
-        // Set 'offset' bytes, so that ptr is 32-bit aligned.
-        int offset = ((uint32_t)ptr) % sizeof(uint32_t);
-        if (offset) {
-            offset = sizeof(uint32_t) -offset;
-            MYSET_NIBBLE(ptr, p, len, offset);
-        }
+  uint32_t al = ( uint32_t ) ( ptr ) % sizeof ( uint32_t );
+  if ( al )
+	  MEMSET_UNTIL_WORD_ALIGNED ( ptr, p, len, al );
+  
+  uint32_t *ptr32 = (uint32_t *)(ptr);
 
-        // ptr is now 32-bit aligned, set words until ptr is 128-bit aligned
-        offset = ((uint32_t)(ptr) & 15);
-        int loops;
+  if ( len >= ALTIVECWORD_SIZE ) {
+	  MYFILL_VECTOR ( p128, p );
+  
+	  // ptr is now 32-bit aligned, memset until ptr is altivec aligned
+	  al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
+	  if ( al )
+	    MEMSET_WORD_UNTIL_ALTIVEC_ALIGNED ( ptr32, p32, len );
+  
+	  // ptr is now 128-bit aligned
+	  // Set 64-byte chunks at a time
+	  if ( len >= QUAD_ALTIVECWORD ) {
+	    MEMSET_LOOP_QUADWORD ( ptr32, p128, len );
+	  }
+  
+	  // memset the remaining 16-byte chunks
+	  while (len >= ALTIVECWORD_SIZE) {
+	    MEMSET_ALTIVECWORD(ptr32, p128, len);
+	  }
+  }
 
-        if (offset) {
-            loops = (16-offset) >> 2; //  divide by sizeof(uint32_t)
-            MYSET_WORDS(ptr, p, len, loops);
-        }
-        offset = ((uint32_t)(ptr) & 15);
-        
-        // ptr is now 128-bit aligned, proceed with seting words.
-        loops = len >> 5; //  divide by 32 (2*size of Altivec registers)
-        if (loops) {
-            MYSET_LOOP_ALTIVECWORD(ptr, p, len, loops);
-        }
-        
-        // ptr is now 32-bit aligned, proceed with seting words.
-        loops = len >> 2; //  divide by sizeof(uint32_t)
-        if (loops) {
-            MYSET_WORDS(ptr, p, len, loops);
-        }
-        // Handle the remaining bytes
-        MYSET_NIBBLE(ptr, p, len, len);
-        
-        return s;
-    }
+  // memset the remaining words
+  MEMSET_REST_WORDS ( ptr32, p32, len );
+  ptr =  (uint8_t *)ptr32;
+
+  // Handle the remaining bytes
+  MEMSET_NIBBLE ( ptr, p, len, len );
+  return s;
 }
 #endif

@@ -3,4 +3,5 @@ METASOURCES = AUTO
 AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_glibc.la
 libfreevec_glibc_la_LDFLAGS = -module
-libfreevec_glibc_la_SOURCES = common.c libfreevec.h memchr.c memcpy.c
+libfreevec_glibc_la_SOURCES = common.c findfirst.S libfreevec.h memccpy.c \
+	memchr.c memcpy.c memmove.c mempcpy.c memrchr.c

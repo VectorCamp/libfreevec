@@ -39,24 +39,16 @@ void *vec_memchr ( void const *str, int c, size_t len ) {
     al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
     if ( al )
       MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, charmask, len, lw, al );
-    ptr = ( uint8_t * ) ptr32;
 
-    vec_dst ( ptr, DST_CTRL ( 2,2,16 ), DST_CHAN_SRC );
-    union {
-      vector uint8_t v;
-      uint8_t c[16];
-    } vc;
-    vc.c[0] = c;
-    vc.v = vec_splat ( vc.v, 0 );
-    vector uint8_t v1;
+    READ_PREFETCH_START ( ptr32 );
+    FILL_VECTOR ( vc, c );
 
     while ( len >= ALTIVECWORD_SIZE ) {
-      MEMCHR_SINGLE_ALTIVEC_WORD ( v1, vc.v, ptr32, c, charmask );
-      vec_dst ( ptr32, DST_CTRL ( 2,2,16 ), DST_CHAN_SRC );
+      MEMCHR_SINGLE_ALTIVEC_WORD ( vc.v, ptr32, c, charmask );
+      READ_PREFETCH_START ( ptr32 );
     }
   }
-
-  MEMCHR_LOOP_WORD ( ptr32, c, charmask, len, lw );
+  MEMCHR_REST_WORDS ( ptr32, c, charmask, len, lw );
 
   ptr = ( uint8_t * ) ptr32;
   MEMCHR_REST_BYTES ( ptr, c, len );
