@@ -12,38 +12,87 @@
 #define FROBNICATOR16   (((FROBNICATOR) << 8) | (FROBNICATOR))
 #define FROBNICATOR32   (((FROBNICATOR16) << 16) | (FROBNICATOR16))
 
-#define MYFROBNICATE_NIBBLE(ptr, len)       \
-    if (len == 3) {                         \
-		*ptr++ ^= FROBNICATOR;          	\
-		*ptr++ ^= FROBNICATOR;          	\
-		*ptr++ ^= FROBNICATOR;          	\
-	} else if (len == 2) {					\
-		*ptr++ ^= FROBNICATOR;          	\
-		*ptr++ ^= FROBNICATOR;          	\
-	} else if (len == 1) {					\
-		*ptr++ ^= FROBNICATOR;          	\
-    }
+#define MEMFROB_NIBBLE(ptr, p, lenvar, len)  \
+  switch(len) {                              \
+  case 3:                                    \
+    *ptr++ ^= FROBNICATOR;                   \
+  case 2:                                    \
+    *ptr++ ^= FROBNICATOR;                   \
+  case 1:                                    \
+    *ptr++ ^= FROBNICATOR;                   \
+    lenvar -= len;                           \
+  }
 
-#define MYFROBNICATE_UNTIL_ALTIVEC_ALIGNED(ptr32, len)                              \
-    while (len >= sizeof(uint32_t) && ((uint32_t)(ptr32) % ALTIVECWORD_SIZE)) {     \
-        *ptr32++ ^= FROBNICATOR32;                                                  \
-        len -= sizeof(uint32_t);                                                    \
-    }
-    
-#define MYFROBNICATE_SINGLE_ALTIVEC_WORD(ptr32, len)                \
-    {                                                               \
-        vector uint32_t v = vec_ld(0, (uint32_t *)ptr32);           \
-        vec_st(vec_xor(v, frobnivector), 0, (uint32_t *)ptr32);     \
-        ptr32 += 4; len -= ALTIVECWORD_SIZE;                        \
-    }
+#define MEMFROB_UNTIL_WORD_ALIGNED( ptr, p, len, al )  \
+{                                                      \
+  int l = MIN( len, sizeof(uint32_t) - al );           \
+  switch (l) {                                         \
+  case 3:                                              \
+    *ptr++ ^= FROBNICATOR;                             \
+  case 2:                                              \
+    *ptr++ ^= FROBNICATOR;                             \
+  case 1:                                              \
+    *ptr++ ^= FROBNICATOR;                             \
+    len -= l;                                          \
+  }                                                    \
+}
 
-#define MYFROBNICATE_LOOP_ALTIVEC_WORD(ptr32, len)                  \
-    while (len >= ALTIVECWORD_SIZE) {                               \
-        MYFROBNICATE_SINGLE_ALTIVEC_WORD(ptr32, len);               \
-    }
-    
-#define MYFROBNICATE_REST_WORDS(ptr32, len) \
-    while (len >= sizeof(uint32_t)) {       \
-        *ptr32++ ^= FROBNICATOR32;          \
-        len -= sizeof(uint32_t);            \
-    }
+#define MEMFROB_WORD_UNTIL_ALTIVEC_ALIGNED( ptr32, p32, len )  \
+{                                                              \
+  int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);          \
+  switch (l) {                                                 \
+    case 3:                                                    \
+      *ptr32++ ^= FROBNICATOR32;                               \
+    case 2:                                                    \
+      *ptr32++ ^= FROBNICATOR32;                               \
+    case 1:                                                    \
+      *ptr32++ ^= FROBNICATOR32;                               \
+      len -= l*sizeof(uint32_t);                               \
+  }                                                            \
+}
+
+#define MEMFROB_ALTIVECWORD(ptr32, vf, len)          \
+{                                                    \
+  vector uint32_t v = vec_ld(0, (uint32_t *)ptr32);  \
+  vec_st(vec_xor(v, vf), 0, (uint32_t *)ptr32);      \
+  ptr32 += 4; len -= ALTIVECWORD_SIZE;               \
+}
+
+#define MEMFROB_LOOP_ALTIVECWORD(ptr32, vf, len)  \
+{                                                 \
+  while (len >= ALTIVECWORD_SIZE) {               \
+    MEMFROB_ALTIVECWORD(ptr32, vf, len);          \
+  }                                               \
+}
+
+#define MEMFROB_LOOP_QUADWORD(ptr32, vf, len)        \
+{                                                    \
+  vector uint32_t v1, v2, v3, v4;                    \
+  uint32_t blocks = len >> LOG_ALTIVECQUAD;          \
+  len -= blocks << LOG_ALTIVECQUAD;                  \
+  while (blocks--) {                                 \
+    v1 = vec_ld(0, (uint32_t *)ptr32);               \
+    v2 = vec_ld(16, (uint32_t *)ptr32);              \
+    v3 = vec_ld(32, (uint32_t *)ptr32);              \
+    v4 = vec_ld(48, (uint32_t *)ptr32);              \
+    vec_st(vec_xor(v1, vf), 0, (uint32_t *)ptr32);   \
+    vec_st(vec_xor(v2, vf), 16, (uint32_t *)ptr32);  \
+    vec_st(vec_xor(v3, vf), 32, (uint32_t *)ptr32);  \
+    vec_st(vec_xor(v4, vf), 48, (uint32_t *)ptr32);  \
+    ptr32 += 16;                                     \
+  }                                                  \
+}
+
+#define MEMFROB_REST_WORDS(ptr32, p32, len)  \
+{                                            \
+  int l = len / sizeof(uint32_t);            \
+  switch (l) {                               \
+    case 3:                                  \
+      *ptr32++ ^= FROBNICATOR32;             \
+    case 2:                                  \
+      *ptr32++ ^= FROBNICATOR32;             \
+    case 1:                                  \
+      *ptr32++ ^= FROBNICATOR32;             \
+      len -= l*sizeof(uint32_t);             \
+  }                                          \
+}

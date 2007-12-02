@@ -14,14 +14,14 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <projectname>freevec</projectname>
-    <defaultencoding/>
+    <defaultencoding></defaultencoding>
   </general>
   <kdevautoproject>
     <general>
       <activetarget>src/freevec</activetarget>
-      <useconfiguration>optimized</useconfiguration>
+      <useconfiguration>debug</useconfiguration>
       <useactivetarget>true</useactivetarget>
     </general>
     <run>
@@ -44,17 +44,17 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O2 -Wall -Werror -g0 -maltivec -mabi=altivec -mregnames</cflags>
+        <cflags>-O2 -Wall -Werror -g0 -maltivec -mabi=altivec -mregnames -mtune=G4 -mcpu=G4</cflags>
         <envvars/>
-        <configargs/>
-        <topsourcedir/>
+        <configargs></configargs>
+        <topsourcedir></topsourcedir>
         <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -62,16 +62,16 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O0 -g3 -maltivec -mabi=altivec -mcpu=7400</cflags>
+        <cflags>-O0 -g3 -maltivec -mabi=altivec -mregnames</cflags>
         <envvars/>
-        <topsourcedir/>
+        <topsourcedir></topsourcedir>
         <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </debug>
     </configurations>
     <make>
@@ -214,7 +214,7 @@
       <resolveIncludePaths>true</resolveIncludePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -241,11 +241,11 @@
   <kdevdebugger>
     <general>
       <programargs/>
-      <gdbpath/>
-      <dbgshell/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>

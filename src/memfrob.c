@@ -21,37 +21,45 @@
 #include "macros/memfrob.h"
 
 #ifdef VEC_GLIBC
-void *vec_memfrob(void *s, size_t len) {
+void *memfrob(void *s, size_t len) {
 #else
 void *vec_memfrob(void *s, size_t len) {
 #endif
 
-    uint8_t *ptr = (uint8_t *)s;
+  uint8_t* ptr = s;
     
-    if (len >= sizeof(uint32_t)) {
-        // Frobnicate 'offset' bytes, so that ptr is 32-bit aligned.
-        uint32_t offset = ((uint32_t)ptr) & (sizeof(uint32_t)-1);
-        if (offset)
-            offset = sizeof(uint32_t) -offset;
-        MYFROBNICATE_NIBBLE(ptr, offset);
-        len -= offset;
-        
-        uint32_t *ptr32 = (uint32_t *)(ptr);
-        MYFROBNICATE_UNTIL_ALTIVEC_ALIGNED(ptr32, len);
-        
-        // build a vector full of fill chars 
-        vector uint32_t frobnivector = { FROBNICATOR32, FROBNICATOR32, FROBNICATOR32, FROBNICATOR32 };
-            
-        MYFROBNICATE_LOOP_ALTIVEC_WORD(ptr32, len);
-        
-        MYFROBNICATE_REST_WORDS(ptr32, len);
-        ptr = (uint8_t *)(ptr32);
-        MYFROBNICATE_NIBBLE(ptr, len);
-        
-        return s;
-    } else {
-        MYFROBNICATE_NIBBLE(ptr, len);
-        return s;
-	}
+  uint32_t al = ( uint32_t ) ( ptr ) % sizeof ( uint32_t );
+  if ( al )
+    MEMFROB_UNTIL_WORD_ALIGNED ( ptr, p, len, al );
+  
+  uint32_t *ptr32 = (uint32_t *)(ptr);
+
+  if ( len >= ALTIVECWORD_SIZE ) {
+    vector uint32_t frobnivector = { FROBNICATOR32, FROBNICATOR32, FROBNICATOR32, FROBNICATOR32 };
+  
+    // ptr is now 32-bit aligned, memset until ptr is altivec aligned
+    al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
+    if ( al )
+      MEMFROB_WORD_UNTIL_ALTIVEC_ALIGNED ( ptr32, p32, len );
+  
+    // ptr is now 128-bit aligned
+    // Set 64-byte chunks at a time
+    if ( len >= QUAD_ALTIVECWORD ) {
+      MEMFROB_LOOP_QUADWORD ( ptr32, frobnivector, len );
+    }
+  
+    // memset the remaining 16-byte chunks
+    while (len >= ALTIVECWORD_SIZE) {
+      MEMFROB_ALTIVECWORD(ptr32, frobnivector, len);
+    }
+  }
+
+  // memset the remaining words
+  MEMFROB_REST_WORDS ( ptr32, p32, len );
+  ptr =  (uint8_t *)ptr32;
+
+  // Handle the remaining bytes
+  MEMFROB_NIBBLE ( ptr, p, len, len );
+  return s;
 }
 #endif
