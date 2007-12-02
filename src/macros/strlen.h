@@ -25,14 +25,14 @@
   }                                            \
 }
 
-#define STRLEN_SINGLE_WORD(str, ptr32)                           \
-{                                                                \
-  uint32_t lw = ((*ptr32 ^ 0) - lomagic) & ~(*ptr32) & himagic;  \
-  if (lw) {                                                      \
-    uint32_t pos = find_leftfirst_nzb(lw);                       \
-    return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);              \
-  }                                                              \
-  ptr32++;                                                       \
+#define STRLEN_SINGLE_WORD(str, ptr32)                                                \
+{                                                                                     \
+  uint32_t lw = ~(((*ptr32 & magic_bits32) + magic_bits32) | *ptr32 | magic_bits32);  \
+  if (lw) {                                                                           \
+    uint32_t pos = find_leftfirst_nzb(lw);                                            \
+    return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);                                   \
+  }                                                                                   \
+  ptr32++;                                                                            \
 }
 
 #define STRLEN_UNTIL_ALTIVEC_ALIGNED(str, ptr)                      \

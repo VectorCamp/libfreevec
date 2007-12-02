@@ -43,7 +43,7 @@
 
 #define himagic         0x80808080L
 #define lomagic         0x01010101L
-#define magic_bits32    0x7efefeffL
+#define magic_bits32    0x7f7f7f7fL
 #define magic_bits64    (((unsigned long int) 0x7efefefe << 32) | 0xfefefeff)
 
 #define charmask16(c)   (uint16_t)((c) | ((c) << 8))
