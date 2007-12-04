@@ -31,26 +31,24 @@ size_t vec_strnlen(const char *str, size_t maxlen) {
 
   STRNLEN_UNTIL_WORD_ALIGNED(str, ptr, len);
   ptr32 = (uint32_t *)(ptr);
-printf("1. ptr32 = %08x, len = %d\n", (uint32_t)ptr32, len);
 
   if (len >= ALTIVECWORD_SIZE) {
     STRNLEN_LOOP_UNTIL_ALTIVEC_ALIGNED(str, ptr32, len);
-printf("2. ptr32 = %08x, len = %d\n", (uint32_t)ptr32, len);
+
     READ_PREFETCH_START(ptr32);
 
     while (len >= ALTIVECWORD_SIZE) {
       STRNLEN_SINGLE_ALTIVEC_WORD(str, ptr32, len);
-printf("3. ptr32 = %08x, len = %d\n", (uint32_t)ptr32, len);
       READ_PREFETCH_START(ptr32);
     }
     READ_PREFETCH_STOP;
   }
 
   STRNLEN_REST_WORDS(str, ptr32, len);
-printf("4. ptr32 = %08x, len = %d\n", (uint32_t)ptr32, len);
+
   ptr = (uint8_t *) ptr32;
   STRNLEN_REST_BYTES(str, ptr, len);
-printf("5. ptr32 = %08x, len = %d\n", (uint32_t)ptr32, len);
+
   return maxlen;
 }
 #endif

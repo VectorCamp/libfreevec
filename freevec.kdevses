@@ -5,8 +5,13 @@
   <Doc0 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strlen.h" >
    <View0 Encoding="" line="0" Type="Source" />
   </Doc0>
+<<<<<<< .mine
+  <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strnlen.c" >
+   <View0 Encoding="" line="0" Type="Source" />
+=======
   <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strcpy.h" >
    <View0 Encoding="" line="0" Type="Source" />
+>>>>>>> .r37
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strcmp.h" >
    <View0 Encoding="" line="0" Type="Source" />
@@ -26,11 +31,16 @@
   <Doc7 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strcpy.c" >
    <View0 Encoding="" line="0" Type="Source" />
   </Doc7>
+<<<<<<< .mine
+  <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strlen.h" >
+   <View0 Encoding="" line="0" Type="Source" />
+=======
   <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strlen.c" >
    <View0 Encoding="" line="0" Type="Source" />
+>>>>>>> .r37
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strncmp.c" >
-   <View0 Encoding="" line="0" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc9>
   <Doc10 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strnlen.c" >
    <View0 Encoding="" line="0" Type="Source" />

@@ -97,22 +97,22 @@
   case 3:                                                \
     if (*ptr == 0) return ptrdiff_t(ptr,str);            \
     ptr++;                                               \
-    len -= l;                                            \
+    len -= sizeof(uint32_t) - l;                         \
   }                                                      \
 }
 
-#define STRNLEN_LOOP_UNTIL_ALTIVEC_ALIGNED(str, ptr32, len)         \
-{                                                                   \
-  int l = (uint32_t)(ptr32) % ALTIVECWORD_SIZE / sizeof(uint32_t);  \
-  switch (l) {                                                      \
-  case 1:                                                           \
-    STRLEN_SINGLE_WORD(str, ptr32);                                 \
-  case 2:                                                           \
-    STRLEN_SINGLE_WORD(str, ptr32);                                 \
-  case 3:                                                           \
-    STRLEN_SINGLE_WORD(str, ptr32);                                 \
-    len -= l*sizeof(uint32_t);                                      \
-  }                                                                 \
+#define STRNLEN_LOOP_UNTIL_ALTIVEC_ALIGNED(str, ptr32, len)          \
+{                                                                    \
+  int l = ((uint32_t)(ptr32) % ALTIVECWORD_SIZE) / sizeof(uint32_t); \
+  switch (l) {                                                       \
+  case 1:                                                            \
+    STRLEN_SINGLE_WORD(str, ptr32);                                  \
+  case 2:                                                            \
+    STRLEN_SINGLE_WORD(str, ptr32);                                  \
+  case 3:                                                            \
+    STRLEN_SINGLE_WORD(str, ptr32);                                  \
+    len -= (sizeof(uint32_t)-l)*sizeof(uint32_t);                    \
+  }                                                                  \
 }
 
 #define STRNLEN_SINGLE_ALTIVEC_WORD(str, ptr32, len)  \
@@ -132,11 +132,11 @@
 {                                            \
   int l = len / sizeof(uint32_t);            \
   switch (l) {                               \
-    case 1:                                  \
+    case 3:                                  \
       STRLEN_SINGLE_WORD(str, ptr32);        \
     case 2:                                  \
       STRLEN_SINGLE_WORD(str, ptr32);        \
-    case 3:                                  \
+    case 1:                                  \
       STRLEN_SINGLE_WORD(str, ptr32);        \
       len -= l*sizeof(uint32_t);             \
   }                                          \

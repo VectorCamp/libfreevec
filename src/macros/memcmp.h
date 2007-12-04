@@ -8,34 +8,37 @@
 
 #include "libfreevec.h"
 
-#define MYMEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len)          	\
-	while (((uint32_t)(src1) % sizeof(uint32_t)) && len--) {		\
-		if (*src1 == *src2)	{										\
-			src1++; src2++;                                         \
-		} else {													\
-			return CMP_LT_OR_GT(*src1, *src2);						\
-		}															\
+#define MEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len)     \
+	while (((uint32_t)(src1) % sizeof(uint32_t)) && len--) {	\
+		if (*src1 == *src2)	{                                   \
+			src1++; src2++;                                       \
+		} else {                                                \
+			return CMP_LT_OR_GT(*src1, *src2);                    \
+		}															                          \
 	}
 
-#define MYMEMCMP_SRC_TO_SRC_UNALIGNED(srcl, srct, srcoffset)\
-	if (srcoffset == 3) {									\
-		srct = (*(srcl) << 24) | (*(srcl+1) >> 8);			\
-	} else if (srcoffset == 2) {							\
-		srct = (*(srcl) << 16) | (*(srcl+1) >> 16);			\
-	} else if (srcoffset == 1) {							\
-		srct = (*(srcl) << 8) | (*(srcl+1) >> 24);			\
-	}
+#define MEMCMP_SRC_TO_SRC_UNALIGNED(srcl, srct, srcoffset)  \
+{                                                           \
+	if (srcoffset == 3) {                                     \
+		srct = (*(srcl) << 24) | (*(srcl+1) >> 8);              \
+	} else if (srcoffset == 2) {                              \
+		srct = (*(srcl) << 16) | (*(srcl+1) >> 16);             \
+	} else if (srcoffset == 1) {                              \
+		srct = (*(srcl) << 8) | (*(srcl+1) >> 24);              \
+	}                                                         \
+}
 
-#define MYMEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                   \
-    if (*src1l != src2t) {                                                                  \
-        src2 = (uint8_t *) src2l +src2offset;                                               \
-        src1 = (uint8_t *) src1l;                                                           \
-        if ((src1[0] != src2[0])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[0], src2[0]); }     \
-        if ((src1[1] != src2[1])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[1], src2[1]); }     \
-        if ((src1[2] != src2[2])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[2], src2[2]); }     \
-        if ((src1[3] != src2[3])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[3], src2[3]); }     \
-    }                                                                                       \
-    src1l++; src2l++;
+#define MEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                   \
+{                                                                                         \
+  if (*src1l != src2t) {                                                                  \
+    src2 = (uint8_t *) src2l +src2offset;                                               \
+    src1 = (uint8_t *) src1l;                                                           \
+    if ((src1[0] != src2[0])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[0], src2[0]); }     \
+    if ((src1[1] != src2[1])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[1], src2[1]); }     \
+    if ((src1[2] != src2[2])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[2], src2[2]); }     \
+    if ((src1[3] != src2[3])) { READ_PREFETCH_STOP; return CMP_LT_OR_GT(src1[3], src2[3]); }     \
+  }                                                                                       \
+  src1l++; src2l++;                                                                       \
 
 /*
 #define MYMEMCMP_QUADWORD_ALIGNED(src1, src2, mask)												\
@@ -55,18 +58,18 @@
 }
 */
 
-#define MYMEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l, src2offset)     \
-    {																		\
-		uint32_t src2t = 0;                                                 \
-		src2t = *src2l;                                   					\
-		MYMEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
-		src2t = *src2l;                                   					\
-		MYMEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
-		src2t = *src2l;                                   					\
-		MYMEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
-		src2t = *src2l;                                   					\
-		MYMEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
-	}
+#define MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l, src2offset)  \
+{																		                                     \
+  uint32_t src2t = 0;                                                    \
+	src2t = *src2l;                                   					           \
+  MEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
+	src2t = *src2l;                                   					\
+  MEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
+  src2t = *src2l;                                   					\
+  MEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
+  src2t = *src2l;                                   					\
+  MEMCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
+}
 
 #define MYMEMCMP_QUADWORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
     {																		\
@@ -294,7 +297,7 @@
         len -= sizeof(uint32_t);                                                    \
     }
 
-#define MYNIBBLE_MEMCMP(src1, src2, len)                                        \
+#define MEMCMP_NIBBLE(src1, src2, len)                                        \
 	if (len == 3) {																\
 		if ((src1[0] != src2[0])) return CMP_LT_OR_GT(src1[0], src2[0]);		\
 		if ((src1[1] != src2[1])) return CMP_LT_OR_GT(src1[1], src2[1]);		\
