@@ -144,7 +144,6 @@
 
 #define STRNLEN_REST_BYTES(str, ptr, len)      \
 {                                              \
-  printf("str = %08x, ptr = %08x, len = %d\n", (uint32_t)str, (uint32_t)ptr, len);\
   switch (len) {                               \
   case 3:                                      \
     if (*ptr == 0) return ptrdiff_t(ptr,str);  \
