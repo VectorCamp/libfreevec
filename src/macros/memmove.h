@@ -74,15 +74,15 @@ switch(len) {                           \
     dst -= ALTIVECWORD_SIZE; src -= QUAD_ALTIVECWORD;            \
     READ_PREFETCH_START ( src );                                 \
     WRITE_PREFETCH_START ( dst );                                \
-    MSQ1 = vec_ld(0, src);                                       \
-    LSQ1 = vec_ld(15, src);                                      \
-    LSQ2 = vec_ld(31, src);                                      \
-    LSQ3 = vec_ld(47, src);                                      \
     LSQ4 = vec_ld(63, src);                                      \
-    vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)dst);       \
-    vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)dst);      \
-    vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)dst);      \
+    LSQ3 = vec_ld(47, src);                                      \
+    LSQ2 = vec_ld(31, src);                                      \
+    LSQ1 = vec_ld(15, src);                                      \
+    MSQ1 = vec_ld(0, src);                                       \
     vec_st(vec_perm(LSQ3, LSQ4, mask), 48, (uint8_t *)dst);      \
+    vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)dst);      \
+    vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)dst);      \
+    vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)dst);       \
   }                                                              \
 }
  

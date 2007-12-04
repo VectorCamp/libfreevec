@@ -28,6 +28,7 @@ void *memmove ( void *dstpp, const void *srcpp, size_t len ) {
 void *vec_memmove ( void *dstpp, const void *srcpp, size_t len ) {
 #endif
 
+  // Copy forward, same as memcpy basically
   if ( abs ( ( uint32_t ) dstpp - ( uint32_t ) srcpp ) >= len ) {
     const uint8_t *src = srcpp;
     uint8_t *dst = dstpp;
@@ -93,15 +94,12 @@ void *vec_memmove ( void *dstpp, const void *srcpp, size_t len ) {
       COPY_FWD_NIBBLE ( dst, src, len );
       return dstpp;
     }
+  // Copy backwards 
   } else {
     const uint8_t *src = srcpp+len;
     uint8_t *dst = dstpp+len;
 
     if ( len >= sizeof ( uint32_t ) ) {
-      // Prefetch some stuff
-      READ_PREFETCH_START ( src );
-      WRITE_PREFETCH_START ( dst );
-
       // Copy until dst is word aligned
       COPY_BWD_UNTIL_DEST_IS_WORD_ALIGNED ( dst, src, len );
 

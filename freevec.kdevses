@@ -1,40 +1,43 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="11" >
-  <Doc0 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strlen.c" >
-   <View0 Encoding="" Type="Source" />
+ <DocsAndViews NumberOfDocuments="12" >
+  <Doc0 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strlen.h" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strnlen.c" >
-   <View0 Encoding="" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strcpy.h" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/swab.c" >
-   <View0 Encoding="" Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/strcmp.h" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strfry.c" >
-   <View0 Encoding="" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/swab.h" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strcpy.c" >
-   <View0 Encoding="" Type="Source" />
+  <Doc4 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/macros/memcmp.h" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strcmp.c" >
-   <View0 Encoding="" Type="Source" />
+  <Doc5 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/memcmp.c" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strcmp.h" >
-   <View0 Encoding="" Type="Source" />
+  <Doc6 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strcmp.c" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strcpy.h" >
-   <View0 Encoding="" Type="Source" />
+  <Doc7 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strcpy.c" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strlen.h" >
-   <View0 Encoding="" Type="Source" />
+  <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strlen.c" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/swab.h" >
+  <Doc9 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strncmp.c" >
    <View0 Encoding="" line="0" Type="Source" />
   </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/memmove.c" >
+  <Doc10 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/strnlen.c" >
    <View0 Encoding="" line="0" Type="Source" />
   </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/markos/Development/AltiVec/freevec/src/swab.c" >
+   <View0 Encoding="" line="9" Type="Source" />
+  </Doc11>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
