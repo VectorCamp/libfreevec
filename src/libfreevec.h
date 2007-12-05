@@ -23,15 +23,17 @@
 #define LOG_ALTIVECQUAD     6
 
 // This portion was stolen from SDL Altivec patches by Ryan C. Gordon :-)
-#define DST_CHAN_SRC 1
-#define DST_CHAN_DEST 2
+#define DST_CHAN_1 1
+#define DST_CHAN_2 2
 
 #define DST_CTRL(size, count, stride) (((size) << 24) | ((count) << 16) | (stride))
 
-#define READ_PREFETCH_START(addr)   vec_dst(addr, DST_CTRL(2,2,16), DST_CHAN_SRC)
-#define WRITE_PREFETCH_START(addr)  vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_DEST)
-#define READ_PREFETCH_STOP          vec_dss(DST_CHAN_SRC)
-#define WRITE_PREFETCH_STOP         vec_dss(DST_CHAN_DEST)
+#define READ_PREFETCH_START1(addr)    vec_dst(addr, DST_CTRL(2,2,16), DST_CHAN_1)
+#define READ_PREFETCH_START2(addr)    vec_dst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
+#define WRITE_PREFETCH_START1(addr)   vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
+#define WRITE_PREFETCH_START2(addr)   vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
+#define PREFETCH_STOP1                vec_dss(DST_CHAN_1)
+#define PREFETCH_STOP2                vec_dss(DST_CHAN_2)
 
 #define ptrdiff_t(a, b)     ((uint32_t)(a)-(uint32_t)(b))
 

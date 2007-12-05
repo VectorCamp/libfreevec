@@ -8,13 +8,27 @@
 
 #include "libfreevec.h"
 
-#define MYSTRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2)                        \
-    while (((uint32_t)(src1) % sizeof(uint32_t))) {                         \
-        if (*src1 == '\0' || (*src1 != *src2)) return DIFF(*src1, *src2);   \
-        src1++; src2++;                                                     \
-    }
+#define STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2)                 \
+{                                                                  \
+  int l = sizeof(uint32_t) - (uint32_t)(src2) % sizeof(uint32_t);  \
+  int8_t c1;                                                       \
+  switch (l) {                                                     \
+  case 3:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  case 2:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  case 1:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  }                                                                \
+}
 
-#define MYSTRCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset)  \
+#define STRCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset)  \
     if (srcoffset == 0) {                                   \
 		srct = *srcl;                                   	\
 	} else if (srcoffset == 3) {							\
@@ -25,7 +39,7 @@
 		srct = (*(srcl) << 8) | (*(srcl+1) >> 24);      	\
     }
 
-#define MYSTRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                           \
+#define STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                           \
     if ((( *src1l - lomagic) & himagic) || *src1l != src2t) {                                       \
         src2 = (uint8_t *) src2l +src2offset;                                                       \
         src1 = (uint8_t *) src1l;                                                                   \
@@ -36,22 +50,22 @@
     }                                                                                               \
     src1l++; src2l++;
 
-#define MYSTRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset)             \
+#define STRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset)             \
     int i;                                                                  \
     for (i=0; i < 4; i++) {                                                 \
         uint32_t src2t = 0;                                                 \
-        MYSTRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);              \
-        MYSTRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
+        STRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);              \
+        STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
     }
     
-#define MYSTRCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
+#define STRCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
     while (((uint32_t)(src1l) % ALTIVECWORD_SIZE)) {                                    \
         uint32_t src2t = 0;                                                             \
-        MYSTRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                          \
-        MYSTRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);              \
+        STRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                          \
+        STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);              \
     }
 
-#define MYSTRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)  \
+#define STRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)  \
     {                                                                               \
         vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
                         vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2),        \
@@ -63,11 +77,11 @@
 		mask1 = vec_or(mask1, mask2);												\
         if (vec_any_ne(mask1, v0)) {                                                \
             src2l = (uint32_t *)(src2 -src2offset);                                 \
-            MYSTRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                \
+            STRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                \
         }                                                                           \
     }
 
-#define MYSTRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)    \
+#define STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)    \
     {                                                                                   \
         vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),           \
                         vsrc2, MSQ, LSQ, vmask, v0 = vec_splat_u8(0);                   \
@@ -82,35 +96,35 @@
 		mask1 = vec_or(mask1, mask2);													\
         if (vec_any_ne(mask1, v0)) {                        							\
             src2l = (uint32_t *)(src2 -src2offset);                                     \
-            MYSTRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                    \
+            STRCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                    \
         }                                                                               \
     }
 
-#define MYSTRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)     \
+#define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)     \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
     while (1) {                                                                             \
-        MYSTRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)          \
+        STRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)          \
         src1l += 4; src2 += ALTIVECWORD_SIZE;                                               \
     }
 
-#define MYSTRCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
+#define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
     while (1) {                                                                             \
-        MYSTRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)        \
+        STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)        \
         src1l += 4; src2 += ALTIVECWORD_SIZE;                                               \
     }
 
 // strncmp()
     
-#define MYSTRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len)                          \
+#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len)                          \
     while (len-- && ((uint32_t)(src1) % sizeof(uint32_t))) {                        \
         if (*src1 == '\0' || (*src1 != *src2)) return DIFF(*src1, *src2);           \
         src1++; src2++;                                                             \
     }
 
-#define MYSTRNCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset) \
+#define STRNCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset) \
     if (srcoffset == 0) {                                   \
 		srct = *srcl;                                   	\
 	} else if (srcoffset == 3) {							\
@@ -121,7 +135,7 @@
 		srct = (*(srcl) << 8) | (*(srcl+1) >> 24);      	\
     }
 
-#define MYSTRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                          \
+#define STRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset)                          \
     if ((( *src1l - lomagic) & himagic) || *src1l != src2t) {                                       \
         src2 = (uint8_t *) src2l +src2offset;                                                       \
         src1 = (uint8_t *) src1l;                                                                   \
@@ -132,36 +146,36 @@
     }                                                                                               \
     src1l++; src2l++;
 
-#define MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset)            \
+#define STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset)            \
     int i;                                                                  \
     for (i=0; i < 4; i++) {                                                 \
         uint32_t src2t = 0;                                                 \
-        MYSTRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);             \
-        MYSTRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset); \
+        STRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);             \
+        STRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset); \
     }
 
-#define MYSTRNCMP_QUADWORD_new(src1, src2, len)								\
+#define STRNCMP_QUADWORD_new(src1, src2, len)								\
     while (len--) {															\
         if (*src1 == '\0' || (*src1 != *src2)) return DIFF(*src1, *src2);   \
         src1++; src2++;                                                     \
     }
 
-#define MYSTRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src2offset)  \
+#define STRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src2offset)  \
     while (len >= sizeof(uint32_t) && ((uint32_t)(src1l) % ALTIVECWORD_SIZE)) {             \
         uint32_t src2t = 0;                                                                 \
-        MYSTRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                             \
-        MYSTRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);                 \
+        STRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                             \
+        STRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);                 \
         len -= sizeof(uint32_t);                                                            \
     }
 
-#define MYSTRNCMP_UNTIL_SRC1_ALTIVEC_ALIGNED_new(src1, src2, len)			\
+#define STRNCMP_UNTIL_SRC1_ALTIVEC_ALIGNED_new(src1, src2, len)			\
     while ((uint32_t)(src1) % ALTIVECWORD_SIZE && len--) {					\
         if (*src1 == '\0' || (*src1 != *src2)) return DIFF(*src1, *src2);   \
         src1++; src2++;                                                     \
     }
 
 
-#define MYSTRNCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset) \
+#define STRNCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset) \
     {                                                                               \
         vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
                         vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2),        \
@@ -173,11 +187,11 @@
 		mask1 = vec_or(mask1, mask2);												\
         if (!vec_all_eq(mask1, v0)) {                                                \
             src2l = (uint32_t *)(src2 -src2offset);                                 \
-            MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
+            STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
         }                                                                           \
     }
 
-#define MYSTRNCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
+#define STRNCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
     {                                                                                   \
         vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),           \
                         vsrc2, MSQ, LSQ, vmask, v0 = vec_splat_u8(0);                   \
@@ -192,11 +206,11 @@
 		mask1 = vec_or(mask1, mask2);													\
         if (!vec_all_eq(mask1, v0)) {                        							\
             src2l = (uint32_t *)(src2 -src2offset);                                     \
-            MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
+            STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
         }                                                                               \
     }
 
-#define MYSTRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
+#define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
 	vector bool char mask1, mask2;															\
@@ -210,12 +224,12 @@
 		mask1 = vec_or(mask1, mask2);														\
         if (!vec_all_eq(mask1, v0)) {                                               			\
             src2l = (uint32_t *)(src2 -src2offset);                                 		\
-            MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               		\
+            STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               		\
         }                                                                           		\
         src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                      \
     }
 
-#define MYSTRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)  \
+#define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)  \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
 	vector bool char mask1, mask2;															\
@@ -232,12 +246,12 @@
 		mask1 = vec_or(mask1, mask2);														\
         if (!vec_all_eq(mask1, v0)) {                        								\
             src2l = (uint32_t *)(src2 -src2offset);                                     	\
-            MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   	\
+            STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   	\
         }                                                                               	\
         src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                      \
     }
 
-#define MYSTRNCMP_LOOP_QUADWORD_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src2offset)       \
+#define STRNCMP_LOOP_QUADWORD_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src2offset)       \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1l, DST_CTRL(2,2,16), DST_CHAN_DEST);                                        \
     {                                                                                       \
@@ -259,22 +273,22 @@
             res4 = vec_any_eq(vsrc1d, v0) |vec_any_ne(vsrc1d, vsrc2d);                      \
             if (res1) {                                                                     \
                 src2l = (uint32_t *)(src2 -src2offset);                                     \
-                MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
+                STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
             }                                                                               \
             if (res2) {                                                                     \
                 src1l += 4; src2 += ALTIVECWORD_SIZE;                                       \
                 src2l = (uint32_t *)(src2 -src2offset);                                     \
-                MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
+                STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
             }                                                                               \
             if (res3) {                                                                     \
                 src1l += 8; src2 += 2*ALTIVECWORD_SIZE;                                     \
                 src2l = (uint32_t *)(src2 -src2offset);                                     \
-                MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
+                STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
             }                                                                               \
             if (res4) {                                                                     \
                 src1l += 12; src2 += 3*ALTIVECWORD_SIZE;                                    \
                 src2l = (uint32_t *)(src2 -src2offset);                                     \
-                MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
+                STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);                   \
             }                                                                               \
             src1l += 16; src2 += 4*ALTIVECWORD_SIZE;                                        \
             len -= 4* ALTIVECWORD_SIZE;                                                     \
@@ -283,7 +297,7 @@
         }                                                                                   \
     }
 
-#define MYSTRNCMP_LOOP_QUADWORD_ALTIVEC_UNALIGNED(src1, src1l, src2, src2l, src2offset)     \
+#define STRNCMP_LOOP_QUADWORD_ALTIVEC_UNALIGNED(src1, src1l, src2, src2l, src2offset)     \
     vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
     vec_dst(src1l, DST_CTRL(2,2,16), DST_CHAN_DEST);                                        \
     {                                                                                       \
@@ -312,22 +326,22 @@
             if (res1|res2|res3|res4) {                                                      \
                 if (res1) {                                                                 \
                     src2l = (uint32_t *)(src2 -src2offset);                                 \
-                    MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
+                    STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
                 }                                                                           \
                 if (res2) {                                                                 \
                     src1l += 4; src2 += ALTIVECWORD_SIZE;                                   \
                     src2l = (uint32_t *)(src2 -src2offset);                                 \
-                    MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
+                    STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
                 }                                                                           \
                 if (res3) {                                                                 \
                     src1l += 8; src2 += 2*ALTIVECWORD_SIZE;                                 \
                     src2l = (uint32_t *)(src2 -src2offset);                                 \
-                    MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
+                    STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
                 }                                                                           \
                 if (res4) {                                                                 \
                     src1l += 12; src2 += 3*ALTIVECWORD_SIZE;                                \
                     src2l = (uint32_t *)(src2 -src2offset);                                 \
-                    MYSTRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
+                    STRNCMP_QUADWORD(src1, src1l, src2, src2l, src2offset);               \
                 }                                                                           \
             }                                                                               \
             src1l += 16; src2 += 4*ALTIVECWORD_SIZE;                                        \
@@ -337,15 +351,15 @@
         }                                                                                   \
     }
     
-#define MYSTRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2offset)             \
+#define STRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2offset)             \
     while (len >= sizeof(uint32_t)) {                                               \
         uint32_t src2t = 0;                                                         \
-        MYSTRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                     \
-        MYSTRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);         \
+        STRNCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                     \
+        STRNCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);         \
         len -= sizeof(uint32_t);                                                    \
     }
 
-#define MYNIBBLE_STRNCMP(src1, src2, len)                                                   \
+#define NIBBLE_STRNCMP(src1, src2, len)                                                   \
     if (len == 3) {																			\
             if (src1[0] == '\0' || (src1[0] != src2[0])) return DIFF(src1[0], src2[0]);     \
             if (src1[0] == '\0' || (src1[1] != src2[1])) return DIFF(src1[1], src2[1]);     \
