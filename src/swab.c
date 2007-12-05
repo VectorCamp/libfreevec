@@ -67,6 +67,7 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
       }
       // Stop prefetching.
       PREFETCH_STOP1;
+      PREFETCH_STOP2;
     }
 
     // Copy the remaining bytes using word-copying

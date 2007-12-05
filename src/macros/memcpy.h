@@ -155,26 +155,26 @@
    *dstl++ = *srcl++;                                                  \
 }
 
-#define MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c) \
-{                                                                                   \
-  uint32_t srct = 0;                                                                \
-  if (srcoffset == 0) {                                                             \
-    srct = *srcl;                                                                   \
-  } else if (srcoffset == 3) {                                                      \
-    srct = (*(srcl) << 24) | (*(srcl+1) >> 8);                                      \
-  } else if (srcoffset == 2) {                                                      \
-    srct = (*(srcl) << 16) | (*(srcl+1) >> 16);                                     \
-  } else if (srcoffset == 1) {                                                      \
-    srct = (*(srcl) << 8) | (*(srcl+1) >> 24);                                      \
-  }                                                                                 \
-  uint32_t lw = ( (srct ^ mask) - lomagic) & himagic;                               \
-  if (lw) {                                                                         \
-    src = (uint8_t *) srcl +srcoffset;                                              \
-    dst = (uint8_t *) dstl;                                                         \
-    MEMCCPY_CHECK_WORD(dst, src, c);                                                \
-  }                                                                                 \
-  *dstl++ = srct;                                                                   \
-  srcl++;                                                                           \
+#define MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c) \
+{                                                                               \
+  uint32_t srct = 0;                                                            \
+  if (srcal == 0) {                                                             \
+    srct = *srcl;                                                               \
+  } else if (srcal == 3) {                                                      \
+    srct = (*(srcl) << 24) | (*(srcl+1) >> 8);                                  \
+  } else if (srcal == 2) {                                                      \
+    srct = (*(srcl) << 16) | (*(srcl+1) >> 16);                                 \
+  } else if (srcal == 1) {                                                      \
+    srct = (*(srcl) << 8) | (*(srcl+1) >> 24);                                  \
+  }                                                                             \
+  uint32_t lw = ( (srct ^ mask) - lomagic) & himagic;                           \
+  if (lw) {                                                                     \
+    src = (uint8_t *) srcl +srcal;                                              \
+    dst = (uint8_t *) dstl;                                                     \
+    MEMCCPY_CHECK_WORD(dst, src, c);                                            \
+  }                                                                             \
+  *dstl++ = srct;                                                               \
+  srcl++;                                                                       \
 }
 
 #define MEMCCPY_QUADWORD_ALIGNED(dst, dstl, src, srcl, mask, c)   \
@@ -185,38 +185,38 @@
   MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c); \
 }
 
-#define MEMCCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c)   \
-{                                                                              \
-  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
+#define MEMCCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c)   \
+{                                                                          \
+  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c); \
+  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c); \
+  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c); \
+  MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c); \
 }
 
-#define MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcoffset, mask, c, al) \
-{                                                                                                \
-  int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);                                            \
-  if (srcoffset == 0) {                                                                          \
-    switch (l) {                                                                                 \
-    case 3:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                            \
-    case 2:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                            \
-    case 1:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                            \
-      len -= l*sizeof(uint32_t);                                                                 \
-    }                                                                                            \
-  } else {                                                                                       \
-    switch (l) {                                                                                 \
-    case 3:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c);               \
-    case 2:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c);               \
-    case 1:                                                                                      \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c);               \
-      len -= l*sizeof(uint32_t);                                                                 \
-    }                                                                                            \
-  }                                                                                              \
+#define MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, mask, c, al) \
+{                                                                                            \
+  int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);                                        \
+  if (srcal == 0) {                                                                          \
+    switch (l) {                                                                             \
+    case 3:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                        \
+    case 2:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                        \
+    case 1:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);                        \
+      len -= l*sizeof(uint32_t);                                                             \
+    }                                                                                        \
+  } else {                                                                                   \
+    switch (l) {                                                                             \
+    case 3:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);               \
+    case 2:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);               \
+    case 1:                                                                                  \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);               \
+      len -= l*sizeof(uint32_t);                                                             \
+    }                                                                                        \
+  }                                                                                          \
 }
 
 #define MEMCCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, mask, vc, c) \
@@ -229,18 +229,18 @@
   vec_st(vsrc, 0, (uint8_t *)dstl);                                            \
 }
 
-#define MEMCCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, vc, c) \
-{                                                                                           \
-  vector uint8_t vsrc, MSQ, LSQ, vmask;                                                     \
-  vmask = vec_lvsl(0, src);                                                                 \
-  MSQ = vec_ld(0, src);                                                                     \
-  LSQ = vec_ld(15, src);                                                                    \
-  vsrc = vec_perm(MSQ, LSQ, vmask);                                                         \
-  if (vec_any_eq(vsrc, vc)) {                                                               \
-    srcl = (uint32_t *)(src -srcoffset4);                                                   \
-    MEMCCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c);                   \
-  }                                                                                         \
-  vec_st(vsrc, 0, (uint8_t *)dstl);                                                         \
+#define MEMCCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, vc, c) \
+{                                                                                       \
+  vector uint8_t vsrc, MSQ, LSQ, vmask;                                                 \
+  vmask = vec_lvsl(0, src);                                                             \
+  MSQ = vec_ld(0, src);                                                                 \
+  LSQ = vec_ld(15, src);                                                                \
+  vsrc = vec_perm(MSQ, LSQ, vmask);                                                     \
+  if (vec_any_eq(vsrc, vc)) {                                                           \
+    srcl = (uint32_t *)(src -srcal);                                                    \
+    MEMCCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);                   \
+  }                                                                                     \
+  vec_st(vsrc, 0, (uint8_t *)dstl);                                                     \
 }
 
 #define MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, len, mask, vc, c) \
@@ -251,38 +251,38 @@
     WRITE_PREFETCH_START2(dst);                                                          \
   }
 
-#define MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcoffset, mask, vc, c) \
-  while (len >= ALTIVECWORD_SIZE) {                                                                   \
-    MEMCCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, vc, c)               \
-    dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                                      \
-    READ_PREFETCH_START1(src);                                                                        \
-    WRITE_PREFETCH_START2(dst);                                                                       \
+#define MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, mask, vc, c) \
+  while (len >= ALTIVECWORD_SIZE) {                                                               \
+    MEMCCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, vc, c)               \
+    dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                                  \
+    READ_PREFETCH_START1(src);                                                                    \
+    WRITE_PREFETCH_START2(dst);                                                                   \
   }
 
-#define MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcoffset, mask, c)          \
-{                                                                                  \
-  int l = len / sizeof(uint32_t);                                                  \
-  if (srcoffset == 0) {                                                            \
-    switch (l) {                                                                   \
-    case 3:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);              \
-    case 2:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);              \
-    case 1:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);              \
-      len -= l*sizeof(uint32_t);                                                   \
-    }                                                                              \
-  } else {                                                                         \
-    switch (l) {                                                                   \
-    case 3:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-    case 2:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-    case 1:                                                                        \
-      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, c); \
-      len -= l*sizeof(uint32_t);                                                   \
-    }                                                                              \
-  }                                                                                \
+#define MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal, mask, c)           \
+{                                                                               \
+  int l = len / sizeof(uint32_t);                                               \
+  if (srcal == 0) {                                                             \
+    switch (l) {                                                                \
+    case 3:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);           \
+    case 2:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);           \
+    case 1:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c);           \
+      len -= l*sizeof(uint32_t);                                                \
+    }                                                                           \
+  } else {                                                                      \
+    switch (l) {                                                                \
+    case 3:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);  \
+    case 2:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);  \
+    case 1:                                                                     \
+      MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);  \
+      len -= l*sizeof(uint32_t);                                                \
+    }                                                                           \
+  }                                                                             \
 }
 
 #define MEMCCPY_FWD_NIBBLE(dst, src, c, len) \

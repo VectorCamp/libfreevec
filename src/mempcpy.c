@@ -69,6 +69,8 @@ void *vec_mempcpy ( void *dstpp, const void *srcpp, size_t len ) {
         dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
         srcl = ( uint32_t * ) ( src -srcoffset4 );
       }
+      PREFETCH_STOP1;
+      PREFETCH_STOP2;
     }
     // Copy the remaining bytes using word-copying
     // Handle alignment as appropriate
@@ -80,9 +82,6 @@ void *vec_mempcpy ( void *dstpp, const void *srcpp, size_t len ) {
 
     // Copy the remaining bytes
     COPY_FWD_NIBBLE ( dst, src, len );
-
-    PREFETCH_STOP1;
-    PREFETCH_STOP2;
 
     return dstlast;
   } else {

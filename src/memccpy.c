@@ -41,17 +41,17 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
     WRITE_PREFETCH_START2(dst);
 
     // Take the word-aligned long pointers of src and dest.
-    uint8_t srcoffset4 = (uint32_t)(src) % sizeof(uint32_t);
-    const uint32_t *srcl = (uint32_t *)(src -srcoffset4);
+    uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
+    const uint32_t *srcl = (uint32_t *)(src -src);
     uint32_t *dstl = (uint32_t *)(dst);
     al = (uint32_t) dstl % ALTIVECWORD_SIZE;
-    MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcoffset4, charmask, c, al);
+    MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, charmask, c, al);
 
     // Now dst is word aligned. If possible (ie if there are enough bytes left)
     // we want to align it to 16-byte boundaries as well.
     // For this we have to know the word-alignment of src also.
 
-    src = (uint8_t *) srcl +srcoffset4;
+    src = (uint8_t *) srcl +srcal;
 
     FILL_VECTOR(vc, c);
 
@@ -62,17 +62,16 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
       srcl = (uint32_t *)(src);
     } else {
       // src is not 16-byte aligned so we have to a little trick with Altivec.
-      MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcoffset4, charmask, vc, c);
-      srcl = (uint32_t *)(src -srcoffset4);
+      MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, charmask, vc, c);
+      srcl = (uint32_t *)(src -srcal);
+      PREFETCH_STOP1;
+      PREFETCH_STOP2;
     }
-    MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcoffset4, charmask, c);
+    MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal, charmask, c);
 
     dst = (uint8_t *) dstl;
-    src = (uint8_t *) srcl +srcoffset4;
+    src = (uint8_t *) srcl +srcal;
     MEMCCPY_FWD_NIBBLE(dst, src, c, len);
-
-    PREFETCH_STOP1;
-    PREFETCH_STOP2;
 
     return 0;
   } else {

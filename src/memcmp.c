@@ -62,9 +62,9 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
         // src2 is not 16-byte aligned so we have to a little trick with Altivec.
         MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);
       }
+      PREFETCH_STOP1;
+      PREFETCH_STOP2;
     }
-    PREFETCH_STOP1;
-    PREFETCH_STOP2;
 
     MEMCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al);
     src1 = (uint8_t *) src1l;
