@@ -86,8 +86,8 @@
     *((uint8_t *)dst16) = carry;                                                           \
     carry = src[15];                                                                       \
     dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START(src);                                                              \
-    WRITE_PREFETCH_START(dst);                                                             \
+    READ_PREFETCH_START1(src);                                                              \
+    WRITE_PREFETCH_START2(dst);                                                             \
   }                                                                                        \
 }
 
@@ -101,8 +101,8 @@
     dst = (uint8_t *)dst16;                                                                     \
     dst[0] = carry; carry = src[15]; dst[15] = src[16];                                         \
     dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                               \
-    READ_PREFETCH_START(src);                                                                   \
-    WRITE_PREFETCH_START(dst);                                                                  \
+    READ_PREFETCH_START1(src);                                                                   \
+    WRITE_PREFETCH_START2(dst);                                                                  \
   }                                                                                             \
 }
 
@@ -113,8 +113,8 @@
   while (len >= ALTIVECWORD_SIZE) {                                                        \
     SWAB_SINGLE_ALTIVEC_ALIGNED_NO_CARRY(vsrc, vdst, src, dst16, vdst_permute_mask);       \
     dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START(src);                                                              \
-    WRITE_PREFETCH_START(dst);                                                             \
+    READ_PREFETCH_START1(src);                                                              \
+    WRITE_PREFETCH_START2(dst);                                                             \
   }                                                                                        \
 }
 
@@ -126,7 +126,7 @@
   while (len >= ALTIVECWORD_SIZE) {                                                        \
     SWAB_SINGLE_ALTIVEC_UNALIGNED(MSQ, LSQ, vsrc, vdst, src, dst16, vdst_permute_mask);    \
     dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START(src);                                                              \
-    WRITE_PREFETCH_START(dst);                                                             \
+    READ_PREFETCH_START1(src);                                                              \
+    WRITE_PREFETCH_START2(dst);                                                             \
   }                                                                                        \
 }

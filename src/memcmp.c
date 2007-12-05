@@ -32,7 +32,7 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
 
   if (len >= sizeof(uint32_t)) {
     // Prefetch some stuff
-    READ_PREFETCH_START(src1);
+    READ_PREFETCH_START1(src1);
 
     MEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len);
 
@@ -57,7 +57,7 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
         MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);
       }
     }
-    READ_PREFETCH_STOP;
+    PREFETCH_STOP1;
 
     MEMCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al);
     src1 = (uint8_t *) src1l;

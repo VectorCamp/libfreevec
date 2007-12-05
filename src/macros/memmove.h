@@ -55,8 +55,8 @@ switch(len) {                           \
   len -= blocks << LOG_ALTIVECQUAD;                                           \
   while (blocks--) {                                                          \
     dst -= ALTIVECWORD_SIZE; src -= QUAD_ALTIVECWORD;                         \
-    READ_PREFETCH_START ( src );                                              \
-    WRITE_PREFETCH_START ( dst );                                             \
+    READ_PREFETCH_START1 ( src );                                              \
+    WRITE_PREFETCH_START2 ( dst );                                             \
     vec_st((vector uint8_t) vec_ld(48, (uint8_t *)src), 48, (uint8_t *)dst);  \
     vec_st((vector uint8_t) vec_ld(32, (uint8_t *)src), 32, (uint8_t *)dst);  \
     vec_st((vector uint8_t) vec_ld(16, (uint8_t *)src), 16, (uint8_t *)dst);  \
@@ -72,8 +72,8 @@ switch(len) {                           \
   mask = vec_lvsl(0, src);                                       \
   while (blocks--) {                                             \
     dst -= ALTIVECWORD_SIZE; src -= QUAD_ALTIVECWORD;            \
-    READ_PREFETCH_START ( src );                                 \
-    WRITE_PREFETCH_START ( dst );                                \
+    READ_PREFETCH_START1 ( src );                                 \
+    WRITE_PREFETCH_START2 ( dst );                                \
     LSQ4 = vec_ld(63, src);                                      \
     LSQ3 = vec_ld(47, src);                                      \
     LSQ2 = vec_ld(31, src);                                      \

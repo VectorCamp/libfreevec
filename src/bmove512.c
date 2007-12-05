@@ -32,8 +32,8 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   uint8_t *dst = to;
 
   // Prefetch some stuff
-  READ_PREFETCH_START ( src );
-  WRITE_PREFETCH_START ( dst );
+  READ_PREFETCH_START1 ( src );
+  WRITE_PREFETCH_START2 ( dst );
 
   uint32_t *dstl = ( uint32_t * ) ( dst );
   const uint32_t *srcl = ( uint32_t * ) ( src );
@@ -63,8 +63,8 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   srcl = ( uint32_t * ) ( src );
   COPY_FWD_REST_WORDS ( dstl, srcl, len, 0 );
 
-  READ_PREFETCH_STOP;
-  WRITE_PREFETCH_STOP;
+  PREFETCH_STOP1;
+  PREFETCH_STOP2;
 
   return;
 }

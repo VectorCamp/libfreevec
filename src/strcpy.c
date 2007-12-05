@@ -40,8 +40,8 @@ int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp)
     MEMCCPY_UNTIL_DEST_WORD_ALIGNED ( dst, src, c, len, al );
 
     // Prefetch some stuff
-    READ_PREFETCH_START ( src );
-    WRITE_PREFETCH_START ( dst );
+    READ_PREFETCH_START1 ( src );
+    WRITE_PREFETCH_START2 ( dst );
 
     // Take the word-aligned long pointers of src and dest.
     uint8_t srcoffset4 = ( uint32_t ) ( src ) % sizeof ( uint32_t );
@@ -74,8 +74,8 @@ int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp)
     src = ( uint8_t * ) srcl +srcoffset4;
     MEMCCPY_FWD_NIBBLE ( dst, src, c, len );
 
-    READ_PREFETCH_STOP;
-    WRITE_PREFETCH_STOP;
+    PREFETCH_STOP1;
+    PREFETCH_STOP2;
 
     return 0;
   } else {

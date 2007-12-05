@@ -119,7 +119,7 @@
 
 #define MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)        \
 {                                                                                \
-  READ_PREFETCH_START(src1);                                                     \
+  READ_PREFETCH_START1(src1);                                                     \
   while (len >= ALTIVECWORD_SIZE) {                                              \
     MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);                \
     src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;               \
@@ -128,8 +128,8 @@
 
 #define MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
 {                                                                                    \
-  READ_PREFETCH_START(src1);                                                         \
-  READ_PREFETCH_START(src2);                                                         \
+  READ_PREFETCH_START1(src1);                                                         \
+  READ_PREFETCH_START1(src2);                                                         \
   while (len >= ALTIVECWORD_SIZE) {                                                  \
     MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
     src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                   \

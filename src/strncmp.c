@@ -67,7 +67,7 @@ int vec_strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len) {
         src1 = (uint8_t *) src1l;
         src2 = (uint8_t *) src2l +src2offset4;
         
-        READ_PREFETCH_STOP;
+        PREFETCH_STOP1;
         NIBBLE_STRNCMP(src1, src2, len);
         
         return 0;

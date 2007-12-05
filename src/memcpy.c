@@ -34,8 +34,8 @@ void *vec_memcpy ( void *dstpp, const void *srcpp, size_t len ) {
     return dstpp;
   } else {
     // Prefetch some stuff
-    READ_PREFETCH_START ( src );
-    WRITE_PREFETCH_START ( dst );
+    READ_PREFETCH_START1 ( src );
+    WRITE_PREFETCH_START2 ( dst );
 
     // Copy until dst is word aligned
     COPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED ( dst, src, len );
@@ -85,8 +85,8 @@ void *vec_memcpy ( void *dstpp, const void *srcpp, size_t len ) {
     // Copy the remaining bytes
     COPY_FWD_NIBBLE ( dst, src, len );
 
-    READ_PREFETCH_STOP;
-    WRITE_PREFETCH_STOP;
+    PREFETCH_STOP1;
+    PREFETCH_STOP2;
 
     return dstpp;
   }

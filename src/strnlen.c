@@ -35,13 +35,13 @@ size_t vec_strnlen(const char *str, size_t maxlen) {
   if (len >= ALTIVECWORD_SIZE) {
     STRNLEN_LOOP_UNTIL_ALTIVEC_ALIGNED(str, ptr32, len);
 
-    READ_PREFETCH_START(ptr32);
+    READ_PREFETCH_START1(ptr32);
 
     while (len >= ALTIVECWORD_SIZE) {
       STRNLEN_SINGLE_ALTIVEC_WORD(str, ptr32, len);
-      READ_PREFETCH_START(ptr32);
+      READ_PREFETCH_START1(ptr32);
     }
-    READ_PREFETCH_STOP;
+    PREFETCH_STOP1;
   }
 
   STRNLEN_REST_WORDS(str, ptr32, len);

@@ -75,7 +75,7 @@
   do {                                           \
     STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32);  \
     ptr32 += 4;                                  \
-    READ_PREFETCH_START( ptr32 );                \
+    READ_PREFETCH_START1( ptr32 );                \
   } while (1);                                   \
 }
 

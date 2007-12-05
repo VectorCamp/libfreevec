@@ -40,12 +40,12 @@ void *vec_memchr ( void const *str, int c, size_t len ) {
     if ( al )
       MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, charmask, len, lw, al );
 
-    READ_PREFETCH_START ( ptr32 );
+    READ_PREFETCH_START1 ( ptr32 );
     FILL_VECTOR ( vc, c );
 
     while ( len >= ALTIVECWORD_SIZE ) {
       MEMCHR_SINGLE_ALTIVEC_WORD ( vc, ptr32, c, charmask );
-      READ_PREFETCH_START ( ptr32 );
+      READ_PREFETCH_START1 ( ptr32 );
     }
   }
   MEMCHR_REST_WORDS ( ptr32, c, charmask, len, lw );

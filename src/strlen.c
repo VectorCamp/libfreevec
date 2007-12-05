@@ -32,7 +32,7 @@ size_t vec_strlen(const int8_t *str) {
   uint32_t *ptr32 = (uint32_t *)(ptr);
   STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32);
 
-  READ_PREFETCH_START(ptr);
+  READ_PREFETCH_START1(ptr);
 
   STRLEN_LOOP_ALTIVEC_WORD(str, ptr32);
 

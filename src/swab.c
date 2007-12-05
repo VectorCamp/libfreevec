@@ -54,8 +54,8 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
     // Now, dst is 16byte aligned. We can use Altivec if len >= 16 bytes
     if (len >= ALTIVECWORD_SIZE) {
       // Prefetch some stuff
-      READ_PREFETCH_START ( src );
-      WRITE_PREFETCH_START ( dst );
+      READ_PREFETCH_START1 ( src );
+      WRITE_PREFETCH_START2 ( dst );
 
       // Check for the alignment of src
       if ((uint32_t)(src) % ALTIVECWORD_SIZE == 0) {
@@ -66,7 +66,7 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
         SWAB_LOOP_ALTIVEC_UNALIGNED_HAS_CARRY(dst16, src, len, carry);
       }
       // Stop prefetching.
-      READ_PREFETCH_STOP;
+      PREFETCH_STOP1;
     }
 
     // Copy the remaining bytes using word-copying
@@ -80,8 +80,8 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
     SWAB_WORD_UNTIL_ALTIVEC_ALIGNED_NO_CARRY(dst16, src, len);
 
     // Prefetch some stuff
-    READ_PREFETCH_START ( src );
-    WRITE_PREFETCH_START ( dst );
+    READ_PREFETCH_START1 ( src );
+    WRITE_PREFETCH_START2 ( dst );
 
     // Now, dst is 16byte aligned. We can use Altivec if len >= 16 bytes
     if (len >= ALTIVECWORD_SIZE) {
@@ -94,8 +94,8 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
         SWAB_LOOP_ALTIVEC_UNALIGNED_NO_CARRY(dst16, src, len);
       }
       // Stop prefetching.
-      READ_PREFETCH_STOP;
-      WRITE_PREFETCH_STOP;
+      PREFETCH_STOP1;
+      PREFETCH_STOP2;
     }
 
     // Copy the remaining bytes using word-copying

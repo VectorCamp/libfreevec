@@ -30,7 +30,7 @@
 
 #define READ_PREFETCH_START1(addr)    vec_dst(addr, DST_CTRL(2,2,16), DST_CHAN_1)
 #define READ_PREFETCH_START2(addr)    vec_dst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
-#define WRITE_PREFETCH_START1(addr)   vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
+#define WRITE_PREFETCH_START1(addr)   vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_1)
 #define WRITE_PREFETCH_START2(addr)   vec_dstst(addr, DST_CTRL(2,2,16), DST_CHAN_2)
 #define PREFETCH_STOP1                vec_dss(DST_CHAN_1)
 #define PREFETCH_STOP2                vec_dss(DST_CHAN_2)
