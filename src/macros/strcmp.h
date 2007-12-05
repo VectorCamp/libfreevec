@@ -8,9 +8,9 @@
 
 #include "libfreevec.h"
 
-#define STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2)                 \
+#define STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, src1al)         \
 {                                                                  \
-  int l = sizeof(uint32_t) - (uint32_t)(src2) % sizeof(uint32_t);  \
+  int l = sizeof(uint32_t) - src1al;                               \
   int8_t c1;                                                       \
   switch (l) {                                                     \
   case 3:                                                          \
@@ -58,11 +58,11 @@
         STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);  \
     }
     
-#define STRCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
+#define STRCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l,  src1al, src2al)    \
     while (((uint32_t)(src1l) % ALTIVECWORD_SIZE)) {                                    \
         uint32_t src2t = 0;                                                             \
-        STRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2offset);                          \
-        STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2offset);              \
+        STRCMP_SRC_TO_SRC_ALIGNED(src2l, src2t, src2al);                          \
+        STRCMP_SINGLE_WORD(src1, src1l, src2, src2l, src2t, src2al);              \
     }
 
 #define STRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)  \
@@ -117,12 +117,26 @@
     }
 
 // strncmp()
-    
-#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len)                          \
-    while (len-- && ((uint32_t)(src1) % sizeof(uint32_t))) {                        \
-        if (*src1 == '\0' || (*src1 != *src2)) return DIFF(*src1, *src2);           \
-        src1++; src2++;                                                             \
-    }
+
+#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al)   \
+{                                                                  \
+  int l = MIN(len, sizeof(uint32_t) - src1al );                    \
+  int8_t c1;                                                       \
+  switch (l) {                                                     \
+  case 3:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  case 2:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  case 1:                                                          \
+    c1 = *src1 - *src2;                                            \
+    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    src1++; src2++;                                                \
+  }                                                                \
+}
 
 #define STRNCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset) \
     if (srcoffset == 0) {                                   \
