@@ -132,7 +132,9 @@
 {                                                                                \
   READ_PREFETCH_START1(src1l);                                                   \
   READ_PREFETCH_START2(src2l);                                                   \
-  while (len >= ALTIVECWORD_SIZE) {                                              \
+  while (len >= 2*ALTIVECWORD_SIZE) {                                              \
+    MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);                \
+    src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                             \
     MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);                \
     src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                             \
     READ_PREFETCH_START1(src1l);                                                 \
