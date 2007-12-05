@@ -247,16 +247,16 @@
   while (len >= ALTIVECWORD_SIZE) {                                                      \
     MEMCCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, mask, vc, c)               \
     dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                         \
-    READ_PREFETCH_START1(src);                                                            \
-    WRITE_PREFETCH_START2(dst);                                                           \
+    READ_PREFETCH_START1(src);                                                           \
+    WRITE_PREFETCH_START2(dst);                                                          \
   }
 
 #define MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcoffset, mask, vc, c) \
   while (len >= ALTIVECWORD_SIZE) {                                                                   \
     MEMCCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcoffset, mask, vc, c)               \
     dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                                      \
-    READ_PREFETCH_START1(src);                                                                         \
-    WRITE_PREFETCH_START2(dst);                                                                        \
+    READ_PREFETCH_START1(src);                                                                        \
+    WRITE_PREFETCH_START2(dst);                                                                       \
   }
 
 #define MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcoffset, mask, c)          \

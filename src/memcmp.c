@@ -20,6 +20,7 @@
 
 #include "libfreevec.h"
 #include "macros/memcmp.h"
+#include "macros/common.h"
 
 #ifdef VEC_GLIBC
 int memcmp(void *src1pp, const void *src2pp, size_t len) {
@@ -33,8 +34,11 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
   if (len >= sizeof(uint32_t)) {
     // Prefetch some stuff
     READ_PREFETCH_START1(src1);
+    READ_PREFETCH_START2(src2);
 
-    MEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len);
+    uint32_t src1al = (uint32_t)src1 % sizeof(uint32_t);
+    if (src1al)
+      MEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al);
 
     // Take the word-aligned long pointers of src2 and src1.
     uint8_t src2al = (uint32_t)(src2) % sizeof(uint32_t);
@@ -45,7 +49,9 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
     // Now src1 is word aligned. If possible (ie if there are enough bytes left)
     // we want to align it to 16-byte boundaries as well.
     // For this we have to know the word-alignment of src2 also.
-    MEMCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src2al);
+    src1al = (uint32_t)src1 % ALTIVECWORD_SIZE;
+    if (src1al)
+      MEMCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src1al, src2al);
 
     if (len >= ALTIVECWORD_SIZE) {
       // Check for the alignment of src2
@@ -58,13 +64,13 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
       }
     }
     PREFETCH_STOP1;
+    PREFETCH_STOP2;
 
     MEMCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al);
     src1 = (uint8_t *) src1l;
     src2 = (uint8_t *) src2l +src2al;
 
     MEMCMP_NIBBLE(src1, src2, len);
-
     return 0;
   } else {
     MEMCMP_NIBBLE(src1, src2, len);

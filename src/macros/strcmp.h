@@ -101,16 +101,16 @@
     }
 
 #define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)     \
-    vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
-    vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
+    READ_PREFETCH_START1(src1);\
+    READ_PREFETCH_START2(src2);\
     while (1) {                                                                             \
         STRCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)          \
         src1l += 4; src2 += ALTIVECWORD_SIZE;                                               \
     }
 
 #define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)   \
-    vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
-    vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
+  READ_PREFETCH_START1(src1);\
+    READ_PREFETCH_START2(src2);\
     while (1) {                                                                             \
         STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)        \
         src1l += 4; src2 += ALTIVECWORD_SIZE;                                               \
@@ -211,8 +211,8 @@
     }
 
 #define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset)    \
-    vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
-    vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
+READ_PREFETCH_START1(src1);\
+    READ_PREFETCH_START2(src2);\
 	vector bool char mask1, mask2;															\
 	vector uint8_t  vsrc1, vsrc2, v0 = vec_splat_u8(0);										\
     while (len >= ALTIVECWORD_SIZE) {                                                       \
@@ -230,8 +230,8 @@
     }
 
 #define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset)  \
-    vec_dst(src2, DST_CTRL(2,2,16), DST_CHAN_SRC);                                          \
-    vec_dst(src1, DST_CTRL(2,2,16), DST_CHAN_DEST);                                         \
+READ_PREFETCH_START1(src1);\
+    READ_PREFETCH_START2(src2);\
 	vector bool char mask1, mask2;															\
 	vector uint8_t  vsrc1, vsrc2, MSQ, LSQ, vmask, v0 = vec_splat_u8(0);					\
     while (len >= ALTIVECWORD_SIZE) {                                                       \
