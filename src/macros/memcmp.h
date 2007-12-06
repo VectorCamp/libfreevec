@@ -132,13 +132,21 @@
 {                                                                                \
   READ_PREFETCH_START1(src1l);                                                   \
   READ_PREFETCH_START2(src2l);                                                   \
-  while (len >= 2*ALTIVECWORD_SIZE) {                                              \
-    MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);                \
-    src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                             \
-    MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);                \
-    src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                             \
-    READ_PREFETCH_START1(src1l);                                                 \
-    READ_PREFETCH_START2(src2l);                                                 \
+  while (len >= 2*ALTIVECWORD_SIZE) {                                            \
+    vector uint8_t  vsrc1a = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
+                    vsrc2a = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),       \
+                    vsrc1b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l),      \
+                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l);      \
+  if (!vec_all_eq(vsrc1a, vsrc2a)) {                                             \
+    MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
+  }                                                                              \
+  src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                               \
+  if (!vec_all_eq(vsrc1b, vsrc2b)) {                                             \
+    MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
+  }                                                                              \
+  src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                               \
+  READ_PREFETCH_START1(src1l);                                                   \
+  READ_PREFETCH_START2(src2l);                                                   \
   }                                                                              \
 }
 
