@@ -28,6 +28,18 @@
   }                                                                \
 }
 
+#define STRCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l)  \
+{                                                             \
+  uint32_t lw = *src1l ^ *src2l;                              \
+  if (lw) {                                                   \
+    uint32_t pos = find_leftfirst_nzb(lw);                    \
+    src2 = (uint8_t *) src2l;                                 \
+    src1 = (uint8_t *) src1l;                                 \
+    return CMP_LT_OR_GT(src1[pos], src2[pos]);                \
+  }                                                           \
+  src1l++; src2l++;                                           \
+}
+
 #define STRCMP_SRC_TO_SRC_ALIGNED(srcl, srct, srcoffset)  \
     if (srcoffset == 0) {                                   \
 		srct = *srcl;                                   	\
