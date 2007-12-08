@@ -136,15 +136,15 @@
     vector uint8_t  vsrc1a = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
                     vsrc2a = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),       \
                     vsrc1b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l),      \
-                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l);      \
+                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src2l);      \
   if (!vec_all_eq(vsrc1a, vsrc2a)) {                                             \
     MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
   }                                                                              \
-  src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                               \
+  src1l += 4; src2l += 4;                                                        \
   if (!vec_all_eq(vsrc1b, vsrc2b)) {                                             \
     MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
   }                                                                              \
-  src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                               \
+  src1l += 4; src2l += 4; len -= 2*ALTIVECWORD_SIZE;                             \
   READ_PREFETCH_START1(src1l);                                                   \
   READ_PREFETCH_START2(src2l);                                                   \
   }                                                                              \
@@ -167,14 +167,9 @@
 {                                                                      \
   int l = len / sizeof(uint32_t);                                      \
   if (src2al == 0) {                                                   \
-    switch (l) {                                                       \
-    case 3:                                                            \
+    while (l--) {                                                      \
       MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);            \
-    case 2:                                                            \
-      MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);            \
-    case 1:                                                            \
-      MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);            \
-      len -= l*sizeof(uint32_t);                                       \
+      len -= sizeof(uint32_t);                                         \
     }                                                                  \
   } else {                                                             \
     switch (l) {                                                       \

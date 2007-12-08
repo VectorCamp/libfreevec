@@ -19,6 +19,7 @@
 
 #include "libfreevec.h"
 #include "macros/strcmp.h"
+#include "macros/common.h"
 
 #ifdef VEC_GLIBC
 int strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len) {
@@ -29,51 +30,57 @@ int vec_strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len) {
   uint8_t *src2 = (uint8_t *)src2pp;
   uint8_t *src1 = (uint8_t *)src1pp;
 
-  if (len >= sizeof(uint32_t)) {
-    // Prefetch some stuff
-    READ_PREFETCH_START1(src1);
-    READ_PREFETCH_START2(src2);
+  if (len >= sizeof(uint32_t)) {    
+    uint32_t src1al = (uint32_t)(src1) % ALTIVECWORD_SIZE;
+    uint32_t src2al = (uint32_t)(src2) % ALTIVECWORD_SIZE;
+    if ((src1al | src2al) == 0) {
+      uint32_t *src1l = (uint32_t *)(src1);
+      const uint32_t *src2l = (uint32_t *)(src2);
+      
+      // Both buffers aligned to 16-byte boundaries, proceed with AltiVec
+      STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);
+      PREFETCH_STOP1;
+      PREFETCH_STOP2;
 
-    // MYSTRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len);
+      STRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al);
+      src1 = (uint8_t *) src1l;
+      src2 = (uint8_t *) src2l;
 
-    //MYSTRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src2offset4);
+      STRNCMP_NIBBLE(src1, src2, len);
+      return 0;
+    } else {
+      src1al = (uint32_t)(src1) % sizeof(uint32_t);
+      src2al = (uint32_t)(src2) % sizeof(uint32_t);
+      if (src1al)
+        STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al);
 
-    STRNCMP_UNTIL_SRC1_ALTIVEC_ALIGNED_new(src1, src2, len);
+      uint32_t *src1l = (uint32_t *)(src1);
+      const uint32_t *src2l = (uint32_t *)(src2 -src2al);
 
-    // Take the word-aligned long pointers of src2 and dest.
-    uint8_t src2offset4 = ((uint32_t)(src2) & (sizeof(uint32_t)-1));
-    uint32_t *src1l = (uint32_t *)(src1);
-    const uint32_t *src2l = (uint32_t *)(src2 -src2offset4);
+      // Now src1 is word aligned. If possible (ie if there are enough bytes left)
+      // we want to align it to 16-byte boundaries as well.
+      // For this we have to know the word-alignment of src2 also.
+      src1al = (uint32_t)src1 % ALTIVECWORD_SIZE;
+      if (src1al)
+        STRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src1al, src2al);
 
-    // Now src1 is word aligned. If possible (ie if there are enough bytes left)
-    // we want to align it to 16-byte boundaries as well.
-    // For this we have to know the word-alignment of src2 also.
-
-    src2 = (uint8_t *) src2l +src2offset4;
-
-    if (len >= ALTIVECWORD_SIZE) {
-      // Check for the alignment of src2
-      if (((uint32_t)(src2) % ALTIVECWORD_SIZE) == 0) {
-        // Now, both buffers are 16-byte aligned, just copy everything directly
-        STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l, src2offset4);
-        src2l = (uint32_t *)(src2 -src2offset4);
-      } else {
+      if (len >= ALTIVECWORD_SIZE) {
         // src2 is not 16-byte aligned so we have to a little trick with Altivec.
-        STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2offset4);
-        src2l = (uint32_t *)(src2 -src2offset4);
+        STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);
+        
+        PREFETCH_STOP1;
+        PREFETCH_STOP2;
       }
+
+      STRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al);
+      src1 = (uint8_t *) src1l;
+      src2 = (uint8_t *) src2l +src2al;
+
+      STRNCMP_NIBBLE(src1, src2, len);
+      return 0;
     }
-
-    STRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2offset4);
-    src1 = (uint8_t *) src1l;
-    src2 = (uint8_t *) src2l +src2offset4;
-
-    PREFETCH_STOP1;
-    NIBBLE_STRNCMP(src1, src2, len);
-
-    return 0;
   } else {
-    NIBBLE_STRNCMP(src1, src2, len);
+    STRNCMP_NIBBLE(src1, src2, len);
     return 0;
   }
 }

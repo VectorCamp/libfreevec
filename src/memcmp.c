@@ -37,10 +37,7 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
     if ((src1al | src2al) == 0) {
       uint32_t *src1l = (uint32_t *)(src1);
       const uint32_t *src2l = (uint32_t *)(src2);
-      // Prefetch some stuff
-      READ_PREFETCH_START1(src1);
-      READ_PREFETCH_START2(src2);
-
+      
       // Both buffers aligned to 16-byte boundaries, proceed with AltiVec
       MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);
       PREFETCH_STOP1;
