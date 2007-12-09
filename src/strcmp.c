@@ -36,7 +36,7 @@ int vec_strcmp(const uint8_t *src1pp, const uint8_t *src2pp) {
     uint32_t *src1l = (uint32_t *)(src1);
     const uint32_t *src2l = (uint32_t *)(src2);
     
-    STRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);
+    STRCMP_LOOP_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);
   } else {
     src1al = (uint32_t)(src1) % sizeof(uint32_t);
     src2al = (uint32_t)(src2) % sizeof(uint32_t);
@@ -58,10 +58,10 @@ int vec_strcmp(const uint8_t *src1pp, const uint8_t *src2pp) {
     // For this we have to know the word-alignment of src2 also.
     if (((uint32_t)(src2) % ALTIVECWORD_SIZE) == 0) {
       // Now, both buffers are 16-byte aligned, just copy everything directly
-      STRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);    
+      STRCMP_LOOP_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);    
     } else {
       // src2 is not 16-byte aligned so we have to a little trick with Altivec.
-      STRCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);
+      STRCMP_LOOP_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);
     }
   }
 

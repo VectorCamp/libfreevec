@@ -135,24 +135,16 @@
   }                                                           \
 }
 
-#define MEMCCPY_CHECK_WORD(dst, src, c)       \
-{                                             \
-  if ((*dst++ = *src++) == c ) return dst;    \
-  if ((*dst++ = *src++) == c ) return dst;    \
-  if ((*dst++ = *src++) == c ) return dst;    \
-  if ((*dst++ = *src++) == c ) return dst;    \
-}
-
-
 #define MEMCCPY_SINGLE_WORD_FWD_ALIGNED(dst, dstl, src, srcl, mask, c) \
 {                                                                      \
-   uint32_t lw = ((*srcl ^ mask) - lomagic) & himagic;                 \
-   if (lw) {                                                           \
-     src = (uint8_t *) srcl;                                           \
-     dst = (uint8_t *) dstl;                                           \
-     MEMCCPY_CHECK_WORD(dst, src, c);                                  \
-   }                                                                   \
-   *dstl++ = *srcl++;                                                  \
+  uint32_t lw = ((*srcl ^ mask) - lomagic) & himagic;                  \
+  if (lw) {                                                            \
+    src = (uint8_t *) srcl;                                            \
+    dst = (uint8_t *) dstl;                                            \
+    uint32_t pos = find_leftfirst_nzb(lw);                             \
+    return (uint8_t *)(dst)+ pos;                                      \
+  }                                                                    \
+  *dstl++ = *srcl++;                                                   \
 }
 
 #define MEMCCPY_SINGLE_WORD_FWD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c) \
@@ -171,7 +163,8 @@
   if (lw) {                                                                     \
     src = (uint8_t *) srcl +srcal;                                              \
     dst = (uint8_t *) dstl;                                                     \
-    MEMCCPY_CHECK_WORD(dst, src, c);                                            \
+    uint32_t pos = find_leftfirst_nzb(lw);                                      \
+    return (uint8_t *)(dst)+ pos;                                               \
   }                                                                             \
   *dstl++ = srct;                                                               \
   srcl++;                                                                       \
@@ -222,7 +215,7 @@
 #define MEMCCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, mask, vc, c) \
 {                                                                              \
   vector uint8_t vsrc = (vector uint8_t) vec_ld(0, (uint8_t *)src);            \
-  if (vec_any_eq(vsrc, vc)) {                                                  \
+  if (!vec_all_ne(vsrc, vc)) {                                                  \
     srcl = (uint32_t *)(src);                                                  \
     MEMCCPY_QUADWORD_ALIGNED(dst, dstl, src, srcl, mask, c);                   \
   }                                                                            \
@@ -236,7 +229,7 @@
   MSQ = vec_ld(0, src);                                                                 \
   LSQ = vec_ld(15, src);                                                                \
   vsrc = vec_perm(MSQ, LSQ, vmask);                                                     \
-  if (vec_any_eq(vsrc, vc)) {                                                           \
+  if (!vec_all_ne(vsrc, vc)) {                                                           \
     srcl = (uint32_t *)(src -srcal);                                                    \
     MEMCCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal, mask, c);                   \
   }                                                                                     \

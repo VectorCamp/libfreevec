@@ -15,15 +15,15 @@
   switch (l) {                                                     \
   case 3:                                                          \
     c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
     src1++; src2++;                                                \
   case 2:                                                          \
     c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
     src1++; src2++;                                                \
   case 1:                                                          \
     c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
     src1++; src2++;                                                \
   }                                                                \
 }
@@ -36,7 +36,7 @@
     uint32_t pos = find_leftfirst_nzb(lw);                                            \
     src2 = (uint8_t *) src2l;                                                         \
     src1 = (uint8_t *) src1l;                                                         \
-    return CMP_LT_OR_GT(src1[pos], src2[pos]);                                        \
+    return DIFF(src1[pos], src2[pos]);                                                \
   }                                                                                   \
   src1l++; src2l++;                                                                   \
 }
@@ -59,7 +59,7 @@
     uint32_t pos = find_leftfirst_nzb(lw);                                            \
     src2 = (uint8_t *)(src2l) +src2al;                                                \
     src1 = (uint8_t *)(src1l);                                                        \
-    return CMP_LT_OR_GT(src1[pos], src2[pos]);                                        \
+    return DIFF(src1[pos], src2[pos]);                                                \
   }                                                                                   \
   src1l++; src2l++;                                                                   \
 }
@@ -130,7 +130,7 @@
   }                                                                             \
 }
 
-#define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)    \
+#define STRCMP_LOOP_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)           \
 {                                                                            \
   READ_PREFETCH_START1(src1l);                                               \
   READ_PREFETCH_START2(src2l);                                               \
@@ -144,7 +144,7 @@
     STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                       \
   }                                                                          \
   src1l += 4; src2l += 4;                                                    \
-  if (!vec_all_ne(vsrc2a, v0) || !vec_all_eq(vsrc1b, vsrc2b)) {              \
+  if (!vec_all_ne(vsrc1b, v0) || !vec_all_eq(vsrc1b, vsrc2b)) {              \
     STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                       \
   }                                                                          \
   src1l += 4; src2l += 4;                                                    \
@@ -153,17 +153,19 @@
   }                                                                          \
 }
 
-#define STRCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
-{                                                                                    \
-  READ_PREFETCH_START1(src1l);                                                       \
-  READ_PREFETCH_START2(src2);                                                        \
-  while (1) {                                                                        \
-    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
-    src1l += 4; src2 += ALTIVECWORD_SIZE;                                            \
-    READ_PREFETCH_START1(src1l);                                                     \
-    READ_PREFETCH_START2(src2);                                                      \
-  }                                                                                  \
-  src2l = (uint32_t *)(src2 -src2al);                                                \
+#define STRCMP_LOOP_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
+{                                                                             \
+  READ_PREFETCH_START1(src1l);                                                \
+  READ_PREFETCH_START2(src2);                                                 \
+  while (1) {                                                                 \
+    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);   \
+    src1l += 4; src2 += ALTIVECWORD_SIZE;                                     \
+    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);   \
+    src1l += 4; src2 += ALTIVECWORD_SIZE;                                     \
+    READ_PREFETCH_START1(src1l);                                              \
+    READ_PREFETCH_START2(src2);                                               \
+  }                                                                           \
+  src2l = (uint32_t *)(src2 -src2al);                                         \
 }
 
 /***************************************************************************
@@ -171,24 +173,25 @@
  * strncmp() macros, compare strings                                       *
  **************************************************************************/
 
-#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al)   \
-{                                                                  \
-  int l = MIN(len, sizeof(uint32_t) - src1al );                    \
-  int8_t c1;                                                       \
-  switch (l) {                                                     \
-  case 3:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
-  case 2:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
-  case 1:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
-  }                                                                \
+#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al)  \
+{                                                                 \
+  int l = MIN(len, sizeof(uint32_t) - src1al );                   \
+  int8_t c1;                                                      \
+  switch (l) {                                                    \
+  case 3:                                                         \
+    c1 = *src1 - *src2;                                           \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
+    src1++; src2++;                                               \
+  case 2:                                                         \
+    c1 = *src1 - *src2;                                           \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
+    src1++; src2++;                                               \
+  case 1:                                                         \
+    c1 = *src1 - *src2;                                           \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
+    src1++; src2++;                                               \
+    len -= l;                                                     \
+  }                                                               \
 }
 
 #define STRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src1al, src2al)  \
@@ -221,40 +224,42 @@
   }                                                                                           \
 }
 
-#define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)       \
-{                                                                                \
-  READ_PREFETCH_START1(src1l);                                                   \
-  READ_PREFETCH_START2(src2l);                                                   \
-  while (len >= 2*ALTIVECWORD_SIZE) {                                            \
-    vector uint8_t  vsrc1a = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
-                    vsrc2a = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),       \
-                    vsrc1b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l),      \
-                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src2l),      \
-                    v0 = vec_splat_u8(0);                                        \
-  if (!vec_all_ne(vsrc1a, v0) || !vec_all_eq(vsrc1a, vsrc2a)) {                  \
-    STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
-  }                                                                              \
-  src1l += 4; src2l += 4;                                                        \
-  if (!vec_all_ne(vsrc2a, v0) || !vec_all_eq(vsrc1b, vsrc2b)) {                  \
-    STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
-  }                                                                              \
-  src1l += 4; src2l += 4; len -= 2*ALTIVECWORD_SIZE;                             \
-  READ_PREFETCH_START1(src1l);                                                   \
-  READ_PREFETCH_START2(src2l);                                                   \
-  }                                                                              \
+#define STRNCMP_LOOP_ALTIVEC_WORDS_ALIGNED(src1, src1l, src2, src2l)         \
+{                                                                            \
+  READ_PREFETCH_START1(src1l);                                               \
+  READ_PREFETCH_START2(src2l);                                               \
+  while (len >= 2*ALTIVECWORD_SIZE) {                                        \
+    vector uint8_t  vsrc1a = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),   \
+                    vsrc2a = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),   \
+                    vsrc1b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l),  \
+                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src2l),  \
+                    v0 = vec_splat_u8(0);                                    \
+  if (!vec_all_ne(vsrc1a, v0) || !vec_all_eq(vsrc1a, vsrc2a)) {              \
+    STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                       \
+  }                                                                          \
+  src1l += 4; src2l += 4;                                                    \
+  if (!vec_all_ne(vsrc1b, v0) || !vec_all_eq(vsrc1b, vsrc2b)) {              \
+    STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                       \
+  }                                                                          \
+  src1l += 4; src2l += 4; len -= 2*ALTIVECWORD_SIZE;                         \
+  READ_PREFETCH_START1(src1l);                                               \
+  READ_PREFETCH_START2(src2l);                                               \
+  }                                                                          \
 }
 
-#define STRNCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
-{                                                                                     \
-  READ_PREFETCH_START1(src1l);                                                        \
-  READ_PREFETCH_START2(src2);                                                         \
-  while (len >= ALTIVECWORD_SIZE) {                                                   \
-    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);           \
-    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                    \
-    READ_PREFETCH_START1(src1l);                                                      \
-    READ_PREFETCH_START2(src2);                                                       \
-  }                                                                                   \
-  src2l = (uint32_t *)(src2 -src2al);                                                 \
+#define STRNCMP_LOOP_ALTIVEC_WORDS_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
+{                                                                               \
+  READ_PREFETCH_START1(src1l);                                                  \
+  READ_PREFETCH_START2(src2);                                                   \
+  while (len >= 2*ALTIVECWORD_SIZE) {                                           \
+    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);     \
+    src1l += 4; src2 += ALTIVECWORD_SIZE;                                       \
+    STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);     \
+    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= 2*ALTIVECWORD_SIZE;            \
+    READ_PREFETCH_START1(src1l);                                                \
+    READ_PREFETCH_START2(src2);                                                 \
+  }                                                                             \
+  src2l = (uint32_t *)(src2 -src2al);                                           \
 }
 
 #define STRNCMP_REST_WORDS(src1, src1l, src2, src2l, len, src2al)      \
@@ -266,32 +271,27 @@
       len -= sizeof(uint32_t);                                         \
     }                                                                  \
   } else {                                                             \
-    switch (l) {                                                       \
-    case 3:                                                            \
+    while (l--) {                                                      \
       STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-    case 2:                                                            \
-      STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-    case 1:                                                            \
-      STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-      len -= l*sizeof(uint32_t);                                       \
+      len -= sizeof(uint32_t);                                         \
     }                                                                  \
   }                                                                    \
 }
 
-#define STRNCMP_NIBBLE(src1, src2, len)                            \
-  int8_t c1;                                                       \
-  switch (len) {                                                   \
-  case 3:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
-  case 2:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
-  case 1:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return CMP_LT_OR_GT(*src1, *src2);  \
-    src1++; src2++;                                                \
+#define STRNCMP_NIBBLE(src1, src2, len)                    \
+  int8_t c1;                                               \
+  switch (len) {                                           \
+  case 3:                                                  \
+    c1 = *src1 - *src2;                                    \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                        \
+  case 2:                                                  \
+    c1 = *src1 - *src2;                                    \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                        \
+  case 1:                                                  \
+    c1 = *src1 - *src2;                                    \
+    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                        \
   }
 

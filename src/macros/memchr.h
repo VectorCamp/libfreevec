@@ -146,7 +146,7 @@
 {                                                                      \
   vector uint8_t vec;                                                  \
   vec = vec_ld(0, (uint8_t *)(ptr32) -16 );                            \
-  if (vec_any_eq(vec, vmask)) {                                        \
+  if (!vec_all_ne(vec, vmask)) {                                       \
     MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
     MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \
     MEMRCHR_BACKWARDS_SINGLE_WORD(ptr32, c, charmask, lw);             \

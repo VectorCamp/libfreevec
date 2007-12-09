@@ -154,9 +154,11 @@
 {                                                                                    \
   READ_PREFETCH_START1(src1l);                                                       \
   READ_PREFETCH_START2(src2);                                                        \
-  while (len >= ALTIVECWORD_SIZE) {                                                  \
+  while (len >= 2*ALTIVECWORD_SIZE) {                                                \
     MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
-    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                   \
+    src1l += 4; src2 += ALTIVECWORD_SIZE;                                            \
+    MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
+    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= 2*ALTIVECWORD_SIZE;                 \
     READ_PREFETCH_START1(src1l);                                                     \
     READ_PREFETCH_START2(src2);                                                      \
   }                                                                                  \
@@ -172,14 +174,9 @@
       len -= sizeof(uint32_t);                                         \
     }                                                                  \
   } else {                                                             \
-    switch (l) {                                                       \
-    case 3:                                                            \
+    while (l--) {                                                      \
       MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-    case 2:                                                            \
-      MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-    case 1:                                                            \
-      MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);  \
-      len -= l*sizeof(uint32_t);                                       \
+      len -= sizeof(uint32_t);                                         \
     }                                                                  \
   }                                                                    \
 }
