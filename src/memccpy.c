@@ -34,7 +34,8 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
     uint32_t charmask = charmask32(c);
 
     uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);
-    MEMCCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, c, len, al);
+    if (al)
+      MEMCCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, c, len, al);
 
     // Prefetch some stuff
     READ_PREFETCH_START1(src);
@@ -42,11 +43,11 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
 
     // Take the word-aligned long pointers of src and dest.
     uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
-    const uint32_t *srcl = (uint32_t *)(src -src);
+    const uint32_t *srcl = (uint32_t *)(src -srcal);
     uint32_t *dstl = (uint32_t *)(dst);
     al = (uint32_t) dstl % ALTIVECWORD_SIZE;
-    MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, charmask, c, al);
-
+    if (al)
+      MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, charmask, c, al);
     // Now dst is word aligned. If possible (ie if there are enough bytes left)
     // we want to align it to 16-byte boundaries as well.
     // For this we have to know the word-alignment of src also.
@@ -67,6 +68,7 @@ void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
       PREFETCH_STOP1;
       PREFETCH_STOP2;
     }
+
     MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal, charmask, c);
 
     dst = (uint8_t *) dstl;

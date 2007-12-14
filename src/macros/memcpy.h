@@ -15,6 +15,8 @@
   case 2:                                 \
     *dst++ = *src++;                      \
   case 1:                                 \
+    *dst++ = *src++;                      \
+  case 0:                                 \
     *dst = *src;                          \
   }
 
@@ -142,6 +144,7 @@
     src = (uint8_t *) srcl;                                            \
     dst = (uint8_t *) dstl;                                            \
     uint32_t pos = find_leftfirst_nzb(lw);                             \
+    COPY_FWD_NIBBLE(dst, src, pos);                                    \
     return (uint8_t *)(dst)+ pos;                                      \
   }                                                                    \
   *dstl++ = *srcl++;                                                   \
@@ -153,17 +156,18 @@
   if (srcal == 0) {                                                             \
     srct = *srcl;                                                               \
   } else if (srcal == 3) {                                                      \
-    srct = (*(srcl) << 24) | (*(srcl+1) >> 8);                                  \
+    srct = ((*(srcl)) << 24) | ((*(srcl+1)) >> 8);                              \
   } else if (srcal == 2) {                                                      \
-    srct = (*(srcl) << 16) | (*(srcl+1) >> 16);                                 \
+    srct = ((*(srcl)) << 16) | ((*(srcl+1)) >> 16);                             \
   } else if (srcal == 1) {                                                      \
-    srct = (*(srcl) << 8) | (*(srcl+1) >> 24);                                  \
+    srct = ((*(srcl)) << 8) | ((*(srcl+1)) >> 24);                              \
   }                                                                             \
   uint32_t lw = ( (srct ^ mask) - lomagic) & himagic;                           \
   if (lw) {                                                                     \
     src = (uint8_t *) srcl +srcal;                                              \
     dst = (uint8_t *) dstl;                                                     \
     uint32_t pos = find_leftfirst_nzb(lw);                                      \
+    COPY_FWD_NIBBLE(dst, src, pos);                                             \
     return (uint8_t *)(dst)+ pos;                                               \
   }                                                                             \
   *dstl++ = srct;                                                               \
@@ -189,6 +193,7 @@
 #define MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, mask, c, al) \
 {                                                                                            \
   int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);                                        \
+  l = MIN( len, l );                                                                         \
   if (srcal == 0) {                                                                          \
     switch (l) {                                                                             \
     case 3:                                                                                  \
