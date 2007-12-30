@@ -22,36 +22,39 @@
 #include "macros/common.h"
 
 #ifdef VEC_GLIBC
-void *memchr ( void const *str, int c, size_t len ) {
+void *memchr(void const *str, int c_in, size_t len) {
 #else
-void *vec_memchr ( void const *str, int c, size_t len ) {
+void *vec_memchr(void const *str, int c_in, size_t len) {
 #endif
+  if (len) {
 
-  uint8_t *ptr = ( uint8_t * ) str;
-  uint32_t al = ( uint32_t ) ( ptr ) % sizeof ( uint32_t );
-  if ( al )
-    MEMCHR_UNTIL_WORD_ALIGNED ( ptr, c, len, al );
+    uint8_t *ptr = (uint8_t *) str, c = (uint8_t) c_in;
+    uint32_t al = (uint32_t)(ptr) % sizeof(uint32_t);
 
-  uint32_t lw, *ptr32 = ( uint32_t * ) ( ptr );
-  uint32_t charmask = charmask32 ( c );
+    if (al)
+      MEMCHR_UNTIL_WORD_ALIGNED(ptr, c, len, al);
 
-  if ( len >= ALTIVECWORD_SIZE ) {
-    al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
-    if ( al )
-      MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, charmask, len, lw, al );
+    uint32_t *ptr32 = (uint32_t *)(ptr);
+    //uint32_t charmask = charmask32(c);
 
-    READ_PREFETCH_START1 ( ptr32 );
-    FILL_VECTOR ( vc, c );
+    if (len >= ALTIVECWORD_SIZE) {
+      al = (uint32_t) ptr32 % ALTIVECWORD_SIZE;
+      if (al)
+        MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, charmask, len, al);
 
-    while ( len >= ALTIVECWORD_SIZE ) {
-      MEMCHR_SINGLE_ALTIVEC_WORD ( vc, ptr32, c, charmask );
-      READ_PREFETCH_START1 ( ptr32 );
+      READ_PREFETCH_START1(ptr32);
+      FILL_VECTOR(vc, c);
+
+      while (len >= ALTIVECWORD_SIZE) {
+        MEMCHR_SINGLE_ALTIVEC_WORD(vc, ptr32, c, charmask);
+        READ_PREFETCH_START1(ptr32);
+      }
     }
-  }
-  MEMCHR_REST_WORDS ( ptr32, c, charmask, len, lw );
+    MEMCHR_REST_WORDS(ptr32, c, charmask, len);
 
-  ptr = ( uint8_t * ) ptr32;
-  MEMCHR_REST_BYTES ( ptr, c, len );
+    ptr = (uint8_t *) ptr32;
+    MEMCHR_REST_BYTES(ptr, c, len);
+  }
 
   return 0;
 }
