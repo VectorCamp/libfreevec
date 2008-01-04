@@ -32,23 +32,22 @@ void *vec_memrchr ( void const *str, int c, size_t len ) {
   if ( al )
     MEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED ( ptr, c, len, al );
 
-  uint32_t lw, *ptr32 = ( uint32_t * ) ( ptr );
-  uint32_t charmask = charmask32 ( c );
+  uint32_t *ptr32 = ( uint32_t * ) ( ptr );
 
   if ( len >= ALTIVECWORD_SIZE ) {
     al = ( uint32_t ) ptr32 % ALTIVECWORD_SIZE;
     if ( al )
-      MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, charmask, len, lw, al );
+      MEMRCHR_BACKWARDS_LOOP_UNTIL_ALTIVEC_ALIGNED ( ptr32, c, len, al );
 
     READ_PREFETCH_START1 ( ptr32 );
     FILL_VECTOR ( vc, c );
 
     while ( len >= ALTIVECWORD_SIZE ) {
-      MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD ( vc, ptr32, c, charmask );
+      MEMRCHR_SINGLE_BACKWARDS_ALTIVEC_WORD ( vc, ptr32, c);
       READ_PREFETCH_START1 ( ptr32 );
     }
   }
-  MEMRCHR_BACKWARDS_REST_WORDS ( ptr32, c, charmask, len, lw );
+  MEMRCHR_BACKWARDS_REST_WORDS ( ptr32, c, len );
 
   ptr = ( uint8_t * ) ptr32;
   MEMRCHR_BACKWARDS_REST_BYTES ( ptr, c, len );

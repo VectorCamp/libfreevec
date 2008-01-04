@@ -25,16 +25,31 @@
   }                                                             \
 }
 
-#define MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l)  \
-{                                                             \
-  uint32_t lw = *src1l ^ *src2l;                              \
-  if (lw) {                                                   \
-    uint32_t pos = find_leftfirst_nzb(lw);                    \
-    src2 = (uint8_t *) src2l;                                 \
-    src1 = (uint8_t *) src1l;                                 \
-    return CMP_LT_OR_GT(src1[pos], src2[pos]);                \
-  }                                                           \
-  src1l++; src2l++;                                           \
+#define MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lw)  \
+{                                                                      \
+  if (lw) {                                                            \
+    uint32_t pos = find_leftfirst_nzb(lw);                             \
+    src2 = (uint8_t *) src2l;                                          \
+    src1 = (uint8_t *) src1l;                                          \
+    return CMP_LT_OR_GT(src1[pos], src2[pos]);                         \
+  }                                                                    \
+}
+
+#define MEMCMP_SINGLE_WORD_UNALIGNED_MASK(src1, src1l, src2, src2l, lw)  \
+{                                                                        \
+  if (lw) {                                                              \
+    uint32_t pos = find_leftfirst_nzb(lw);                               \
+    src2 = (uint8_t *)(src2l) +src2al;                                   \
+    src1 = (uint8_t *)(src1l);                                           \
+    return CMP_LT_OR_GT(src1[pos], src2[pos]);                           \
+  }                                                                      \
+}
+
+#define MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l)      \
+{                                                                 \
+  uint32_t lw = *src1l ^ *src2l;                                  \
+  MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lw);  \
+  src1l++; src2l++;                                               \
 }
 
 #define MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
@@ -49,13 +64,8 @@
   } else if (src2al == 1) {                                             \
     src2t = (*(src2l) << 8) | (*(src2l+1) >> 24);                       \
   }                                                                     \
-  uint32_t lw = *src1l ^ src2t;                                          \
-  if (lw) {                                                             \
-    uint32_t pos = find_leftfirst_nzb(lw);                              \
-    src2 = (uint8_t *)(src2l) +src2al;                                  \
-    src1 = (uint8_t *)(src1l);                                          \
-    return CMP_LT_OR_GT(src1[pos], src2[pos]);                          \
-  }                                                                     \
+  uint32_t lw = *src1l ^ src2t;                                         \
+  MEMCMP_SINGLE_WORD_UNALIGNED_MASK(src1, src1l, src2, src2l, lw);      \
   src1l++; src2l++;                                                     \
 }
 
@@ -103,15 +113,6 @@
   MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);    \
   MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);    \
   MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);    \
-}
-
-#define MEMCMP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)     \
-{                                                                        \
-  vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),  \
-                  vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l);  \
-  if (!vec_all_eq(vsrc1, vsrc2)) {                                       \
-    MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                   \
-  }                                                                      \
 }
 
 #define MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \

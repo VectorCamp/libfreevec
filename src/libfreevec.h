@@ -16,6 +16,7 @@
 #include <altivec.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define ALTIVECWORD_SIZE    16
 #define QUAD_ALTIVECWORD    64
@@ -37,7 +38,7 @@
 
 #define ptrdiff_t(a, b)     ((uint32_t)(a)-(uint32_t)(b))
 
-#define CMP_LT_OR_GT(a, b) ((a) > (b) ? 1 : -1)
+#define CMP_LT_OR_GT(a, b) ((a) - (b))
 
 #define MIN(a,b)    ((a) <= (b) ? (a) : (b))
 
@@ -45,7 +46,7 @@
 
 #define himagic         0x80808080L
 #define lomagic         0x01010101L
-#define magic_bits32    0x7f7f7f7fL
+#define magic_bits32    0x07efefeff
 #define magic_bits64    (((unsigned long int) 0x7efefefe << 32) | 0xfefefeff)
 
 #define charmask16(c)   (uint16_t)((c) | ((c) << 8))
@@ -58,5 +59,6 @@ void printvec_text ( char *label, vector uint8_t vc );
 void printvec_char ( char *label, vector uint8_t vc );
 void printvec_short ( char *label, vector uint16_t vs );
 void printvec_long ( char *label, vector uint32_t vl );
+void fprintvec_long ( FILE *fp, vector uint32_t vl );
 
 #endif

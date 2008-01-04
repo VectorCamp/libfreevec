@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/rules/buildcore.mk
+
+# where sources are
+DEB_SRCDIR = $(CURDIR)/src
+
+# in which directory to build
+DEB_BUILDDIR = $(DEB_SRCDIR)/build
+
+-DHAVE_ALTIVEC_H
+-O2 -Wall -Werror -g0 -maltivec -mabi=altivec -mregnames

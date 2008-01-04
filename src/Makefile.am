@@ -9,7 +9,7 @@ pkglib_LTLIBRARIES = libfreevec.la
 libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 	memccpy.c memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c \
 	memset.c printvec.c strcmp.c strcpy.c strfill.c strfry.c strlen.c strncmp.c \
-	strnlen.c swab.c
+	strncpy.c strnlen.c swab.c
 libfreevec_la_LDFLAGS = -module
 
 SUBDIRS = glibc

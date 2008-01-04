@@ -12,7 +12,7 @@
 #define FROBNICATOR16   (((FROBNICATOR) << 8) | (FROBNICATOR))
 #define FROBNICATOR32   (((FROBNICATOR16) << 16) | (FROBNICATOR16))
 
-#define MEMFROB_NIBBLE(ptr, p, lenvar, len)  \
+#define MEMFROB_NIBBLE(ptr, len)  \
   switch(len) {                              \
   case 3:                                    \
     *ptr++ ^= FROBNICATOR;                   \
@@ -20,10 +20,9 @@
     *ptr++ ^= FROBNICATOR;                   \
   case 1:                                    \
     *ptr++ ^= FROBNICATOR;                   \
-    lenvar -= len;                           \
   }
 
-#define MEMFROB_UNTIL_WORD_ALIGNED( ptr, p, len, al )  \
+#define MEMFROB_UNTIL_WORD_ALIGNED( ptr, len, al )  \
 {                                                      \
   int l = MIN( len, sizeof(uint32_t) - al );           \
   switch (l) {                                         \
@@ -37,7 +36,7 @@
   }                                                    \
 }
 
-#define MEMFROB_WORD_UNTIL_ALTIVEC_ALIGNED( ptr32, p32, len )  \
+#define MEMFROB_WORD_UNTIL_ALTIVEC_ALIGNED( ptr32, len )  \
 {                                                              \
   int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);          \
   switch (l) {                                                 \
@@ -83,7 +82,7 @@
   }                                                  \
 }
 
-#define MEMFROB_REST_WORDS(ptr32, p32, len)  \
+#define MEMFROB_REST_WORDS(ptr32, len)  \
 {                                            \
   int l = len / sizeof(uint32_t);            \
   switch (l) {                               \

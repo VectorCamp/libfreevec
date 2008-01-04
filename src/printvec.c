@@ -99,4 +99,19 @@ void printvec_long ( char *label, vector uint32_t vl ) {
   printf ( "\n" );
 }
 
+void fprintvec_long ( FILE *fp, vector uint32_t vl ) {
+  int i;
+  union {
+    vector uint32_t v;
+    uint32_t l[4];
+  } vt_int;
+
+  vt_int.v = vl;
+  for ( i=0; i < 4; i++ ) {
+    fprintf ( fp, "%08x ", vt_int.l[i] );
+  }
+  fprintf ( fp, "\n" );
+}
+
+
 #endif

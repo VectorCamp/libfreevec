@@ -25,13 +25,18 @@
   }                                            \
 }
 
+#define STRLEN_SINGLE_WORD_MASK(str, ptr32, lw)      \
+{                                                    \
+  if (lw) {                                          \
+    uint32_t pos = find_leftfirst_nzb(lw);           \
+    return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);  \
+  }                                                  \
+}
+
 #define STRLEN_SINGLE_WORD(str, ptr32)                                                \
 {                                                                                     \
   uint32_t lw = ~(((*ptr32 & magic_bits32) + magic_bits32) | *ptr32 | magic_bits32);  \
-  if (lw) {                                                                           \
-    uint32_t pos = find_leftfirst_nzb(lw);                                            \
-    return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);                                   \
-  }                                                                                   \
+  STRLEN_SINGLE_WORD_MASK(str, ptr32, lw);                                            \
   ptr32++;                                                                            \
 }
 
@@ -58,15 +63,21 @@
   }                                                     \
 }
 
-#define STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32)   \
-{                                                    \
-  vector uint8_t vec = vec_ld(0, (uint8_t *)ptr32);  \
-  if (!vec_all_ne(vec, v0)) {                        \
-    STRLEN_SINGLE_WORD(str, ptr32);                  \
-    STRLEN_SINGLE_WORD(str, ptr32);                  \
-    STRLEN_SINGLE_WORD(str, ptr32);                  \
-    STRLEN_SINGLE_WORD(str, ptr32);                  \
-  }                                                  \
+#define STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32)      \
+{                                                       \
+  vector uint8_t vec = vec_ld(0, (uint8_t *)ptr32);     \
+  if (!vec_all_ne(vec, v0)) {                           \
+    uint32_t __attribute__ ((aligned(16))) lwa[4];      \
+    vec = vec_cmpeq(vec, v0);                           \
+    vec_st(vec, 0, (uint8_t *) &lwa[0]);                \
+    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[0]);        \
+    ptr32++;                                            \
+    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[1]);        \
+    ptr32++;                                            \
+    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[2]);        \
+    ptr32++;                                            \
+    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[3]);        \
+  }                                                     \
 }
 
 #define STRLEN_LOOP_ALTIVEC_WORD( str, ptr32 )   \
@@ -117,14 +128,8 @@
 
 #define STRNLEN_SINGLE_ALTIVEC_WORD(str, ptr32, len)  \
 {                                                     \
-  vector uint8_t v0 = vec_splat_u8(0), vec;           \
-  vec = vec_ld(0, (uint8_t *)ptr32);                  \
-  if (!vec_all_ne(vec, v0)) {                         \
-    STRLEN_SINGLE_WORD(str, ptr32);                   \
-    STRLEN_SINGLE_WORD(str, ptr32);                   \
-    STRLEN_SINGLE_WORD(str, ptr32);                   \
-    STRLEN_SINGLE_WORD(str, ptr32);                   \
-  }                                                   \
+  vector uint8_t v0 = vec_splat_u8(0);                \
+  STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32);         \
   ptr32 += 4; len -= ALTIVECWORD_SIZE;                \
 }
 

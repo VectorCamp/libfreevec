@@ -18,65 +18,66 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
-#include "macros/memccpy.h"
+#include "macros/strcpy.h"
+#include "macros/strncpy.h"
 #include "macros/common.h"
 
 #ifdef VEC_GLIBC
-void *memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
+void *strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
 #else
-void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
+void *vec_strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
 #endif
 
-  const uint8_t *src = (uint8_t *) srcpp;
-  uint8_t *dst = (uint8_t *) dstpp;
+  int8_t *src = (int8_t *) srcpp;
+  int8_t *dst = (int8_t *) dstpp;
 
   if (len >= sizeof(uint32_t)) {
     uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);
     if (al)
-      MEMCCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, c, len, al);
-
-    // Prefetch some stuff
-    READ_PREFETCH_START1(src);
-    WRITE_PREFETCH_START2(dst);
+      STRNCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, len, al);
 
     // Take the word-aligned long pointers of src and dest.
     uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
-    const uint32_t *srcl = (uint32_t *)(src -srcal);
+    uint32_t *srcl = (uint32_t *)(src -srcal);
     uint32_t *dstl = (uint32_t *)(dst);
     al = (uint32_t) dstl % ALTIVECWORD_SIZE;
     if (al)
-      MEMCCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, c, al);
+      STRNCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, al);
     // Now dst is word aligned. If possible (ie if there are enough bytes left)
     // we want to align it to 16-byte boundaries as well.
     // For this we have to know the word-alignment of src also.
 
-    src = (uint8_t *) srcl +srcal;
+    src = (int8_t *) srcl +srcal;
 
-    FILL_VECTOR(vc, c);
+    vector uint8_t v0 = vec_splat_u8(0);
+
+    // Prefetch some stuff
+    READ_PREFETCH_START1(srcl);
+    WRITE_PREFETCH_START2(dstl);
 
     // Check for the alignment of src
     if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
       // Now, both buffers are 16-byte aligned, just copy everything directly
-      MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, len, vc, c);
+      STRNCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, len, v0);
       srcl = (uint32_t *)(src);
     } else {
       // src is not 16-byte aligned so we have to a little trick with Altivec.
-      MEMCCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, vc, c);
+      STRNCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, v0);
       srcl = (uint32_t *)(src -srcal);
       PREFETCH_STOP1;
       PREFETCH_STOP2;
     }
 
-    MEMCCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal, c);
+    STRNCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal);
 
-    dst = (uint8_t *) dstl;
-    src = (uint8_t *) srcl +srcal;
-    MEMCCPY_FWD_NIBBLE(dst, src, c, len);
+    dst = (int8_t *) dstl;
+    src = (int8_t *) srcl +srcal;
+    STRNCPY_NIBBLE(dst, src, len);
 
-    return 0;
+    return dstpp;
   } else {
-    MEMCCPY_FWD_NIBBLE(dst, src, c, len);
-    return 0;
+    STRNCPY_NIBBLE(dst, src, len);
+    return dstpp;
   }
 }
 #endif

@@ -21,54 +21,43 @@
 #include "macros/strcpy.h"
 
 #ifdef VEC_GLIBC
-int8_t *strcpy(int8_t *dstpp, const int8_t *srcpp)
-{
+int8_t *strcpy(int8_t *dstpp, const int8_t *srcpp) {
 #else
-int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp)
-{
+int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp) {
 #endif
 
-  const int8_t *src = srcpp;
+  int8_t *src = (int8_t *)srcpp;
   int8_t *dst = dstpp;
-  
-  uint32_t srcal = (uint32_t)(src) % ALTIVECWORD_SIZE;
-  uint32_t dstal = (uint32_t)(dst) % ALTIVECWORD_SIZE;
-  if ((srcal | dstal) == 0) {
-    const uint32_t *srcl = (uint32_t *)(src);
-    uint32_t *dstl = (uint32_t *)(dst);
-    
-    // Handle a single altivec vector first to cater for small strings
-    STRCPY_SINGLE_ALTIVEC_WORD_ALIGNED(src, srcl, dst, dstl);
-    srcl += 4; dstl += 4;
 
+  uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);
+  if (al)
+    STRCPY_UNTIL_DST_WORD_ALIGNED(dst, src, al);
+
+  // Take the word-aligned long pointers of src and dest.
+  uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
+  const uint32_t *srcl = (uint32_t *)(src -srcal);
+  uint32_t *dstl = (uint32_t *)(dst);
+  al = (uint32_t) dstl % ALTIVECWORD_SIZE;
+  if (al) {
+    STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(src, srcl, dst, dstl, srcal, al);
+  }
+
+  // Now dst is word aligned. If possible (ie if there are enough bytes left)
+  // we want to align it to 16-byte boundaries as well.
+  // For this we have to know the word-alignment of src also.
+  src = (int8_t *) srcl +srcal;
+
+  // Prefetch some stuff
+  READ_PREFETCH_START1(srcl);
+  WRITE_PREFETCH_START2(dstl);
+
+  // Check for the alignment of src
+  if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
+    // Now, both buffers are 16-byte aligned, just copy everything directly
     STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(src, srcl, dst, dstl);
   } else {
-    srcal = (uint32_t)(src) % sizeof(uint32_t);
-    dstal = (uint32_t)(dst) % sizeof(uint32_t);
-    
-    if (dstal)
-      STRCPY_UNTIL_DST_WORD_ALIGNED(src, dst, dstal);
-    
-    // Take the word-aligned long pointers of dst and dest.
-    uint8_t srcal = ((uint32_t)(src) % sizeof(uint32_t));
-
-    const uint32_t *srcl = (uint32_t *)(src -srcal);
-    uint32_t *dstl = (uint32_t *)(dst);
-    dstal = (uint32_t)dst % ALTIVECWORD_SIZE;
-    
-    if (dstal)
-      STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(src, srcl, dst, dstl, srcal, dstal);
-    
-    // Now src is word aligned. If possible (ie if there are enough bytes left)
-    // we want to align it to 16-byte boundaries as well.
-    // For this we have to know the word-alignment of dst also.
-    if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
-      // Now, both buffers are 16-byte aligned, just copy everything directly
-      STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(src, srcl, dst, dstl);    
-    } else {
-      // dst is not 16-byte aligned so we have to a little trick with Altivec.
-      STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);
-    }
+    // src is not 16-byte aligned so we have to a little trick with Altivec.
+    STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);
   }
 }
 #endif

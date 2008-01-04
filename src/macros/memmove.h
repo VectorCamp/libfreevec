@@ -32,17 +32,17 @@ switch(len) {                           \
   }                                                           \
 }
     
-#define COPY_BWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, src, len, srcofst)      \
+#define COPY_BWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, src, len, srcal)      \
   while (len >= sizeof(uint32_t) && ((uint32_t)(dst) % ALTIVECWORD_SIZE)) { \
-    if (srcofst == 0) {                                                     \
+    if (srcal == 0) {                                                     \
       *--dst = *--src;                                                      \
-    } else if (srcofst == 3) {                                              \
+    } else if (srcal == 3) {                                              \
       *--dst = (*(src-1) << 24) | (*(src) >> 8);                            \
       --src;                                                                \
-    } else if (srcofst == 2) {                                              \
+    } else if (srcal == 2) {                                              \
       *--dst = (*(src-1) << 16) | (*(src) >> 16);                           \
       --src;                                                                \
-    } else if (srcofst == 1) {                                              \
+    } else if (srcal == 1) {                                              \
       *--dst = (*(src-1) << 8) | (*(src) >> 24);                            \
       --src;                                                                \
     }                                                                       \
@@ -86,17 +86,17 @@ switch(len) {                           \
   }                                                              \
 }
  
-#define COPY_BWD_REST_WORDS(dst, src, len, srcofst)  \
+#define COPY_BWD_REST_WORDS(dst, src, len, srcal)  \
   while (len >= sizeof(uint32_t)) {                  \
-    if (srcofst == 0) {                              \
+    if (srcal == 0) {                              \
       *--dst = *--src;                               \
-    } else if (srcofst == 3) {                       \
+    } else if (srcal == 3) {                       \
       *--dst = (*(src-1) << 24) | (*(src) >> 8);     \
       --src;                                         \
-    } else if (srcofst == 2) {                       \
+    } else if (srcal == 2) {                       \
       *--dst = (*(src-1) << 16) | (*(src) >> 16);    \
       --src;                                         \
-    } else if (srcofst == 1) {                       \
+    } else if (srcal == 1) {                       \
       *--dst = (*(src-1) << 8) | (*(src) >> 24);     \
       --src;                                         \
     }                                                \

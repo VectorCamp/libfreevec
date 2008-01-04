@@ -62,6 +62,7 @@
 
 #define MEMSET_LOOP_QUADWORD(ptr32, vc, len)  \
 {                                             \
+  WRITE_PREFETCH_START2(ptr32);               \
   uint32_t blocks = len >> LOG_ALTIVECQUAD;   \
   len -= blocks << LOG_ALTIVECQUAD;           \
   while (blocks--) {                          \

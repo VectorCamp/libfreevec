@@ -61,7 +61,7 @@ am_libfreevec_la_OBJECTS = bcmp.lo bcopy.lo bmove512.lo bzero.lo \
 	common.lo findfirst.lo memccpy.lo memchr.lo memcmp.lo \
 	memcpy.lo memfrob.lo memmove.lo mempcpy.lo memrchr.lo \
 	memset.lo printvec.lo strcmp.lo strcpy.lo strfill.lo strfry.lo \
-	strlen.lo strncmp.lo strnlen.lo swab.lo
+	strlen.lo strncmp.lo strncpy.lo strnlen.lo swab.lo
 libfreevec_la_OBJECTS = $(am_libfreevec_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -142,6 +142,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -205,7 +206,7 @@ pkglib_LTLIBRARIES = libfreevec.la
 libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 	memccpy.c memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c \
 	memset.c printvec.c strcmp.c strcpy.c strfill.c strfry.c strlen.c strncmp.c \
-	strnlen.c swab.c
+	strncpy.c strnlen.c swab.c
 
 libfreevec_la_LDFLAGS = -module
 SUBDIRS = glibc
@@ -299,6 +300,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strfry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncmp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strnlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swab.Plo@am__quote@
 

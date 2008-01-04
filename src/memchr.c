@@ -35,22 +35,20 @@ void *vec_memchr(void const *str, int c_in, size_t len) {
       MEMCHR_UNTIL_WORD_ALIGNED(ptr, c, len, al);
 
     uint32_t *ptr32 = (uint32_t *)(ptr);
-    //uint32_t charmask = charmask32(c);
 
     if (len >= ALTIVECWORD_SIZE) {
       al = (uint32_t) ptr32 % ALTIVECWORD_SIZE;
       if (al)
-        MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, charmask, len, al);
+        MEMCHR_LOOP_UNTIL_ALTIVEC_ALIGNED(ptr32, c, len, al);
 
       READ_PREFETCH_START1(ptr32);
       FILL_VECTOR(vc, c);
 
       while (len >= ALTIVECWORD_SIZE) {
-        MEMCHR_SINGLE_ALTIVEC_WORD(vc, ptr32, c, charmask);
-        READ_PREFETCH_START1(ptr32);
+        MEMCHR_SINGLE_ALTIVEC_WORD(vc, ptr32, c);
       }
     }
-    MEMCHR_REST_WORDS(ptr32, c, charmask, len);
+    MEMCHR_REST_WORDS(ptr32, c, len);
 
     ptr = (uint8_t *) ptr32;
     MEMCHR_REST_BYTES(ptr, c, len);

@@ -39,21 +39,21 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   const uint32_t *srcl = ( uint32_t * ) ( src );
 
   // While we're not 16-byte aligned, move in 4-byte long steps.
-  COPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, 0 );
+  MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, 0 );
   src = ( uint8_t * ) srcl;
 
   if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
-    COPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, len );
+    MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, len );
   } else {
-    COPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, len );
+    MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, len );
   }
 
   while ( len >= ALTIVECWORD_SIZE ) {
     if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
-      COPY_SINGLEQUADWORD_ALTIVEC_ALIGNED ( dstl, src, 0 );
+      MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED ( dstl, src, 0 );
       dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
     } else {
-      COPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED ( dstl, src, 0 );
+      MEMCPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED ( dstl, src, 0 );
       dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
     }
   }
@@ -61,7 +61,7 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   // Copy the remaining bytes using word-copying
   // Handle alignment as appropriate
   srcl = ( uint32_t * ) ( src );
-  COPY_FWD_REST_WORDS ( dstl, srcl, len, 0 );
+  MEMCPY_FWD_REST_WORDS_ALIGNED ( dstl, srcl, len );
 
   PREFETCH_STOP1;
   PREFETCH_STOP2;
