@@ -4,5 +4,5 @@ AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_glibc.la
 libfreevec_glibc_la_LDFLAGS = -module
 libfreevec_glibc_la_SOURCES = findfirst.S libfreevec.h memccpy.c memchr.c \
-	memcmp.c memcpy.c memrchr.c memset.c strcpy.c strncmp.c strncpy.c strnlen.c \
-	swab.c
+	memcmp.c memcpy.c memrchr.c memset.c printvec.c strcpy.c strncmp.c strncpy.c \
+	strnlen.c swab.c

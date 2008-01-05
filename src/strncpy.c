@@ -30,12 +30,13 @@ void *vec_strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
 
   int8_t *src = (int8_t *) srcpp;
   int8_t *dst = (int8_t *) dstpp;
-
+  int len1 = len;
+printf("strncpy: src = %s, len = %d\n", src, len);
   if (len >= sizeof(uint32_t)) {
     uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);
     if (al)
       STRNCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, len, al);
-
+printbuf(dstpp, len1);
     // Take the word-aligned long pointers of src and dest.
     uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
     uint32_t *srcl = (uint32_t *)(src -srcal);
@@ -46,7 +47,7 @@ void *vec_strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
     // Now dst is word aligned. If possible (ie if there are enough bytes left)
     // we want to align it to 16-byte boundaries as well.
     // For this we have to know the word-alignment of src also.
-
+printbuf(dstpp, len1);
     src = (int8_t *) srcl +srcal;
 
     vector uint8_t v0 = vec_splat_u8(0);
@@ -67,16 +68,17 @@ void *vec_strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
       PREFETCH_STOP1;
       PREFETCH_STOP2;
     }
-
+printbuf(dstpp, len1);
     STRNCPY_REST_WORDS(dst, dstl, src, srcl, len, srcal);
-
+printbuf(dstpp, len1);
     dst = (int8_t *) dstl;
     src = (int8_t *) srcl +srcal;
     STRNCPY_NIBBLE(dst, src, len);
-
+printbuf(dstpp, len1);
     return dstpp;
   } else {
     STRNCPY_NIBBLE(dst, src, len);
+printbuf(dstpp, len1);
     return dstpp;
   }
 }

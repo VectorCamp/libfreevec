@@ -29,13 +29,13 @@ int vec_strcmp(const uint8_t *src1pp, const uint8_t *src2pp) {
 
   const uint8_t *src2 = (uint8_t *)src2pp;
   const uint8_t *src1 = (uint8_t *)src1pp;
-  
+
   uint32_t src1al = (uint32_t)(src1) % ALTIVECWORD_SIZE;
   uint32_t src2al = (uint32_t)(src2) % ALTIVECWORD_SIZE;
   if ((src1al | src2al) == 0) {
     uint32_t *src1l = (uint32_t *)(src1);
     const uint32_t *src2l = (uint32_t *)(src2);
-    
+
     STRCMP_LOOP_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l);
   } else {
     src1al = (uint32_t)(src1) % sizeof(uint32_t);

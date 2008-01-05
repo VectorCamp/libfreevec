@@ -30,6 +30,18 @@ void printbuf16 ( char *label, uint8_t *buf ) {
   printf ( "\n" );
 }
 
+void printbuf ( uint8_t *buf, size_t len ) {
+  int i;
+  printf("%08x: ", buf);
+  for ( i=0; i < len; i++ ) {
+    printf ( "%02x ", buf[i]);
+    if (i >= 15 && ((i+1) % 16) == 0)
+       printf("\n%08x: ", &buf[i]);
+  }
+  printf ( "\n" );
+}
+
+
 void printbuf4 ( char *label, uint32_t *buf ) {
   int i;
   printf ( "%s : ", label );
