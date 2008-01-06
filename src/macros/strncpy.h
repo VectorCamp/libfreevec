@@ -11,38 +11,38 @@
   int l = MIN( len, sizeof(uint32_t) - al );               \
   switch (l) {                                             \
   case 3:                                                  \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}              \
+    if ((*dst++ = *src++) == 0) return dstpp;              \
   case 2:                                                  \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}              \
+    if ((*dst++ = *src++) == 0) return dstpp;              \
   case 1:                                                  \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}              \
+    if ((*dst++ = *src++) == 0) return dstpp;              \
     len -= l;                                              \
   }                                                        \
 }
 
 #define STRNCPY_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, len, srcal, al)  \
 {                                                                                    \
-  int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);                                \
+  int l = (ALTIVECWORD_SIZE - al);                                                   \
   l = MIN( len, l );                                                                 \
   if (srcal == 0) {                                                                  \
     switch (l) {                                                                     \
-    case 3:                                                                          \
+    case 12:                                                                         \
       STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                              \
-    case 2:                                                                          \
+    case 8:                                                                          \
       STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                              \
-    case 1:                                                                          \
+    case 4:                                                                          \
       STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                              \
-      len -= l*sizeof(uint32_t);                                                     \
+      len -= l;                                                                      \
     }                                                                                \
   } else {                                                                           \
     switch (l) {                                                                     \
-    case 3:                                                                          \
+    case 12:                                                                         \
       STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                     \
-    case 2:                                                                          \
+    case 8:                                                                          \
       STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                     \
-    case 1:                                                                          \
+    case 4:                                                                          \
       STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                     \
-      len -= l*sizeof(uint32_t);                                                     \
+      len -= l;                                                                      \
     }                                                                                \
   }                                                                                  \
 }
@@ -128,9 +128,9 @@
 #define STRNCPY_NIBBLE(dst, src, len)          \
   switch (len) {                               \
   case 3:                                      \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}  \
+    if ((*dst++ = *src++) == 0) return dstpp;  \
   case 2:                                      \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}  \
+    if ((*dst++ = *src++) == 0) return dstpp;  \
   case 1:                                      \
-    if ((*dst++ = *src++) == 0) {printf("strncpy: #1dst = %s\n", dst);return dstpp;}  \
+    if ((*dst++ = *src++) == 0) return dstpp;  \
   }

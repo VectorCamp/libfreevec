@@ -39,7 +39,7 @@ int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp) {
   uint32_t *dstl = (uint32_t *)(dst);
   al = (uint32_t) dstl % ALTIVECWORD_SIZE;
   if (al) {
-    STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(src, srcl, dst, dstl, srcal, al);
+    STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, srcal, al);
   }
 
   // Now dst is word aligned. If possible (ie if there are enough bytes left)
@@ -54,10 +54,10 @@ int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp) {
   // Check for the alignment of src
   if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
     // Now, both buffers are 16-byte aligned, just copy everything directly
-    STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(src, srcl, dst, dstl);
+    STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl);
   } else {
     // src is not 16-byte aligned so we have to a little trick with Altivec.
-    STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);
+    STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);
   }
 }
 #endif

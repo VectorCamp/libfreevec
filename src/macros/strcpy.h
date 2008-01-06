@@ -61,14 +61,14 @@
   }                                                                             \
 }
 
-#define STRCPY_SINGLE_WORD_ALIGNED(src, srcl, dst, dstl)          \
+#define STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl)          \
 {                                                                 \
   uint32_t lw = HAS_ZERO_BYTE(*srcl);                             \
   STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lw);  \
   *dstl++ = *srcl++;                                              \
 }
 
-#define STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal)          \
+#define STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal)          \
 {                                                                          \
   uint32_t srct = *srcl, srct2 = *(srcl+1);                                \
   if (srcal == 3) {                                                        \
@@ -83,41 +83,41 @@
   *dstl++ = srct; srcl++;                                                  \
 }
 
-#define STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(src, srcl, dst, dstl, srcal, dstal)  \
+#define STRCPY_UNTIL_DST_IS_ALTIVEC_ALIGNED(dst, dstl, src, srcl, srcal, dstal)  \
 {                                                                                \
   uint32_t l = (ALTIVECWORD_SIZE - dstal)/sizeof(uint32_t);                      \
   if (srcal == 0) {                                                              \
     switch (l) {                                                                 \
     case 3:                                                                      \
-      STRCPY_SINGLE_WORD_ALIGNED(src, srcl, dst, dstl);                          \
+      STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                          \
     case 2:                                                                      \
-      STRCPY_SINGLE_WORD_ALIGNED(src, srcl, dst, dstl);                          \
+      STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                          \
     case 1:                                                                      \
-      STRCPY_SINGLE_WORD_ALIGNED(src, srcl, dst, dstl);                          \
+      STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);                          \
       src = (int8_t *)(srcl);                                                    \
     }                                                                            \
   } else {                                                                       \
     switch (l) {                                                                 \
     case 3:                                                                      \
-      STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);                 \
+      STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                 \
     case 2:                                                                      \
-      STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);                 \
+      STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                 \
     case 1:                                                                      \
-      STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);                 \
+      STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                 \
       src = (int8_t *)(srcl) +srcal;                                             \
     }                                                                            \
   }                                                                              \
 }
 
-#define STRCPY_QUADWORD_UNALIGNED(src, srcl, dst, dstl, srcal)  \
+#define STRCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal)  \
 {                                                               \
-  STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);    \
-  STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);    \
-  STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);    \
-  STRCPY_SINGLE_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);    \
+  STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);    \
+  STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);    \
+  STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);    \
+  STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);    \
 }
 
-#define STRCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal)  \
+#define STRCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal)  \
 {                                                                          \
   vector uint8_t vsrc, MSQ, LSQ, vmask, v0 = vec_splat_u8(0);              \
   vmask = vec_lvsl(0, src);                                                \
@@ -126,12 +126,12 @@
   vsrc = vec_perm(MSQ, LSQ, vmask);                                        \
   if (!vec_all_ne(vsrc, v0)) {                                             \
     srcl = (uint32_t *)(src -srcal);                                       \
-    STRCPY_QUADWORD_UNALIGNED(src, srcl, dst, dstl, srcal);                \
+    STRCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal);                \
   }                                                                        \
   vec_st(vsrc, 0, (uint8_t *)dstl);                                        \
 }
 
-#define STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(src, srcl, dst, dstl)             \
+#define STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl)             \
 {                                                                          \
   while (1) {                                                              \
     vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)srcl),   \
@@ -154,10 +154,10 @@
   }                                                                        \
 }
 
-#define STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal)  \
+#define STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal)  \
 {                                                                        \
   while (1) {                                                            \
-    STRCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(src, srcl, dst, dstl, srcal);   \
+    STRCPY_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);   \
     dstl += 4; src += ALTIVECWORD_SIZE;                                  \
   }                                                                      \
   srcl = (uint32_t *)(src -srcal);                                       \
