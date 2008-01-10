@@ -101,14 +101,6 @@
   }                                                                                          \
 }
 
-#define MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l)  \
-{                                                          \
-  MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);    \
-  MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);    \
-  MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);    \
-  MEMCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l);    \
-}
-
 #define MEMCMP_QUADWORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
 {                                                                    \
   MEMCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);    \
@@ -131,39 +123,37 @@
   }                                                                             \
 }
 
-#define MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)        \
-{                                                                                \
-  READ_PREFETCH_START1(src1l);                                                   \
-  READ_PREFETCH_START2(src2l);                                                   \
-  while (len >= 2*ALTIVECWORD_SIZE) {                                            \
-    vector uint8_t  vsrc1a = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),       \
-                    vsrc2a = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),       \
-                    vsrc1b = (vector uint8_t) vec_ld(16, (uint8_t *)src1l),      \
-                    vsrc2b = (vector uint8_t) vec_ld(16, (uint8_t *)src2l);      \
-  if (!vec_all_eq(vsrc1a, vsrc2a)) {                                             \
-    MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
-  }                                                                              \
-  src1l += 4; src2l += 4;                                                        \
-  if (!vec_all_eq(vsrc1b, vsrc2b)) {                                             \
-    MEMCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                           \
-  }                                                                              \
-  src1l += 4; src2l += 4; len -= 2*ALTIVECWORD_SIZE;                             \
-  READ_PREFETCH_START1(src1l);                                                   \
-  READ_PREFETCH_START2(src2l);                                                   \
-  }                                                                              \
+#define MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(src1, src1l, src2, src2l)    \
+{                                                                            \
+  READ_PREFETCH_START1(src1l);                                               \
+  READ_PREFETCH_START2(src2l);                                               \
+  while (len >= ALTIVECWORD_SIZE) {                                          \
+    vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),    \
+                    vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l);    \
+    if (!vec_all_eq(vsrc1, vsrc2)) {                                         \
+      uint32_t __attribute__ ((aligned(16))) lwa[4];                         \
+      vsrc1 = vec_cmpeq(vsrc1, vsrc2);                                       \
+      vsrc1 = vec_nor(vsrc1, vsrc1);                                         \
+      vec_st(vsrc1, 0, (uint8_t *) &lwa[0]);                                 \
+      MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lwa[0]);     \
+      src1l++; src2l++;                                                      \
+      MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lwa[1]);     \
+      src1l++; src2l++;                                                      \
+      MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lwa[2]);     \
+      src1l++; src2l++;                                                      \
+      MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lwa[3]);     \
+    }                                                                        \
+    src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                         \
+  }                                                                          \
 }
 
 #define MEMCMP_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
 {                                                                                    \
   READ_PREFETCH_START1(src1l);                                                       \
   READ_PREFETCH_START2(src2);                                                        \
-  while (len >= 2*ALTIVECWORD_SIZE) {                                                \
+  while (len >= ALTIVECWORD_SIZE) {                                                  \
     MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
-    src1l += 4; src2 += ALTIVECWORD_SIZE;                                            \
-    MEMCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);          \
-    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= 2*ALTIVECWORD_SIZE;                 \
-    READ_PREFETCH_START1(src1l);                                                     \
-    READ_PREFETCH_START2(src2);                                                      \
+    src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                   \
   }                                                                                  \
   src2l = (uint32_t *)(src2 -src2al);                                                \
 }

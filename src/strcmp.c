@@ -44,7 +44,7 @@ int vec_strcmp(const uint8_t *src1pp, const uint8_t *src2pp) {
       STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, src1al);
 
     // Take the word-aligned long pointers of src2 and dest.
-    uint8_t src2al = ((uint32_t)(src2) % sizeof(uint32_t));
+    uint8_t src2al = (uint32_t)(src2) % sizeof(uint32_t);
 
     uint32_t *src1l = (uint32_t *)(src1);
     const uint32_t *src2l = (uint32_t *)(src2 -src2al);
