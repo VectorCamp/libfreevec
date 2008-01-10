@@ -19,8 +19,8 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
-#include "macros/memcmp.h"
 #include "macros/common.h"
+#include "macros/memcmp.h"
 
 #ifdef VEC_GLIBC
 int memcmp(void *src1pp, const void *src2pp, size_t len) {

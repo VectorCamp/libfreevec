@@ -18,7 +18,9 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
+#include "macros/common.h"
 #include "macros/strlen.h"
+
 
 #ifdef VEC_GLIBC
 size_t strlen(const int8_t *str) {
@@ -30,9 +32,12 @@ size_t vec_strlen(const int8_t *str) {
   STRLEN_UNTIL_WORD_ALIGNED(str, ptr);
 
   uint32_t *ptr32 = (uint32_t *)(ptr);
-  STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32);
+  READ_PREFETCH_START1(ptr32);
 
-  READ_PREFETCH_START1(ptr);
+  uint32_t al = (uint32_t) ptr32 % ALTIVECWORD_SIZE;
+  if (al)
+    STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32, al);
+
 
   STRLEN_LOOP_ALTIVEC_WORD(str, ptr32);
 

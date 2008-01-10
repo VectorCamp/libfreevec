@@ -7,10 +7,6 @@
  ***************************************************************************/
 
 #include "libfreevec.h"
-#include "macros/common.h"
-
-// Taken from http://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
-#define HAS_ZERO_BYTE(v)  (((v) - 0x01010101UL) & (~(v)) & 0x80808080UL)
 
 #define STRCPY_NIBBLE(d, s, l)  \
 {                               \
@@ -44,7 +40,8 @@
   if (lw) {                                                            \
     src = (int8_t *) srcl;                                             \
     dst = (int8_t *) dstl;                                             \
-    uint32_t pos = find_leftfirst_nzb(lw);                             \
+    uint32_t pos;                                                      \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                   \
     STRCPY_NIBBLE(dst, src, pos);                                      \
     return dstpp;                                                      \
   }                                                                    \
@@ -55,7 +52,8 @@
   if (lw) {                                                                     \
     src = (int8_t *) srcl +srcal;                                               \
     dst = (int8_t *) dstl;                                                      \
-    uint32_t pos = find_leftfirst_nzb(lw);                                      \
+    uint32_t pos;                                                               \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                            \
     STRCPY_NIBBLE(dst, src, pos);                                               \
     return dstpp;                                                               \
   }                                                                             \

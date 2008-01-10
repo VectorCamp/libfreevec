@@ -17,6 +17,8 @@
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
 
+#define FUNCTION_NAME     MEMCCPY
+
 #include "libfreevec.h"
 #include "macros/memccpy.h"
 #include "macros/common.h"

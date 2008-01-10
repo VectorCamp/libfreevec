@@ -18,6 +18,7 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
+#include "macros/common.h"
 #include "macros/strlen.h"
 
 #ifdef VEC_GLIBC
@@ -43,7 +44,6 @@ size_t vec_strnlen(const char *str, size_t maxlen) {
     }
     PREFETCH_STOP1;
   }
-
   STRNLEN_REST_WORDS(str, ptr32, len);
 
   ptr = (uint8_t *) ptr32;

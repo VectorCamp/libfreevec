@@ -18,8 +18,8 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
-#include "macros/memchr.h"
 #include "macros/common.h"
+#include "macros/memchr.h"
 
 #ifdef VEC_GLIBC
 void *memchr(void const *str, int c_in, size_t len) {

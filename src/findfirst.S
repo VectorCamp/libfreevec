@@ -10,10 +10,15 @@
 #define rTMPa     r4
 #define rTMPb     r5
 
+#define vIN       v2
+#define vMASK     v3
+#define vRES      v0
+
 .text                       /* section declaration - begin code */
 
 .globl find_leftfirst_nzb
 .globl find_rightfirst_nzb
+.globl vec_find_leftfirst_nzb_mask
 
 find_leftfirst_nzb:
     /* count zero bits in r3 (argument) before the first non-zero bit */
@@ -37,3 +42,15 @@ find_rightfirst_nzb:
     li            rTMPa, 3
     sub           rRTN, rTMPa, rRTN
     blr           /* return back to caller */
+
+vec_find_leftfirst_nzb_mask_2:
+    /* compare the vIN vector to vMASK, set the CR bit and store the result in vRES */
+    vcmpequb.     vRES, vIN, vMASK
+    bne-          cr6, vec_find_leftfirst_nzb_end
+    blr
+vec_find_leftfirst_nzb_end:
+    /* if we got here, the vectors might be equal */
+    li            rTMPa, 0
+    stvx          vRES, rRTN, rTMPa
+    li            rRTN, 1
+    blr

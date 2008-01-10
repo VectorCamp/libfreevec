@@ -57,7 +57,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libfreevec_glibc_la_LIBADD =
 am_libfreevec_glibc_la_OBJECTS = findfirst.lo memccpy.lo memchr.lo \
 	memcmp.lo memcpy.lo memrchr.lo memset.lo printvec.lo strcpy.lo \
-	strncmp.lo strncpy.lo strnlen.lo swab.lo
+	strlen.lo strncmp.lo strncpy.lo strnlen.lo swab.lo
 libfreevec_glibc_la_OBJECTS = $(am_libfreevec_glibc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,8 +188,8 @@ AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_glibc.la
 libfreevec_glibc_la_LDFLAGS = -module
 libfreevec_glibc_la_SOURCES = findfirst.S libfreevec.h memccpy.c memchr.c \
-	memcmp.c memcpy.c memrchr.c memset.c printvec.c strcpy.c strncmp.c strncpy.c \
-	strnlen.c swab.c
+	memcmp.c memcpy.c memrchr.c memset.c printvec.c strcpy.c strlen.c strncmp.c \
+	strncpy.c strnlen.c swab.c
 
 all: all-am
 
@@ -268,6 +268,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printvec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcpy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strnlen.Plo@am__quote@

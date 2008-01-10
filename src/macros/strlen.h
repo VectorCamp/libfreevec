@@ -7,7 +7,6 @@
  ***************************************************************************/
 
 #include "libfreevec.h"
-#include "macros/common.h"
 
 #define STRLEN_UNTIL_WORD_ALIGNED(str, ptr)    \
 {                                              \
@@ -28,39 +27,30 @@
 #define STRLEN_SINGLE_WORD_MASK(str, ptr32, lw)      \
 {                                                    \
   if (lw) {                                          \
-    uint32_t pos = find_leftfirst_nzb(lw);           \
+    uint32_t pos;                                    \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                 \
     return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);  \
   }                                                  \
 }
 
-#define STRLEN_SINGLE_WORD(str, ptr32)                                                \
-{                                                                                     \
-  uint32_t lw = ~(((*ptr32 & magic_bits32) + magic_bits32) | *ptr32 | magic_bits32);  \
-  STRLEN_SINGLE_WORD_MASK(str, ptr32, lw);                                            \
-  ptr32++;                                                                            \
+#define STRLEN_SINGLE_WORD(str, ptr32)      \
+{                                           \
+  uint32_t lw = HAS_ZERO_BYTE(*ptr32);      \
+  STRLEN_SINGLE_WORD_MASK(str, ptr32, lw);  \
+  ptr32++;                                  \
 }
 
-#define STRLEN_UNTIL_ALTIVEC_ALIGNED(str, ptr)                      \
-{                                                                   \
-  uint32_t al = ALTIVECWORD_SIZE -(uint32_t)ptr % ALTIVECWORD_SIZE; \
-  while (al--) {                                                    \
-    if (*ptr == 0) return ptrdiff_t(ptr,str);                       \
-    ptr++;                                                          \
-  }                                                                 \
-}
-
-#define STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32)  \
-{                                                       \
-  uint32_t al = (uint32_t)ptr32 % ALTIVECWORD_SIZE;     \
-  int l = al / sizeof(uint32_t);                        \
-  switch (l) {                                          \
-    case 1:                                             \
-      STRLEN_SINGLE_WORD(str, ptr32);                   \
-    case 2:                                             \
-      STRLEN_SINGLE_WORD(str, ptr32);                   \
-    case 3:                                             \
-      STRLEN_SINGLE_WORD(str, ptr32);                   \
-  }                                                     \
+#define STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32, al)  \
+{                                                           \
+  int l = al / sizeof(uint32_t);                            \
+  switch (l) {                                              \
+    case 1:                                                 \
+      STRLEN_SINGLE_WORD(str, ptr32);                       \
+    case 2:                                                 \
+      STRLEN_SINGLE_WORD(str, ptr32);                       \
+    case 3:                                                 \
+      STRLEN_SINGLE_WORD(str, ptr32);                       \
+  }                                                         \
 }
 
 #define STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32)      \

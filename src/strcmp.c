@@ -18,8 +18,8 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
-#include "macros/strcmp.h"
 #include "macros/common.h"
+#include "macros/strcmp.h"
 
 #ifdef VEC_GLIBC
 int strcmp(const uint8_t *src1pp, const uint8_t *src2pp) {

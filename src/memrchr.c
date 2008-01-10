@@ -17,6 +17,8 @@
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
 
+#define FUNCTION_NAME     MEMRCHR
+
 #include "libfreevec.h"
 #include "macros/memchr.h"
 #include "macros/common.h"

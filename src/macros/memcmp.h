@@ -28,7 +28,8 @@
 #define MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lw)  \
 {                                                                      \
   if (lw) {                                                            \
-    uint32_t pos = find_leftfirst_nzb(lw);                             \
+    uint32_t pos;                                                      \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                   \
     src2 = (uint8_t *) src2l;                                          \
     src1 = (uint8_t *) src1l;                                          \
     return CMP_LT_OR_GT(src1[pos], src2[pos]);                         \
@@ -38,7 +39,8 @@
 #define MEMCMP_SINGLE_WORD_UNALIGNED_MASK(src1, src1l, src2, src2l, lw)  \
 {                                                                        \
   if (lw) {                                                              \
-    uint32_t pos = find_leftfirst_nzb(lw);                               \
+    uint32_t pos;                                                        \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                     \
     src2 = (uint8_t *)(src2l) +src2al;                                   \
     src1 = (uint8_t *)(src1l);                                           \
     return CMP_LT_OR_GT(src1[pos], src2[pos]);                           \

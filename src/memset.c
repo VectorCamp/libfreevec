@@ -18,6 +18,8 @@
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
 
+#define FUNCTION_NAME     MEMSET
+
 #include "libfreevec.h"
 #include "macros/memset.h"
 #include "macros/common.h"

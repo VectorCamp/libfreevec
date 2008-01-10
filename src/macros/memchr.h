@@ -47,7 +47,8 @@
 #define MEMCHR_SINGLE_WORD_MASK(ptr32, lw)  \
 {                                           \
   if (lw) {                                 \
-    uint32_t pos = find_leftfirst_nzb(lw);  \
+    uint32_t pos;                           \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);        \
     return ((uint8_t *)(ptr32)+ pos);       \
   }                                         \
 }
@@ -98,12 +99,11 @@
 
 #define MEMCHR_SINGLE_ALTIVEC_WORD(vmask, ptr32, c)  \
 {                                                    \
-  vector uint8_t vsrc, vm;                           \
-  vsrc = vec_ld(0, (uint8_t *)ptr32);                \
+  vector uint8_t vsrc = vec_ld(0, (uint8_t *)ptr32); \
   if (!vec_all_ne(vsrc, vmask)) {                    \
     uint32_t __attribute__ ((aligned(16))) lwa[4];   \
-    vm = vec_cmpeq(vsrc, vmask);                     \
-    vec_st(vm, 0, (uint8_t *) &lwa[0]);              \
+    vsrc = vec_cmpeq(vsrc, vmask);                   \
+    vec_st(vsrc, 0, (uint8_t *) &lwa[0]);            \
     MEMCHR_SINGLE_WORD_MASK(ptr32, lwa[0]);          \
     ptr32++;                                         \
     MEMCHR_SINGLE_WORD_MASK(ptr32, lwa[1]);          \

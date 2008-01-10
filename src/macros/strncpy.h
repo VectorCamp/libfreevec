@@ -6,6 +6,8 @@
  *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
+#include "libfreevec.h"
+
 #define STRNCPY_UNTIL_DEST_WORD_ALIGNED(dst, src, len, al) \
 {                                                          \
   int l = MIN( len, sizeof(uint32_t) - al );               \

@@ -2,8 +2,8 @@
 <kdevelop>
   <general>
     <author>Konstantinos Margaritis</author>
-    <email>markos@debian.org</email>
-    <version>0.8</version>
+    <email>markos@codex.gr</email>
+    <version>1.0</version>
     <projectmanagement>KDevAutoProject</projectmanagement>
     <primarylanguage>C</primarylanguage>
     <keywords>
@@ -14,9 +14,9 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <projectname>freevec</projectname>
-    <defaultencoding/>
+    <defaultencoding></defaultencoding>
   </general>
   <kdevautoproject>
     <general>
@@ -25,7 +25,7 @@
       <useactivetarget>true</useactivetarget>
     </general>
     <run>
-      <mainprogram>/home/markos/Development/AltiVec/freevec/optimized</mainprogram>
+      <mainprogram/>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
@@ -33,7 +33,7 @@
       <autocompile>true</autocompile>
       <envvars/>
       <globaldebugarguments/>
-      <globalcwd>/home/markos/Development/AltiVec/freevec/optimized</globalcwd>
+      <globalcwd/>
       <useglobalprogram>false</useglobalprogram>
       <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
@@ -44,17 +44,17 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O2 -Wall -Werror -g0 -maltivec -mabi=altivec -mregnames</cflags>
+        <cflags>-O -Wall -Werror -Winline -g0 -maltivec -mabi=altivec -mregnames -frename-registers -fivopts</cflags>
         <envvars/>
-        <configargs/>
-        <topsourcedir/>
-        <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <configargs></configargs>
+        <topsourcedir></topsourcedir>
+        <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -62,16 +62,16 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O0 -g3 -maltivec -mabi=altivec -mcpu=7400</cflags>
+        <cflags>-O0 -g3 -maltivec -mabi=altivec -mcpu=7400 -mregnames</cflags>
         <envvars/>
-        <topsourcedir/>
-        <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <topsourcedir></topsourcedir>
+        <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </debug>
     </configurations>
     <make>
@@ -80,11 +80,11 @@
         <envvar value="1" name="WANT_AUTOMAKE_1_6" />
       </envvars>
       <abortonerror>true</abortonerror>
-      <numberofjobs>1</numberofjobs>
+      <numberofjobs>2</numberofjobs>
       <dontact>false</dontact>
       <makebin/>
       <prio>0</prio>
-      <runmultiplejobs>false</runmultiplejobs>
+      <runmultiplejobs>true</runmultiplejobs>
     </make>
   </kdevautoproject>
   <kdevdoctreeview>
@@ -157,7 +157,7 @@
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem>Doxygen Documentation Collection</docsystem>
+      <docsystem>Συλλογή τεκμηρίωσης Doxygen</docsystem>
       <docurl>freevec.tag</docurl>
       <usermanualurl/>
     </projectdoc>
@@ -214,7 +214,7 @@
       <resolveIncludePaths>true</resolveIncludePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -241,11 +241,11 @@
   <kdevdebugger>
     <general>
       <programargs/>
-      <gdbpath/>
-      <dbgshell/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>

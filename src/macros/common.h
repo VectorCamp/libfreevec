@@ -6,7 +6,7 @@
  *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
-#define POSINWORD	0x00010203
+#define POSINWORD   0x00010203
 
 // Helper macro, fills a vector with a given char
 #define FILL_VECTOR(vecname, p)                   \
@@ -17,9 +17,55 @@
   p_env.c[0] = p;                                 \
   vector uint8_t vecname = vec_splat(p_env.v, 0);
 
+#define FIND_LEFTFIRST_IN_WORD(res, x)       \
+{                                            \
+  __asm__("\t"                                   \
+    "cntlzw   %%r0, %[input]\n\t"            \
+    "srawi    %[output], %%r0, 3"            \
+    : [output] "=r" (res)  /* outputs:  */   \
+    : [input] "r" (x)      /* inputs:   */   \
+    : "r0"                 /* clobbers: */   \
+  );                                         \
+}
+
+#define FIND_RIGHTFIRST_IN_WORD(res, x)      \
+{                                            \
+  asm("\t"                                   \
+    "li       %%r4, 0\n\t"                   \
+    "lwbrx    %%r5, %%r4, %[input]\n\t"      \
+    "cntlzw   %%r4, %%r5\n\t"                \
+    "srawi    %[output], %%r4, 3\n\t"        \
+    "li       %%r4, 3\n\t"                   \
+    "sub      %[output], %%r4, %[output]\n"  \
+    : [output] "=r" (res)  /* outputs:  */   \
+    : [input] "r" (x)      /* inputs:   */   \
+    : "r4" "r5"            /* clobbers: */   \
+  );                                         \
+}
+
+static inline uint32_t vec_find_leftfirst_nzb_mask(vector uint8_t v,
+                vector uint8_t mask, uint32_t *lw) {
+  int res = 0;
+  __asm__("\t"
+      "vcmpequb.  %[vin], %[vin], %[vmask]\n\t"
+      "beq+       cr6, has_no_mask_byte\n\t"
+      "li         %%r4, 0\n\t"
+      "stvx       %[vin], %[vcopy], %%r4\n\t"
+      "li         %[output], 1\n"
+      "has_no_mask_byte:\n\t"
+    : [output] "+r" (res)
+    : [vin] "v"(v), [vmask] "v"(mask), [vcopy] "r"(lw)
+    : "r4"
+  );
+  return res;
+}
+
+// Taken from http://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+#define HAS_ZERO_BYTE(v)  (((v) - 0x01010101UL) & (~(v)) & 0x80808080UL)
+
 size_t find_leftfirst_in_word(uint32_t x);
 size_t find_rightfirst_in_word(uint32_t x);
 
-uint32_t inline find_leftfirst_nzb( uint32_t x);
-uint32_t inline find_rightfirst_nzb( uint32_t *x);
+uint32_t find_leftfirst_nzb( uint32_t x);
+uint32_t find_rightfirst_nzb( uint32_t *x);
 

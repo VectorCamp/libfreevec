@@ -35,7 +35,8 @@
   if (lw) {                                                             \
     src = (uint8_t *) srcl;                                             \
     dst = (uint8_t *) dstl;                                             \
-    uint32_t pos = find_leftfirst_nzb(lw);                              \
+    uint32_t pos;                                                       \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                    \
     MEMCPY_FWD_NIBBLE(dst, src, pos);                                   \
     return dst+1;                                                       \
   }                                                                     \

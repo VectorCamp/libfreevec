@@ -17,6 +17,8 @@
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
 
+#define FUNCTION_NAME     STRNCPY
+
 #include "libfreevec.h"
 #include "macros/strcpy.h"
 #include "macros/strncpy.h"

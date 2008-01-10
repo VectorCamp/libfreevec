@@ -33,7 +33,8 @@
   uint32_t lw = ~(((*src1l & magic_bits32) + magic_bits32) | *src1l | magic_bits32);  \
   lw = (*src1l ^ *src2l) | lw;                                                        \
   if (lw) {                                                                           \
-    uint32_t pos = find_leftfirst_nzb(lw);                                            \
+    uint32_t pos;                                                                     \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                                  \
     src2 = (uint8_t *) src2l;                                                         \
     src1 = (uint8_t *) src1l;                                                         \
     return DIFF(src1[pos], src2[pos]);                                                \
@@ -56,7 +57,8 @@
   uint32_t lw = ~(((*src1l & magic_bits32) + magic_bits32) | *src1l | magic_bits32);  \
   lw = (*src1l ^ src2t) | lw;                                                         \
   if (lw) {                                                                           \
-    uint32_t pos = find_leftfirst_nzb(lw);                                            \
+    uint32_t pos;                                                                     \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                                  \
     src2 = (uint8_t *)(src2l) +src2al;                                                \
     src1 = (uint8_t *)(src1l);                                                        \
     return DIFF(src1[pos], src2[pos]);                                                \

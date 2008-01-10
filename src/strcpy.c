@@ -18,6 +18,7 @@
 #include <altivec.h>
 
 #include "libfreevec.h"
+#include "macros/common.h"
 #include "macros/strcpy.h"
 
 #ifdef VEC_GLIBC
