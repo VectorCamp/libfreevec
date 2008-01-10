@@ -30,7 +30,7 @@ void printbuf16 ( char *label, uint8_t *buf ) {
   printf ( "\n" );
 }
 
-void printbuf ( uint8_t *buf, size_t len ) {
+void printbuf ( char *buf, size_t len ) {
   int i;
   printf("%08x: ", (uint32_t)buf);
   for ( i=0; i < len; i++ ) {

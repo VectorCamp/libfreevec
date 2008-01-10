@@ -23,13 +23,12 @@
 #include "macros/memmove.h"
 
 #ifdef VEC_GLIBC
-void *memmove ( void *dstpp, const void *srcpp, size_t len ) {
+void *memmove(void *dstpp, const void *srcpp, size_t len) {
 #else
-void *vec_memmove ( void *dstpp, const void *srcpp, size_t len ) {
+void *vec_memmove(void *dstpp, const void *srcpp, size_t len) {
 #endif
-  printf("srcal = %x, dstal = %x, len = %d\n", (uint32_t)srcpp % 16, (uint32_t)dstpp % 16, len);
   // Copy forward, same as memcpy basically
-  if ( abs ( ( uint32_t ) dstpp - ( uint32_t ) srcpp ) >= len ) {
+  if ((uint32_t) dstpp - (uint32_t) srcpp >= len) {
     const uint8_t *src = srcpp;
     uint8_t *dst = dstpp;
 
@@ -94,65 +93,65 @@ void *vec_memmove ( void *dstpp, const void *srcpp, size_t len ) {
     MEMCPY_FWD_NIBBLE(dst, src, len);
     return dstpp;
   } else {
-    // Copy backwards 
+    // Copy backwards
     const uint8_t *src = srcpp+len;
     uint8_t *dst = dstpp+len;
-    printf("1b. case (dstpp -srcpp) < len\n");
-    if ( len >= sizeof ( uint32_t ) ) {
+
+    if (len >= sizeof(uint32_t)) {
       // Copy until dst is word aligned
-      COPY_BWD_UNTIL_DEST_IS_WORD_ALIGNED ( dst, src, len );
+      COPY_BWD_UNTIL_DEST_IS_WORD_ALIGNED(dst, src, len);
 
       // Now dst is word aligned. We'll continue by word copying, but
       // for this we have to know the word-alignment of src also.
-      uint8_t srcal = ( ( uint32_t ) ( src ) & ( sizeof ( uint32_t )-1 ) );
+      uint8_t srcal = ((uint32_t)(src) & (sizeof(uint32_t)-1));
 
       // Take the word-aligned long pointers of src and dest.
-      uint32_t *dstl = ( uint32_t * ) ( dst );
-      const uint32_t *srcl = ( uint32_t * ) ( src -srcal );
+      uint32_t *dstl = (uint32_t *)(dst);
+      const uint32_t *srcl = (uint32_t *)(src -srcal);
 
       // While we're not 16-byte aligned, move in 4-byte long steps.
-      COPY_BWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, srcal );
+      COPY_BWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcal);
 
       // Now, dst is 16byte aligned. We can use Altivec if len >= 32
-      src = ( uint8_t * ) srcl +srcal;
+      src = (uint8_t *) srcl +srcal;
 
-      if ( len >= QUAD_ALTIVECWORD ) {
-        if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
-          COPY_BWD_LOOP_QUADWORD_ALTIVEC_ALIGNED ( dstl, src, len );
-          srcl = ( uint32_t * ) ( src -srcal );
+      if (len >= QUAD_ALTIVECWORD) {
+        if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
+          COPY_BWD_LOOP_QUADWORD_ALTIVEC_ALIGNED(dstl, src, len);
+          srcl = (uint32_t *)(src -srcal);
         } else {
-          COPY_BWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED ( dstl, src, len );
-          srcl = ( uint32_t * ) ( src -srcal );
+          COPY_BWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED(dstl, src, len);
+          srcl = (uint32_t *)(src -srcal);
         }
       }
 
-      if ( len >= ALTIVECWORD_SIZE ) {
-        if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {
+      if (len >= ALTIVECWORD_SIZE) {
+        if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
           dstl -= 4; src -= ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
-          MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED ( dstl, src, 0 );
-          srcl = ( uint32_t * ) ( src -srcal );
+          MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(dstl, src, 0);
+          srcl = (uint32_t *)(src -srcal);
         } else {
           dstl -= 4; src -= ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;
-          MEMCPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED ( dstl, src, 0 );
-          srcl = ( uint32_t * ) ( src -srcal );
+          MEMCPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED(dstl, src, 0);
+          srcl = (uint32_t *)(src -srcal);
         }
       }
-      // Copy the remaining bytes using word-copying
-      // Handle alignment as appropriate
-      COPY_BWD_REST_WORDS ( dstl, srcl, len, srcal );
-      // For the end copy we have to use char * pointers.
-      dst = ( uint8_t * ) dstl;
-      src = ( uint8_t * ) srcl +srcal;
-
-      // Copy the remaining bytes
-      COPY_BWD_NIBBLE ( dst, src, len );
-
       PREFETCH_STOP1;
       PREFETCH_STOP2;
-      printf("10b. case (dstpp -srcpp) < len\n");
+
+      // Copy the remaining bytes using word-copying
+      // Handle alignment as appropriate
+      COPY_BWD_REST_WORDS(dstl, srcl, len, srcal);
+      // For the end copy we have to use char * pointers.
+      dst = (uint8_t *) dstl;
+      src = (uint8_t *) srcl +srcal;
+
+      // Copy the remaining bytes
+      COPY_BWD_NIBBLE(dst, src, len);
+
       return dstpp;
     } else {
-      COPY_BWD_NIBBLE ( dst, src, len );
+      COPY_BWD_NIBBLE(dst, src, len);
       return dstpp;
     }
   }

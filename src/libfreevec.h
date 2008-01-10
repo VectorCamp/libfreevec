@@ -55,7 +55,7 @@
 
 void printbuf16 ( char *label, uint8_t *buf );
 void printbuf4 ( char *label, uint32_t *buf );
-void printbuf ( uint8_t *buf, size_t len );
+void printbuf ( char *buf, size_t len );
 void printvec_text ( char *label, vector uint8_t vc );
 void printvec_char ( char *label, vector uint8_t vc );
 void printvec_short ( char *label, vector uint16_t vs );
