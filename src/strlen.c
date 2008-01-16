@@ -38,7 +38,6 @@ size_t vec_strlen(const int8_t *str) {
   if (al)
     STRLEN_WORDS_UNTIL_ALTIVEC_ALIGNED(str, ptr32, al);
 
-
   STRLEN_LOOP_ALTIVEC_WORD(str, ptr32);
 
   return ptrdiff_t(ptr,str);

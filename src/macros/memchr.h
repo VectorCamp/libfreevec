@@ -44,13 +44,13 @@
   if (*ptr == c) return ptr;             \
 }
 
-#define MEMCHR_SINGLE_WORD_MASK(ptr32, lw)  \
-{                                           \
-  if (lw) {                                 \
-    uint32_t pos;                           \
-    FIND_LEFTFIRST_IN_WORD(pos, lw);        \
-    return ((uint8_t *)(ptr32)+ pos);       \
-  }                                         \
+#define MEMCHR_SINGLE_WORD_MASK(ptr32, lw)       \
+{                                                \
+  if (lw) {                                      \
+    uint32_t pos;                                \
+    FIND_LEFTFIRST_ZB_IN_WORD(pos, *ptr32, lw);  \
+    return ((uint8_t *)(ptr32)+ pos);            \
+  }                                              \
 }
 // uint32_t lw = ((*ptr32 ^ mask) - lomagic) & himagic;
 

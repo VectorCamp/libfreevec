@@ -30,6 +30,10 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
   uint8_t *dst = dstpp;
 
   if (len >= sizeof(uint32_t)) {
+    // Prefetch some stuff
+    READ_PREFETCH_START1(src);
+    WRITE_PREFETCH_START2(dst);
+
     // Copy until dst is word aligned
     MEMCPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED(dst, src, len);
 
@@ -44,10 +48,6 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
     // While we're not 16-byte aligned, move in 4-byte long steps.
     MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4);
     src = (uint8_t *) srcl +srcoffset4;
-
-    // Prefetch some stuff
-    READ_PREFETCH_START1(src);
-    WRITE_PREFETCH_START2(dst);
 
     // Now, dst is 16byte aligned. We can use Altivec if len >= 32
     if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {

@@ -63,6 +63,12 @@ am_libfreevec_la_OBJECTS = bcmp.lo bcopy.lo bmove512.lo bzero.lo \
 	memset.lo printvec.lo strcmp.lo strcpy.lo strfill.lo strfry.lo \
 	strlen.lo strncmp.lo strncpy.lo strnlen.lo swab.lo
 libfreevec_la_OBJECTS = $(am_libfreevec_la_OBJECTS)
+libfreevec_preload_la_LIBADD =
+am_libfreevec_preload_la_OBJECTS = bmove512.lo common.lo findfirst.lo \
+	memccpy.lo memchr.lo memcmp.lo memcpy.lo memfrob.lo memmove.lo \
+	mempcpy.lo memrchr.lo memset.lo strcpy.lo strlen.lo strncmp.lo \
+	strncpy.lo strnlen.lo swab.lo
+libfreevec_preload_la_OBJECTS = $(am_libfreevec_preload_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -77,8 +83,9 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libfreevec_la_SOURCES)
-DIST_SOURCES = $(libfreevec_la_SOURCES)
+SOURCES = $(libfreevec_la_SOURCES) $(libfreevec_preload_la_SOURCES)
+DIST_SOURCES = $(libfreevec_la_SOURCES) \
+	$(libfreevec_preload_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -202,7 +209,7 @@ INCLUDES = $(all_includes)
 noinst_HEADERS = libfreevec.h macros/memchr.h macros/memcmp.h macros/memcpy.h macros/memfrob.h \
                     macros/memset.h macros/strcmp.h macros/strcpy.h macros/strlen.h macros/swab.h
 
-pkglib_LTLIBRARIES = libfreevec.la
+pkglib_LTLIBRARIES = libfreevec.la libfreevec_preload.la
 libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 	memccpy.c memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c \
 	memset.c printvec.c strcmp.c strcpy.c strfill.c strfry.c strlen.c strncmp.c \
@@ -210,6 +217,11 @@ libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 
 libfreevec_la_LDFLAGS = -module
 SUBDIRS = glibc
+libfreevec_preload_la_LDFLAGS = -module
+libfreevec_preload_la_SOURCES = bmove512.c common.c findfirst.S memccpy.c \
+	memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c memset.c \
+	strcpy.c strlen.c strncmp.c strncpy.c strnlen.c swab.c
+
 all: all-recursive
 
 .SUFFIXES:
@@ -223,9 +235,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Makefile
+	  $(AUTOMAKE) --gnu  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -272,6 +284,8 @@ clean-pkglibLTLIBRARIES:
 	done
 libfreevec.la: $(libfreevec_la_OBJECTS) $(libfreevec_la_DEPENDENCIES) 
 	$(LINK) -rpath $(pkglibdir) $(libfreevec_la_LDFLAGS) $(libfreevec_la_OBJECTS) $(libfreevec_la_LIBADD) $(LIBS)
+libfreevec_preload.la: $(libfreevec_preload_la_OBJECTS) $(libfreevec_preload_la_DEPENDENCIES) 
+	$(LINK) -rpath $(pkglibdir) $(libfreevec_preload_la_LDFLAGS) $(libfreevec_preload_la_OBJECTS) $(libfreevec_preload_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

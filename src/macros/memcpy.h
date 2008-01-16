@@ -66,8 +66,6 @@
 
 #define MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED(d, s, len)               \
 {                                                                         \
-  READ_PREFETCH_START1(s);                                                \
-  WRITE_PREFETCH_START2(d);                                               \
   uint32_t blocks = len >> LOG_ALTIVECQUAD;                               \
   len -= blocks << LOG_ALTIVECQUAD;                                       \
   while (blocks--) {                                                      \
@@ -81,8 +79,6 @@
 
 #define MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED(d, s, len)  \
 {                                                              \
-  READ_PREFETCH_START1(s);                                     \
-  WRITE_PREFETCH_START2(d);                                    \
   vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;           \
   uint32_t blocks = len >> LOG_ALTIVECQUAD ;                   \
   len -= blocks << LOG_ALTIVECQUAD;                            \
@@ -108,7 +104,6 @@
     len -= sizeof(uint32_t);                      \
   }                                               \
 }
-
 
 #define MEMCPY_FWD_REST_WORDS_UNALIGNED(d, s, len, srcofst)  \
 {                                                            \

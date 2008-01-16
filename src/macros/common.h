@@ -8,6 +8,12 @@
 
 #define POSINWORD   0x00010203
 
+// Taken from http://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+#define HAS_ZERO_BYTE(v)  (~((((v & 0x7F7F7F7FUL) + 0x7F7F7F7FUL) | v) | 0x7F7F7F7FUL))
+// This one was used initially but it won't catch all cases
+#define HAS_ZERO_BYTE_3(v)  (((v) - 0x01010101UL) & (~(v)) & 0x80808080UL)
+#define HAS_ZERO_BYTE_2(v)    (((v) + 0xFEFEFEFFUL) & ((~v) & 0x80808080UL))
+
 // Helper macro, fills a vector with a given char
 #define FILL_VECTOR(vecname, p)                   \
   union {                                         \
@@ -17,9 +23,22 @@
   p_env.c[0] = p;                                 \
   vector uint8_t vecname = vec_splat(p_env.v, 0);
 
+#define FIND_LEFTFIRST_ZB_IN_WORD(res, x, m)  \
+{                                             \
+  __asm__("\t"                                \
+    "rlwinm   %%r0,%[input],7,0,31\n\n"       \
+    "andc     %[mask],%[mask],%%r0\n\t"       \
+    "cntlzw   %%r0, %[mask]\n\t"              \
+    "srawi    %[output], %%r0, 3"             \
+    : [output] "=r" (res)  /* outputs   */    \
+    : [input] "r"(x), [mask] "r"(m)           \
+    : "r0"                 /* clobbers: */    \
+  );                                          \
+}
+
 #define FIND_LEFTFIRST_IN_WORD(res, x)       \
 {                                            \
-  __asm__("\t"                                   \
+  __asm__("\t"                               \
     "cntlzw   %%r0, %[input]\n\t"            \
     "srawi    %[output], %%r0, 3"            \
     : [output] "=r" (res)  /* outputs:  */   \
@@ -59,9 +78,6 @@ static inline uint32_t vec_find_leftfirst_nzb_mask(vector uint8_t v,
   );
   return res;
 }
-
-// Taken from http://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
-#define HAS_ZERO_BYTE(v)  (((v) - 0x01010101UL) & (~(v)) & 0x80808080UL)
 
 size_t find_leftfirst_in_word(uint32_t x);
 size_t find_rightfirst_in_word(uint32_t x);

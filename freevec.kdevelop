@@ -44,7 +44,7 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O -Wall -Werror -Winline -g0 -maltivec -mabi=altivec -mregnames -frename-registers -fivopts</cflags>
+        <cflags>-O2 -Wall -Werror -Winline -g0 -maltivec -mabi=altivec -mregnames -frename-registers -fivopts</cflags>
         <envvars/>
         <configargs></configargs>
         <topsourcedir></topsourcedir>
@@ -64,14 +64,14 @@
         <f77compiler>kdevg77options</f77compiler>
         <cflags>-O0 -g3 -maltivec -mabi=altivec -mcpu=7400 -mregnames</cflags>
         <envvars/>
-        <topsourcedir></topsourcedir>
+        <topsourcedir/>
         <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
-        <ldflags></ldflags>
-        <ccompilerbinary></ccompilerbinary>
-        <cxxcompilerbinary></cxxcompilerbinary>
-        <f77compilerbinary></f77compilerbinary>
-        <cxxflags></cxxflags>
-        <f77flags></f77flags>
+        <ldflags/>
+        <ccompilerbinary/>
+        <cxxcompilerbinary/>
+        <f77compilerbinary/>
+        <cxxflags/>
+        <f77flags/>
       </debug>
     </configurations>
     <make>

@@ -8,37 +8,61 @@
 
 #include "libfreevec.h"
 
-#define STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, src1al)         \
-{                                                                  \
-  int l = sizeof(uint32_t) - src1al;                               \
-  int8_t c1;                                                       \
-  switch (l) {                                                     \
-  case 3:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
-    src1++; src2++;                                                \
-  case 2:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
-    src1++; src2++;                                                \
-  case 1:                                                          \
-    c1 = *src1 - *src2;                                            \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);          \
-    src1++; src2++;                                                \
-  }                                                                \
+#define STRCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, src1al)              \
+{                                                                       \
+  int l = sizeof(uint32_t) - src1al;                                    \
+  switch (l) {                                                          \
+  case 3:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 2:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 1:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  }                                                                     \
 }
 
-#define STRCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l)                          \
-{                                                                                     \
-  uint32_t lw = (*src1l ^ *src2l) | HAS_ZERO_BYTE(*src1l);                            \
-  if (lw) {                                                                           \
-    uint32_t pos;                                                                     \
-    FIND_LEFTFIRST_IN_WORD(pos, lw);                                                  \
-    src2 = (uint8_t *) src2l;                                                         \
-    src1 = (uint8_t *) src1l;                                                         \
-    return DIFF(src1[pos], src2[pos]);                                                \
-  }                                                                                   \
-  src1l++; src2l++;                                                                   \
+#define STRCMP_SINGLE_WORD_BYTE(src1, src1l, src2, src2l)             \
+{                                                                     \
+  if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+  src1++; src2++;                                                     \
+  if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+  src1++; src2++;                                                     \
+  if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+  src1++; src2++;                                                     \
+  if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+  src1++; src2++;                                                     \
+}
+
+#define STRCMP_SINGLE_WORD_ALIGNED1(src1, src1l, src2, src2l)  \
+{                                                             \
+  src2 = (uint8_t *) src2l;                                   \
+  src1 = (uint8_t *) src1l;                                   \
+  STRCMP_SINGLE_WORD_BYTE(src1, src1l, src2, src2l);          \
+  src1l++; src2l++;                                           \
+}
+
+#define STRCMP_SINGLE_WORD_UNALIGNED1(src1, src1l, src2, src2l, src2al)  \
+{                                                                       \
+  src2 = (uint8_t *)(src2l) +src2al;                                    \
+  src1 = (uint8_t *)(src1l);                                            \
+  STRCMP_SINGLE_WORD_BYTE(src1, src1l, src2, src2l);                    \
+  src1l++; src2l++;                                                     \
+}
+
+#define STRCMP_SINGLE_WORD_ALIGNED(src1, src1l, src2, src2l)  \
+{                                                             \
+  uint32_t lw = (*src1l ^ *src2l) | HAS_ZERO_BYTE(*src1l);    \
+  if (lw) {                                                   \
+    uint32_t pos;                                             \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                          \
+    src2 = (uint8_t *) src2l;                                 \
+    src1 = (uint8_t *) src1l;                                 \
+    return DIFF(src1[pos], src2[pos]);                        \
+  }                                                           \
+  src1l++; src2l++;                                           \
 }
 
 #define STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)                \
@@ -119,7 +143,7 @@
 #define STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
 {                                                                               \
   vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),         \
-                  vsrc2, MSQ, LSQ, vmask, v0 = vec_splat_u8(0);                 \
+                  vsrc2, MSQ, LSQ, vmask;                                       \
   vmask = vec_lvsl(0, src2);                                                    \
   MSQ = vec_ld(0, src2);                                                        \
   LSQ = vec_ld(15, src2);                                                       \
@@ -134,25 +158,26 @@
 {                                                                          \
   READ_PREFETCH_START1(src1l);                                             \
   READ_PREFETCH_START2(src2l);                                             \
-  while (1) {                                                              \
+  vector uint8_t v0 = vec_splat_u8(0);                                     \
+  do {                                                                     \
     vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),  \
-                    vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),  \
-                    v0 = vec_splat_u8(0);                                  \
+                    vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l);  \
     if (!vec_all_ne(vsrc1, v0) || !vec_all_eq(vsrc1, vsrc2)) {             \
       STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                   \
     }                                                                      \
     src1l += 4; src2l += 4;                                                \
-  }                                                                        \
+  } while (1);                                                             \
 }
 
 #define STRCMP_LOOP_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
 {                                                                             \
   READ_PREFETCH_START1(src1l);                                                \
   READ_PREFETCH_START2(src2);                                                 \
-  while (1) {                                                                 \
+  vector uint8_t v0 = vec_splat_u8(0);                                        \
+  do {                                                                        \
     STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);   \
     src1l += 4; src2 += ALTIVECWORD_SIZE;                                     \
-  }                                                                           \
+  } while (1);                                                                \
   src2l = (uint32_t *)(src2 -src2al);                                         \
 }
 
@@ -161,25 +186,21 @@
  * strncmp() macros, compare strings                                       *
  **************************************************************************/
 
-#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al)  \
-{                                                                 \
-  int l = MIN(len, sizeof(uint32_t) - src1al );                   \
-  int8_t c1;                                                      \
-  switch (l) {                                                    \
-  case 3:                                                         \
-    c1 = *src1 - *src2;                                           \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
-    src1++; src2++;                                               \
-  case 2:                                                         \
-    c1 = *src1 - *src2;                                           \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
-    src1++; src2++;                                               \
-  case 1:                                                         \
-    c1 = *src1 - *src2;                                           \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);         \
-    src1++; src2++;                                               \
-    len -= l;                                                     \
-  }                                                               \
+#define STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al)        \
+{                                                                       \
+  int l = MIN(len, sizeof(uint32_t) - src1al );                         \
+  switch (l) {                                                          \
+  case 3:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 2:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 1:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  }                                                                     \
+  len -= l;                                                             \
 }
 
 #define STRNCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, len, src1al, src2al)  \
@@ -216,12 +237,12 @@
 {                                                                          \
   READ_PREFETCH_START1(src1l);                                             \
   READ_PREFETCH_START2(src2l);                                             \
+  vector uint8_t v0 = vec_splat_u8(0);                                     \
   while (len >= ALTIVECWORD_SIZE) {                                        \
     vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)src1l),  \
-                    vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l),  \
-                    v0 = vec_splat_u8(0);                                  \
-  if (!vec_all_ne(vsrc1, v0) || !vec_all_eq(vsrc1, vsrc2)) {               \
-    STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                     \
+                    vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l);  \
+    if (!vec_all_ne(vsrc1, v0) || !vec_all_eq(vsrc1, vsrc2)) {             \
+      STRCMP_QUADWORD_ALIGNED(src1, src1l, src2, src2l);                   \
   }                                                                        \
   src1l += 4; src2l += 4; len -= ALTIVECWORD_SIZE;                         \
   }                                                                        \
@@ -231,6 +252,7 @@
 {                                                                               \
   READ_PREFETCH_START1(src1l);                                                  \
   READ_PREFETCH_START2(src2);                                                   \
+  vector uint8_t v0 = vec_splat_u8(0);                                          \
   while (len >= ALTIVECWORD_SIZE) {                                             \
     STRCMP_SINGLE_ALTIVEC_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al);     \
     src1l += 4; src2 += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;              \
@@ -254,20 +276,18 @@
   }                                                                    \
 }
 
-#define STRNCMP_NIBBLE(src1, src2, len)                    \
-  int8_t c1;                                               \
-  switch (len) {                                           \
-  case 3:                                                  \
-    c1 = *src1 - *src2;                                    \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
-    src1++; src2++;                                        \
-  case 2:                                                  \
-    c1 = *src1 - *src2;                                    \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
-    src1++; src2++;                                        \
-  case 1:                                                  \
-    c1 = *src1 - *src2;                                    \
-    if (c1 != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
-    src1++; src2++;                                        \
-  }
+#define STRNCMP_NIBBLE(src1, src2, len)                                 \
+{                                                                       \
+  switch (len) {                                                        \
+  case 3:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 2:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  case 1:                                                               \
+    if ((*src1 - *src2) != 0 || *src1 == 0) return DIFF(*src1, *src2);  \
+    src1++; src2++;                                                     \
+  }                                                                     \
+}
 

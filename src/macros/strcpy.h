@@ -107,6 +107,14 @@
   }                                                                              \
 }
 
+#define STRCPY_QUADWORD_ALIGNED(dst, dstl, src, srcl)  \
+{                                                      \
+  STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);    \
+  STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);    \
+  STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);    \
+  STRCPY_SINGLE_WORD_ALIGNED(dst, dstl, src, srcl);    \
+}
+
 #define STRCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal)  \
 {                                                               \
   STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);    \
@@ -129,27 +137,17 @@
   vec_st(vsrc, 0, (uint8_t *)dstl);                                        \
 }
 
-#define STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl)             \
-{                                                                          \
-  while (1) {                                                              \
-    vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)srcl),   \
-                    vm, v0 = vec_splat_u8(0);                              \
-    if (!vec_all_ne(vsrc1, v0)) {                                          \
-      uint32_t __attribute__ ((aligned(16))) lwa[4];                       \
-      vm = vec_cmpeq(vsrc1, v0);                                           \
-      vec_st(vm, 0, (uint8_t *) &lwa[0]);                                  \
-      STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[0]);   \
-      *dstl++ = *srcl++;                                                   \
-      STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[1]);   \
-      *dstl++ = *srcl++;                                                   \
-      STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[2]);   \
-      *dstl++ = *srcl++;                                                   \
-      STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[3]);   \
-      *dstl++ = *srcl++;                                                   \
-    }                                                                      \
-    vec_st(vsrc1, 0, (uint8_t *)dstl);                                     \
-    srcl += 4; dstl += 4;                                                  \
-  }                                                                        \
+#define STRCPY_LOOP_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl)            \
+{                                                                         \
+  do {                                                                    \
+    vector uint8_t  vsrc1 = (vector uint8_t) vec_ld(0, (uint8_t *)srcl),  \
+                    v0 = vec_splat_u8(0);                                 \
+    if (!vec_all_ne(vsrc1, v0)) {                                         \
+      STRCPY_QUADWORD_ALIGNED(dst, dstl, src, srcl);                      \
+    }                                                                     \
+    vec_st(vsrc1, 0, (uint8_t *)dstl);                                    \
+    srcl += 4; dstl += 4;                                                 \
+  } while (1);                                                            \
 }
 
 #define STRCPY_LOOP_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, srcal)  \

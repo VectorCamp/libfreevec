@@ -28,7 +28,7 @@
 {                                                    \
   if (lw) {                                          \
     uint32_t pos;                                    \
-    FIND_LEFTFIRST_IN_WORD(pos, lw);                 \
+    FIND_LEFTFIRST_ZB_IN_WORD(pos, *ptr32, lw);      \
     return ptrdiff_t((uint8_t *)(ptr32)+ pos, str);  \
   }                                                  \
 }
@@ -57,16 +57,10 @@
 {                                                       \
   vector uint8_t vec = vec_ld(0, (uint8_t *)ptr32);     \
   if (!vec_all_ne(vec, v0)) {                           \
-    uint32_t __attribute__ ((aligned(16))) lwa[4];      \
-    vec = vec_cmpeq(vec, v0);                           \
-    vec_st(vec, 0, (uint8_t *) &lwa[0]);                \
-    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[0]);        \
-    ptr32++;                                            \
-    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[1]);        \
-    ptr32++;                                            \
-    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[2]);        \
-    ptr32++;                                            \
-    STRLEN_SINGLE_WORD_MASK(str, ptr32, lwa[3]);        \
+    STRLEN_SINGLE_WORD(str, ptr32);                     \
+    STRLEN_SINGLE_WORD(str, ptr32);                     \
+    STRLEN_SINGLE_WORD(str, ptr32);                     \
+    STRLEN_SINGLE_WORD(str, ptr32);                     \
   }                                                     \
 }
 
@@ -74,9 +68,9 @@
 {                                                \
   vector uint8_t v0 = vec_splat_u8( 0 );         \
   do {                                           \
+    READ_PREFETCH_START1( ptr32 );               \
     STRLEN_SINGLE_ALTIVEC_WORD(v0, str, ptr32);  \
     ptr32 += 4;                                  \
-    READ_PREFETCH_START1( ptr32 );                \
   } while (1);                                   \
 }
 
