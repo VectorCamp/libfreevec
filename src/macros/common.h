@@ -62,7 +62,8 @@
   );                                         \
 }
 
-static inline uint32_t vec_find_leftfirst_nzb_mask(vector uint8_t v,
+/*
+inline uint32_t vec_find_leftfirst_nzb_mask(vector uint8_t v,
                 vector uint8_t mask, uint32_t *lw) {
   int res = 0;
   __asm__("\t"
@@ -77,7 +78,7 @@ static inline uint32_t vec_find_leftfirst_nzb_mask(vector uint8_t v,
     : "r4"
   );
   return res;
-}
+}*/
 
 size_t find_leftfirst_in_word(uint32_t x);
 size_t find_rightfirst_in_word(uint32_t x);

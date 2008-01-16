@@ -3,22 +3,22 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="12" >
   <Doc0 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strcpy.h" >
-   <View0 Encoding="" line="145" Type="Source" />
+   <View0 Encoding="" line="144" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strlen.h" >
-   <View0 Encoding="" line="24" Type="Source" />
+   <View0 Encoding="" line="28" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strcmp.h" >
    <View0 Encoding="" line="0" Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/Makefile.am" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strncpy.h" >
    <View0 Encoding="" Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/common.h" >
-   <View0 Encoding="" line="14" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/memchr.h" >
    <View0 Encoding="" Type="Source" />
@@ -27,13 +27,13 @@
    <View0 Encoding="" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strlen.c" >
-   <View0 Encoding="" line="39" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strcpy.c" >
-   <View0 Encoding="" line="52" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc9>
   <Doc10 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/memcpy.h" >
-   <View0 Encoding="" line="67" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/memcpy.c" >
    <View0 Encoding="" line="35" Type="Source" />

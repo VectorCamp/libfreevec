@@ -18,7 +18,7 @@
 
 .globl find_leftfirst_nzb
 .globl find_rightfirst_nzb
-.globl vec_find_leftfirst_nzb_mask
+/* .globl vec_find_leftfirst_nzb_mask */
 
 find_leftfirst_nzb:
     /* count zero bits in r3 (argument) before the first non-zero bit */

@@ -10,10 +10,10 @@ libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 	memccpy.c memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c \
 	memset.c printvec.c strcmp.c strcpy.c strfill.c strfry.c strlen.c strncmp.c \
 	strncpy.c strnlen.c swab.c
-libfreevec_la_LDFLAGS = -module
+libfreevec_la_LDFLAGS = -module -release $(VERSION)
 
 SUBDIRS = glibc
-libfreevec_preload_la_LDFLAGS = -module
+libfreevec_preload_la_LDFLAGS = -module -release $(VERSION)
 libfreevec_preload_la_SOURCES = bmove512.c common.c findfirst.S memccpy.c \
 	memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c memset.c \
 	strcpy.c strlen.c strncmp.c strncpy.c strnlen.c swab.c

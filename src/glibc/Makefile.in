@@ -57,7 +57,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libfreevec_glibc_la_LIBADD =
 am_libfreevec_glibc_la_OBJECTS = findfirst.lo memccpy.lo memchr.lo \
 	memcmp.lo memcpy.lo memfrob.lo memmove.lo mempcpy.lo \
-	memrchr.lo strcmp.lo strcpy.lo strlen.lo strncmp.lo strncpy.lo \
+	memrchr.lo strcmp.lo strlen.lo strncmp.lo strncpy.lo \
 	strnlen.lo swab.lo
 libfreevec_glibc_la_OBJECTS = $(am_libfreevec_glibc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -187,10 +187,10 @@ INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/src/glibc $(all_includes)
 METASOURCES = AUTO
 AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_glibc.la
-libfreevec_glibc_la_LDFLAGS = -module
+libfreevec_glibc_la_LDFLAGS = -module -release $(VERSION)
 libfreevec_glibc_la_SOURCES = findfirst.S libfreevec.h memccpy.c memchr.c \
-	memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c strcmp.c strcpy.c \
-	strlen.c strncmp.c strncpy.c strnlen.c swab.c
+	memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c strcmp.c strlen.c \
+	strncmp.c strncpy.c strnlen.c swab.c
 
 all: all-am
 
@@ -205,9 +205,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/glibc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/glibc/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/glibc/Makefile
+	  $(AUTOMAKE) --foreign  src/glibc/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -270,7 +270,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mempcpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memrchr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcmp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncpy.Plo@am__quote@

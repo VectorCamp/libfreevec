@@ -3,7 +3,7 @@
   <general>
     <author>Konstantinos Margaritis</author>
     <email>markos@codex.gr</email>
-    <version>1.0</version>
+    <version>1.0.2</version>
     <projectmanagement>KDevAutoProject</projectmanagement>
     <primarylanguage>C</primarylanguage>
     <keywords>
@@ -25,15 +25,15 @@
       <useactivetarget>true</useactivetarget>
     </general>
     <run>
-      <mainprogram/>
+      <mainprogram>/home/markos/Development/Altivec/freevec/optimized</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
-      <programargs/>
+      <programargs></programargs>
       <autocompile>true</autocompile>
       <envvars/>
-      <globaldebugarguments/>
-      <globalcwd/>
+      <globaldebugarguments></globaldebugarguments>
+      <globalcwd>/home/markos/Development/Altivec/freevec/optimized</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
@@ -62,16 +62,17 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O0 -g3 -maltivec -mabi=altivec -mcpu=7400 -mregnames</cflags>
+        <cflags>-Wall -fgnu89-inline
+-O0 -g3 -maltivec -mabi=altivec -mcpu=7400 -mregnames</cflags>
         <envvars/>
-        <topsourcedir/>
+        <topsourcedir></topsourcedir>
         <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </debug>
     </configurations>
     <make>
@@ -82,7 +83,7 @@
       <abortonerror>true</abortonerror>
       <numberofjobs>2</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <prio>0</prio>
       <runmultiplejobs>true</runmultiplejobs>
     </make>
@@ -159,7 +160,7 @@
     <projectdoc>
       <docsystem>Συλλογή τεκμηρίωσης Doxygen</docsystem>
       <docurl>freevec.tag</docurl>
-      <usermanualurl/>
+      <usermanualurl></usermanualurl>
     </projectdoc>
   </kdevdocumentation>
   <substmap>
@@ -267,32 +268,32 @@
     <scaling>-1</scaling>
   </kdevvisualadvance>
   <ctagspart>
-    <customArguments/>
+    <customArguments></customArguments>
     <customTagfilePath>/home/markos/Development/AltiVec/freevec/tags</customTagfilePath>
     <activeTagsFiles/>
   </ctagspart>
   <dist>
     <custom>false</custom>
-    <bzip>false</bzip>
-    <archname/>
+    <bzip>true</bzip>
+    <archname>%n_%v</archname>
     <appname>libfreevec</appname>
-    <version>1.0</version>
-    <release/>
-    <vendor>Konstantinos Margaritis</vendor>
+    <version>1.0.1</version>
+    <release></release>
+    <vendor>CODEX</vendor>
     <licence>LGPL</licence>
-    <summary/>
-    <group/>
+    <summary></summary>
+    <group></group>
     <packager>Konstantinos Margaritis</packager>
-    <description/>
-    <changelog/>
+    <description></description>
+    <changelog></changelog>
     <devpackage>false</devpackage>
     <docspackage>false</docspackage>
     <appicon>false</appicon>
-    <arch>0</arch>
+    <arch>7</arch>
     <genHTML>false</genHTML>
     <useRPM>false</useRPM>
     <ftpkde>false</ftpkde>
     <appskde>false</appskde>
-    <url/>
+    <url></url>
   </dist>
 </kdevelop>

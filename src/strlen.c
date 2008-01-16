@@ -27,7 +27,6 @@ size_t strlen(const int8_t *str) {
 #else
 size_t vec_strlen(const int8_t *str) {
 #endif
-
   int8_t *ptr = (int8_t *) str;
   STRLEN_UNTIL_WORD_ALIGNED(str, ptr);
 
