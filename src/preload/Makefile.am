@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/src/glibc $(all_includes)
+INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/src/preload $(all_includes)
 METASOURCES = AUTO
 AM_CFLAGS = -DVEC_GLIBC
 lib_LTLIBRARIES = libfreevec_preload.la

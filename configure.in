@@ -7,4 +7,4 @@ AC_LANG_C
 AM_PROG_AS
 AM_PROG_LIBTOOL
 
-AC_OUTPUT(Makefile src/Makefile src/glibc/Makefile)
+AC_OUTPUT(Makefile src/Makefile)
