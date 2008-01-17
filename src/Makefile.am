@@ -13,8 +13,11 @@ libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 libfreevec_la_LDFLAGS = -module -release $(VERSION)
 
 SUBDIRS = glibc
+<<<<<<< .mine
+=======
 AM_CFLAGS = -DVEC_GLIBC
 libfreevec_preload_la_LDFLAGS = -module -release $(VERSION)
 libfreevec_preload_la_SOURCES = bmove512.c common.c findfirst.S memccpy.c \
 	memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c memset.c \
 	strcpy.c strlen.c strncmp.c strncpy.c strnlen.c swab.c
+>>>>>>> .r86
