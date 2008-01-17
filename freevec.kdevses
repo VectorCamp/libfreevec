@@ -23,11 +23,11 @@
   <Doc6 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/libfreevec.h" >
    <View0 Encoding="" line="59" Type="Source" />
   </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/preload/Makefile.am" >
-   <View0 Encoding="" line="0" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/Makefile.am" >
+  <Doc7 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/Makefile.am" >
    <View0 Encoding="" line="14" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/libc/Makefile.am" >
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc8>
  </DocsAndViews>
  <pluginList>

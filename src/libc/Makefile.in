@@ -36,7 +36,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/glibc
+subdir = src/libc
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -54,12 +54,12 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libfreevec_preload_la_LIBADD =
-am_libfreevec_preload_la_OBJECTS = findfirst.lo memccpy.lo memchr.lo \
-	memcmp.lo memcpy.lo memfrob.lo memmove.lo mempcpy.lo \
-	memrchr.lo strcmp.lo strlen.lo strncmp.lo strncpy.lo \
+libfreevec_libc_la_LIBADD =
+am_libfreevec_libc_la_OBJECTS = bmove512.lo findfirst.lo memccpy.lo \
+	memchr.lo memcmp.lo memcpy.lo memfrob.lo memmove.lo mempcpy.lo \
+	memrchr.lo memset.lo strcmp.lo strlen.lo strncmp.lo strncpy.lo \
 	strnlen.lo swab.lo
-libfreevec_preload_la_OBJECTS = $(am_libfreevec_preload_la_OBJECTS)
+libfreevec_libc_la_OBJECTS = $(am_libfreevec_libc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -74,8 +74,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libfreevec_preload_la_SOURCES)
-DIST_SOURCES = $(libfreevec_preload_la_SOURCES)
+SOURCES = $(libfreevec_libc_la_SOURCES)
+DIST_SOURCES = $(libfreevec_libc_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -183,14 +183,14 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/src/glibc $(all_includes)
+INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/src/libc $(all_includes)
 METASOURCES = AUTO
 AM_CFLAGS = -DVEC_GLIBC
-lib_LTLIBRARIES = libfreevec_preload.la
-libfreevec_preload_la_LDFLAGS = -module -release $(VERSION)
-libfreevec_preload_la_SOURCES = findfirst.S libfreevec.h memccpy.c memchr.c \
-	memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c strcmp.c strlen.c \
-	strncmp.c strncpy.c strnlen.c swab.c
+lib_LTLIBRARIES = libfreevec_libc.la
+libfreevec_libc_la_LDFLAGS = -module -release $(VERSION)
+libfreevec_libc_la_SOURCES = bmove512.c findfirst.S libfreevec.h memccpy.c \
+	memchr.c memcmp.c memcpy.c memfrob.c memmove.c mempcpy.c memrchr.c memset.c \
+	strcmp.c strlen.c strncmp.c strncpy.c strnlen.c swab.c
 
 all: all-am
 
@@ -205,9 +205,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/glibc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/libc/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/glibc/Makefile
+	  $(AUTOMAKE) --gnu  src/libc/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -252,8 +252,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libfreevec_preload.la: $(libfreevec_preload_la_OBJECTS) $(libfreevec_preload_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libfreevec_preload_la_LDFLAGS) $(libfreevec_preload_la_OBJECTS) $(libfreevec_preload_la_LIBADD) $(LIBS)
+libfreevec_libc.la: $(libfreevec_libc_la_OBJECTS) $(libfreevec_libc_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libfreevec_libc_la_LDFLAGS) $(libfreevec_libc_la_OBJECTS) $(libfreevec_libc_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -261,6 +261,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bmove512.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memccpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memchr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memcmp.Plo@am__quote@
@@ -269,6 +270,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memmove.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mempcpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memrchr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strncmp.Plo@am__quote@
