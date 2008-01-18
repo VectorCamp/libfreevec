@@ -51,19 +51,9 @@
 
 #define STRNCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, vc)     \
 {                                                                         \
-  vector uint8_t vsrc = (vector uint8_t) vec_ld(0, (uint8_t *)src);       \
+  vector uint8_t vsrc = (vector uint8_t) vec_ld(0, (uint8_t *)srcl);      \
   if (!vec_all_ne(vsrc, vc)) {                                            \
-    srcl = (uint32_t *)(src);                                             \
-    uint32_t __attribute__ ((aligned(16))) lwa[4];                        \
-    vsrc = vec_cmpeq(vsrc, vc);                                           \
-    vec_st(vsrc, 0, (uint8_t *) &lwa[0]);                                 \
-    STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[0]);    \
-    *dstl++ = *srcl++;                                                    \
-    STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[1]);    \
-    *dstl++ = *srcl++;                                                    \
-    STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[2]);    \
-    *dstl++ = *srcl++;                                                    \
-    STRCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[3]);    \
+    STRCPY_QUADWORD_ALIGNED(dst, dstl, src, srcl);                        \
   }                                                                       \
   vec_st(vsrc, 0, (uint8_t *)dstl);                                       \
 }
@@ -77,10 +67,7 @@
   vsrc = vec_perm(MSQ, LSQ, vmask);                                             \
   if (!vec_all_ne(vsrc, vc)) {                                                  \
     srcl = (uint32_t *)(src -srcal);                                            \
-    STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                  \
-    STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                  \
-    STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                  \
-    STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal);                  \
+    STRCPY_QUADWORD_UNALIGNED(dst, dstl, src, srcl, srcal);                     \
   }                                                                             \
   vec_st(vsrc, 0, (uint8_t *)dstl);                                             \
 }
@@ -89,8 +76,8 @@
   READ_PREFETCH_START1(srcl);                                                    \
   WRITE_PREFETCH_START2(dstl);                                                   \
   while (len >= ALTIVECWORD_SIZE) {                                              \
-    STRNCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, vc)                \
-    dstl += 4; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                 \
+    STRNCPY_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, vc);               \
+    dstl += 4; srcl += 4; len -= ALTIVECWORD_SIZE;                               \
   }
 
 #define STRNCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, vc)  \

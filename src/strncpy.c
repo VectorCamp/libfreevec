@@ -62,7 +62,6 @@ void *vec_strncpy(int8_t *dstpp, const int8_t *srcpp, size_t len) {
     if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
       // Now, both buffers are 16-byte aligned, just copy everything directly
       STRNCPY_LOOP_SINGLE_ALTIVEC_WORD_ALIGNED(dst, dstl, src, srcl, len, v0);
-      srcl = (uint32_t *)(src);
     } else {
       // src is not 16-byte aligned so we have to a little trick with Altivec.
       STRNCPY_LOOP_SINGLE_ALTIVEC_WORD_UNALIGNED(dst, dstl, src, srcl, len, srcal, v0);
