@@ -2,6 +2,10 @@
 # set the include path found by configure
 INCLUDES= $(all_includes)
 
+#AM_CCASFLAGS = -mregnames
+#AM_CFLAGS = -Wall -Werror -Winline -maltivec -mabi=altivec
+#AM_CPPFLAGS = -std=c99
+
 # the library search path.
 noinst_HEADERS = libfreevec.h macros/memchr.h macros/memcmp.h macros/memcpy.h macros/memfrob.h \
                     macros/memset.h macros/strcmp.h macros/strcpy.h macros/strlen.h macros/swab.h

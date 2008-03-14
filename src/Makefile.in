@@ -198,6 +198,10 @@ target_alias = @target_alias@
 # set the include path found by configure
 INCLUDES = $(all_includes)
 
+#AM_CCASFLAGS = -mregnames
+#AM_CFLAGS = -Wall -Werror -Winline -maltivec -mabi=altivec
+#AM_CPPFLAGS = -std=c99
+
 # the library search path.
 noinst_HEADERS = libfreevec.h macros/memchr.h macros/memcmp.h macros/memcpy.h macros/memfrob.h \
                     macros/memset.h macros/strcmp.h macros/strcpy.h macros/strlen.h macros/swab.h
@@ -223,9 +227,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/Makefile
+	  $(AUTOMAKE) --foreign  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -21,12 +21,13 @@
 #define MEMCPY_FWD_UNTIL_DEST_IS_WORD_ALIGNED(d, s, len)  \
 {                                                         \
   int dstal = ((uint32_t)d) % sizeof(uint32_t);           \
+  printf("dstal = %d\n", dstal);\
   switch (dstal) {                                        \
-  case 3:                                                 \
+  case 1:                                                 \
     *d++ = *s++;                                          \
   case 2:                                                 \
     *d++ = *s++;                                          \
-  case 1:                                                 \
+  case 3:                                                 \
     *d++ = *s++;                                          \
   }                                                       \
   len -= dstal;                                           \
