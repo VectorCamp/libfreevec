@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
@@ -38,6 +39,8 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
 
     uint32_t src1al = (uint32_t)(src1) % ALTIVECWORD_SIZE;
     uint32_t src2al = (uint32_t)(src2) % ALTIVECWORD_SIZE;
+    uint32_t sh_l, sh_r;
+    sh_l = src2al * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
 
     if ((src1al | src2al) == 0) {
       uint32_t *src1l = (uint32_t *)(src1);
@@ -58,6 +61,9 @@ int vec_memcmp(void *src1pp, const void *src2pp, size_t len) {
     } else {
       src1al = (uint32_t)(src1) % sizeof(uint32_t);
       src2al = (uint32_t)(src2) % sizeof(uint32_t);
+      uint32_t sh_l, sh_r;
+      sh_l = src2al * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
+
       if (src1al)
         MEMCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al);
 

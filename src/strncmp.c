@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <limits.h>
 
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
@@ -33,6 +34,8 @@ int vec_strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len) {
   if (len >= sizeof(uint32_t)) {
     uint32_t src1al = (uint32_t)(src1) % ALTIVECWORD_SIZE;
     uint32_t src2al = (uint32_t)(src2) % ALTIVECWORD_SIZE;
+    uint32_t sh_l, sh_r;
+    sh_l = src2al * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
     if ((src1al | src2al) == 0) {
       uint32_t *src1l = (uint32_t *)(src1);
       const uint32_t *src2l = (uint32_t *)(src2);
@@ -54,6 +57,8 @@ int vec_strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len) {
         STRNCMP_UNTIL_SRC1_WORD_ALIGNED(src1, src2, len, src1al);
 
       src2al = (uint32_t)(src2) % sizeof(uint32_t);
+      sh_l = src2al * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
+
       uint32_t *src1l = (uint32_t *)(src1);
       const uint32_t *src2l = (uint32_t *)(src2 -src2al);
 

@@ -44,11 +44,11 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O -Wall -Werror -Winline -g0 -maltivec -mabi=altivec -mregnames -frename-registers -fivopts</cflags>
+        <cflags>-O -g0 -frename-registers -fivopts -maltivec -mabi=altivec -Wall -Werror -Winline -std=c99</cflags>
         <envvars/>
         <configargs/>
         <topsourcedir/>
-        <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
+        <cppflags>-DHAVE_ALTIVEC_H</cppflags>
         <ldflags/>
         <ccompilerbinary/>
         <cxxcompilerbinary/>
@@ -62,11 +62,10 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-Wall -fgnu89-inline
--O0 -g3 -maltivec -mabi=altivec -mcpu=7400 -mregnames</cflags>
+        <cflags>-O0 -g3</cflags>
         <envvars/>
         <topsourcedir/>
-        <cppflags>-DHAVE_ALTIVEC_H -std=c99</cppflags>
+        <cppflags>-DHAVE_ALTIVEC_H</cppflags>
         <ldflags/>
         <ccompilerbinary/>
         <cxxcompilerbinary/>

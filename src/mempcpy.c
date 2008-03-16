@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <limits.h>
 
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
@@ -34,14 +35,15 @@ void *vec_mempcpy ( void *dstpp, const void *srcpp, size_t len ) {
 
     // Now dst is word aligned. We'll continue by word copying, but
     // for this we have to know the word-alignment of src also.
-    uint8_t srcoffset4 = ((uint32_t)(src) % sizeof(uint32_t));
+    uint8_t srcoffset4 = ((uint32_t)(src) % sizeof(uint32_t)), sh_l, sh_r;
+    sh_l = srcoffset4 * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
 
     // Take the word-aligned long pointers of src and dest.
     uint32_t *dstl = (uint32_t *)(dst);
     const uint32_t *srcl = (uint32_t *)(src -srcoffset4);
 
     // While we're not 16-byte aligned, move in 4-byte long steps.
-    MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4);
+    MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4, sh_l, sh_r);
     src = (uint8_t *) srcl +srcoffset4;
 
     // Prefetch some stuff
@@ -78,7 +80,7 @@ void *vec_mempcpy ( void *dstpp, const void *srcpp, size_t len ) {
       MEMCPY_FWD_REST_WORDS_ALIGNED(dstl, srcl, len);
       src = (uint8_t *) srcl;
     } else {
-      MEMCPY_FWD_REST_WORDS_UNALIGNED(dstl, srcl, len, srcoffset4);
+      MEMCPY_FWD_REST_WORDS_UNALIGNED(dstl, srcl, len, sh_l, sh_r);
       src = (uint8_t *) srcl +srcoffset4;
     }
     // For the end copy we have to use char * pointers.

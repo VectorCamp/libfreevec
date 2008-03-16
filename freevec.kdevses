@@ -1,28 +1,22 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="7" >
+ <DocsAndViews NumberOfDocuments="5" >
   <Doc0 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strcpy.h" >
    <View0 Encoding="" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/common.h" >
    <View0 Encoding="" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/memccpy.h" >
+  <Doc2 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strncpy.h" >
    <View0 Encoding="" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strlen.c" >
+  <Doc3 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/strncpy.c" >
    <View0 Encoding="" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/strlen.h" >
-   <View0 Encoding="" Type="Source" />
+  <Doc4 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/libfreevec.h" >
+   <View0 Encoding="" line="31" Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/macros/memset.h" >
-   <View0 Encoding="" Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/markos/Development/Altivec/freevec/src/memset.c" >
-   <View0 Encoding="" line="70" Type="Source" />
-  </Doc6>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>

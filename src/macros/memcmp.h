@@ -59,12 +59,8 @@
   uint32_t src2t = 0;                                                   \
   if (src2al == 0) {                                                    \
     src2t = *src2l;                                                     \
-  } else if (src2al == 3) {                                             \
-    src2t = (*(src2l) << 24) | (*(src2l+1) >> 8);                       \
-  } else if (src2al == 2) {                                             \
-    src2t = (*(src2l) << 16) | (*(src2l+1) >> 16);                      \
-  } else if (src2al == 1) {                                             \
-    src2t = (*(src2l) << 8) | (*(src2l+1) >> 24);                       \
+  } else {                                                              \
+    src2t = (*(src2l) << sh_l) | (*(src2l+1) >> sh_r);                  \
   }                                                                     \
   uint32_t lw = *src1l ^ src2t;                                         \
   MEMCMP_SINGLE_WORD_UNALIGNED_MASK(src1, src1l, src2, src2l, lw);      \

@@ -69,12 +69,8 @@
 #define STRCPY_SINGLE_WORD_UNALIGNED(dst, dstl, src, srcl, srcal)          \
 {                                                                          \
   uint32_t srct = *srcl, srct2 = *(srcl+1);                                \
-  if (srcal == 3) {                                                        \
-    srct = (srct << 24) | (srct2 >> 8);                                    \
-  } else if (srcal == 2) {                                                 \
-    srct = (srct << 16) | (srct2 >> 16);                                   \
-  } else if (srcal == 1) {                                                 \
-    srct = (srct << 8) | (srct2 >> 24);                                    \
+  if (srcal) {                                                             \
+    srct = (srct << sh_l) | (srct2 >> sh_r);                               \
   }                                                                        \
   uint32_t lw = HAS_ZERO_BYTE(srct);                                       \
   STRCPY_SINGLE_WORD_FWD_UNALIGNED_MASK(dst, dstl, src, srcl, srcal, lw);  \

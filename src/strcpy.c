@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <limits.h>
 
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
@@ -36,6 +37,9 @@ int8_t *vec_strcpy(int8_t *dstpp, const int8_t *srcpp) {
 
   // Take the word-aligned long pointers of src and dest.
   uint8_t srcal = (uint32_t)(src) % sizeof(uint32_t);
+  uint32_t sh_l, sh_r;
+  sh_l = srcal * CHAR_BIT; sh_r = CHAR_BIT*sizeof(uint32_t) - sh_l;
+
   const uint32_t *srcl = (uint32_t *)(src -srcal);
   uint32_t *dstl = (uint32_t *)(dst);
   al = (uint32_t) dstl % ALTIVECWORD_SIZE;

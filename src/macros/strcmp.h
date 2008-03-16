@@ -65,27 +65,23 @@
   src1l++; src2l++;                                           \
 }
 
-#define STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)                \
-{                                                                                     \
-  uint32_t src2t = 0;                                                                 \
-  if (src2al == 0) {                                                                  \
-    src2t = *src2l;                                                                   \
-  } else if (src2al == 3) {                                                           \
-    src2t = (*(src2l) << 24) | (*(src2l+1) >> 8);                                     \
-  } else if (src2al == 2) {                                                           \
-    src2t = (*(src2l) << 16) | (*(src2l+1) >> 16);                                    \
-  } else if (src2al == 1) {                                                           \
-    src2t = (*(src2l) << 8) | (*(src2l+1) >> 24);                                     \
-  }                                                                                   \
-  uint32_t lw = (*src1l ^ src2t) | HAS_ZERO_BYTE(*src1l);                             \
-  if (lw) {                                                                           \
-    uint32_t pos;                                                                     \
-    FIND_LEFTFIRST_IN_WORD(pos, lw);                                                  \
-    src2 = (uint8_t *)(src2l) +src2al;                                                \
-    src1 = (uint8_t *)(src1l);                                                        \
-    return DIFF(src1[pos], src2[pos]);                                                \
-  }                                                                                   \
-  src1l++; src2l++;                                                                   \
+#define STRCMP_SINGLE_WORD_UNALIGNED(src1, src1l, src2, src2l, src2al)  \
+{                                                                       \
+  uint32_t src2t = 0;                                                   \
+  if (src2al == 0) {                                                    \
+    src2t = *src2l;                                                     \
+  } else {                                                              \
+    src2t = (*(src2l) << sh_l) | (*(src2l+1) >> sh_r);                  \
+  }                                                                     \
+  uint32_t lw = (*src1l ^ src2t) | HAS_ZERO_BYTE(*src1l);               \
+  if (lw) {                                                             \
+    uint32_t pos;                                                       \
+    FIND_LEFTFIRST_IN_WORD(pos, lw);                                    \
+    src2 = (uint8_t *)(src2l) +src2al;                                  \
+    src1 = (uint8_t *)(src1l);                                          \
+    return DIFF(src1[pos], src2[pos]);                                  \
+  }                                                                     \
+  src1l++; src2l++;                                                     \
 }
 
 #define STRCMP_UNTIL_SRC1_IS_ALTIVEC_ALIGNED(src1, src1l, src2, src2l, src1al, src2al)  \

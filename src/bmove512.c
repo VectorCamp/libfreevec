@@ -39,7 +39,7 @@ void vec_bmove512 ( void *to, const void *from, uint32_t len ) {
   const uint32_t *srcl = ( uint32_t * ) ( src );
 
   // While we're not 16-byte aligned, move in 4-byte long steps.
-  MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, 0 );
+  MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED ( dstl, srcl, len, 0, 0, 0);
   src = ( uint8_t * ) srcl;
 
   if ( ( ( uint32_t ) ( src ) % ALTIVECWORD_SIZE ) == 0 ) {

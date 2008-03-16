@@ -28,25 +28,19 @@
     *d++ = *s++;                                          \
   case 3:                                                 \
     *d++ = *s++;                                          \
+    len -= sizeof(uint32_t) -dstal;                       \
   }                                                       \
-  len -= dstal;                                           \
 }
 
-#define MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(d, s, len, srcofst)       \
-  while (len >= sizeof(uint32_t) && ((uint32_t)(d) % ALTIVECWORD_SIZE)) {  \
-    if (srcofst == 0) {                                                    \
-      *d++ = *s++;                                                         \
-    } else if (srcofst == 3) {                                             \
-      *d++ = (*(s) << 24) | (*(s+1) >> 8);                                 \
-      s++;                                                                 \
-    } else if (srcofst == 2) {                                             \
-      *d++ = (*(s) << 16) | (*(s+1) >> 16);                                \
-      s++;                                                                 \
-    } else if (srcofst == 1) {                                             \
-      *d++ = (*(s) << 8) | (*(s+1) >> 24);                                 \
-      s++;                                                                 \
-    }                                                                      \
-    len -= sizeof(uint32_t);                                               \
+#define MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(d, s, len, srcofst, sh_l, sh_r)  \
+  while (len >= sizeof(uint32_t) && ((uint32_t)(d) % ALTIVECWORD_SIZE)) {         \
+    if (srcofst == 0) {                                                           \
+      *d++ = *s++;                                                                \
+    } else {                                                                      \
+      *d++ = (*(s) << sh_l) | (*(s+1) >> sh_r);                                   \
+      s++;                                                                        \
+    }                                                                             \
+    len -= sizeof(uint32_t);                                                      \
   }
 
 #define MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(d, s, step)  \
@@ -105,19 +99,11 @@
   }                                               \
 }
 
-#define MEMCPY_FWD_REST_WORDS_UNALIGNED(d, s, len, srcofst)  \
-{                                                            \
-  while (len >= sizeof(uint32_t)) {                          \
-    if (srcofst == 3) {                                      \
-      *d++ = (*(s) << 24) | (*(s+1) >> 8);                   \
-      s++;                                                   \
-    } else if (srcofst == 2) {                               \
-      *d++ = (*(s) << 16) | (*(s+1) >> 16);                  \
-      s++;                                                   \
-    } else if (srcofst == 1) {                               \
-      *d++ = (*(s) << 8) | (*(s+1) >> 24);                   \
-      s++;                                                   \
-    }                                                        \
-    len -= sizeof(uint32_t);                                 \
-  }                                                          \
+#define MEMCPY_FWD_REST_WORDS_UNALIGNED(d, s, len, sh_l, sh_r)  \
+{                                                               \
+  while (len >= sizeof(uint32_t)) {                             \
+    *d++ = (*(s) << sh_l) | (*(s+1) >> sh_r);                   \
+    s++;                                                        \
+    len -= sizeof(uint32_t);                                    \
+  }                                                             \
 }

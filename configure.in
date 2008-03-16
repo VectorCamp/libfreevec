@@ -7,4 +7,5 @@ AC_LANG_C
 AM_PROG_AS
 AM_PROG_LIBTOOL
 
+AC_CHECK_HEADERS(altivec.h)
 AC_OUTPUT(Makefile src/Makefile src/libc/Makefile)
