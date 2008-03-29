@@ -8,15 +8,14 @@
 
 #include "libfreevec.h"
 
-#define MEMSET_NIBBLE(ptr, p, lenvar, len)  \
-  switch(len) {                             \
-  case 3:                                   \
-    *ptr++ = p;                             \
-  case 2:                                   \
-    *ptr++ = p;                             \
-  case 1:                                   \
-    *ptr++ = p;                             \
-    lenvar -= len;                          \
+#define MEMSET_NIBBLE(ptr, p, len)  \
+  switch(len) {                     \
+  case 3:                           \
+    *ptr++ = p;                     \
+  case 2:                           \
+    *ptr++ = p;                     \
+  case 1:                           \
+    *ptr++ = p;                     \
   }
 
 #define MEMSET_UNTIL_WORD_ALIGNED( ptr, p, len, al )  \

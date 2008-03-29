@@ -14,9 +14,9 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <projectname>freevec</projectname>
-    <defaultencoding/>
+    <defaultencoding></defaultencoding>
   </general>
   <kdevautoproject>
     <general>
@@ -44,17 +44,17 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O -g0 -frename-registers -fivopts -maltivec -mabi=altivec -Wall -Werror -Winline -std=c99</cflags>
+        <cflags>-O -g0 -frename-registers -fivopts -maltivec -mabi=altivec -Wall -Werror -Winline -std=c99 -mregnames</cflags>
         <envvars/>
-        <configargs/>
-        <topsourcedir/>
+        <configargs></configargs>
+        <topsourcedir></topsourcedir>
         <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags/>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cxxflags/>
-        <f77flags/>
+        <ldflags></ldflags>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cxxflags></cxxflags>
+        <f77flags></f77flags>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -214,7 +214,7 @@
       <resolveIncludePaths>true</resolveIncludePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -241,11 +241,11 @@
   <kdevdebugger>
     <general>
       <programargs/>
-      <gdbpath/>
-      <dbgshell/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
