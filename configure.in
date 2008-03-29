@@ -1,11 +1,24 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(freevec, 1.0.2)
+AM_INIT_AUTOMAKE(freevec, 1.0.3)
 
 AC_LANG_C
 AM_PROG_AS
 AM_PROG_LIBTOOL
+
+if test "X$CFLAGS" != "X"; then
+    CFLAGS="$CFLAGS -maltivec -mabi=altivec -O2 -frename-registers -Wall -Werror -Winline -std=c99"
+fi
+
+if test "X$CCASFLAGS" != "X"; then
+    CCASFLAGS="$CCASFLAGS -mregnames"
+fi
+configure_CCASFLAGS=$CCASFLAGS
+configure_CFLAGS=$CFLAGS
+
+AC_SUBST(configure_CFLAGS)
+AC_SUBST(configure_CCASFLAGS)
 
 AC_CHECK_HEADERS(altivec.h)
 AC_OUTPUT(Makefile src/Makefile src/libc/Makefile)
