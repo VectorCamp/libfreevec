@@ -61,5 +61,6 @@ void printvec_char ( char *label, vector uint8_t vc );
 void printvec_short ( char *label, vector uint16_t vs );
 void printvec_long ( char *label, vector uint32_t vl );
 void fprintvec_long ( FILE *fp, vector uint32_t vl );
+int detect_altivec();
 
 #endif
