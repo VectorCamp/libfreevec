@@ -8,7 +8,7 @@ AM_PROG_AS
 AM_PROG_LIBTOOL
 
 if test "X$CFLAGS" != "X"; then
-    CFLAGS="$CFLAGS -maltivec -mabi=altivec -O2 -frename-registers -Wall -Werror -Winline -std=c99"
+    CFLAGS="$CFLAGS -maltivec -mabi=altivec -frename-registers -Wall -Winline -std=c99 "
 fi
 
 if test "X$CCASFLAGS" != "X"; then
@@ -21,4 +21,4 @@ AC_SUBST(configure_CFLAGS)
 AC_SUBST(configure_CCASFLAGS)
 
 AC_CHECK_HEADERS(altivec.h)
-AC_OUTPUT(Makefile src/Makefile src/libc/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/libc/Makefile src/libm/Makefile)

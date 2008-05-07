@@ -12,4 +12,4 @@ libfreevec_la_SOURCES = bcmp.c bcopy.c bmove512.c bzero.c common.c findfirst.S \
 	strncpy.c strnlen.c swab.c
 libfreevec_la_LDFLAGS = -module -release $(VERSION)
 
-SUBDIRS = libc
+SUBDIRS = libc libm

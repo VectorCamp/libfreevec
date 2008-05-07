@@ -44,7 +44,7 @@
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevg77options</f77compiler>
-        <cflags>-O -g0 -frename-registers -fivopts -maltivec -mabi=altivec -Wall -Werror -Winline -std=c99 -mregnames</cflags>
+        <cflags>-g0 -O2</cflags>
         <envvars/>
         <configargs></configargs>
         <topsourcedir></topsourcedir>

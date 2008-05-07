@@ -76,6 +76,15 @@
 #define MEMSET_REST_WORDS(ptr32, p32, len)  \
 {                                           \
   int l = len / sizeof(uint32_t);           \
+  len -= l*sizeof(uint32_t);                \
+  while (l--) {                             \
+      *ptr32++ = p32;                       \
+  }                                         \
+}
+
+#define MEMSET_REST_WORDS2(ptr32, p32, len)  \
+{                                           \
+  int l = len / sizeof(uint32_t);           \
   switch (l) {                              \
     case 3:                                 \
       *ptr32++ = p32;                       \

@@ -16,12 +16,8 @@
 
 // Helper macro, fills a vector with a given char
 #define FILL_VECTOR(vecname, p)                   \
-  union {                                         \
-    vector uint8_t v;                             \
-    uint8_t c[16];                                \
-  } p_env;                                        \
-  p_env.c[0] = p;                                 \
-  vector uint8_t vecname = vec_splat(p_env.v, 0);
+  vector uint8_t vecname = vec_lde(0, &p);       \
+  vecname = vec_splat(vecname, 0);
 
 #define FIND_LEFTFIRST_ZB_IN_WORD(res, x, m)  \
 {                                             \

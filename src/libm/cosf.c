@@ -6,11 +6,6 @@
  *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <sys/types.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <limits.h>
@@ -18,8 +13,6 @@
 
 #ifdef HAVE_ALTIVEC_H
 #include <altivec.h>
-
-#include "libfreevec.h"
 
 #define POW2(x)		(x*x)
 
@@ -29,19 +22,21 @@ float cosf(float x) {
 float vcosf(float x) {
 #endif
 
-  float nom, denom, res, x2, x4, x6;
-  x2 = POW2(x);
+  float nom, res, denom, x2, x4, x6;
+  // Instead calculate cos(x/2) and use the formula, cos(x) = 2*cos(x/2)^2 - 1
+  x2 = x*x;
   x4 = x2*x2;
-  x6 = x4*x2;
+  x6 = x2*x4;
 
   // we don't use the following but a normalized version of it:
   //nom   = 39251520.0 - 18471600.0 * POW2(x) + 1075032.0 * POW4(x) -14615.0 * POW6(x);
   //denom = 39251520.0 + 1154160.0 * POW2(x) + 16632.0 * POW4(x) + 127.0 * POW6(x);
 
-  nom   = 1.0 - 0.4705957883923985619  * x2 + 0.02738828967642526965   * x4 - 0.0003723422685287092067 * x6;
-  denom = 1.0 + 0.02940421160760143811 * x2 + 0.0004237288135593220339 * x4 + 3.235543489780777916e-06 * x6;
+  nom   = 1.0 - x2 * 0.4705957883923985619  + x4 * 0.02738828967642526965   - x6 * 0.0003723422685287092067;
+  denom = 1.0 + x2 * 0.02940421160760143811 + x4 * 0.0004237288135593220339 + x6 * 3.235543489780777916e-06;
 
   res = nom/denom;
+
   return res;
 }
 
@@ -116,7 +111,9 @@ float vsinf(float x) {
   x4 = x2*x2;
   x5 = x4*x;
   nom   = 166320.0 * x - 22260.0 * x3 + 551.0 * x5;
+  // nom   = x*(166320.0 - x2 * (22260.0 + 551.0 * x2));
   denom = 166320.0 + 5460.0 * x2 + 75.0 * x4;
+  // denom = 166320.0 + x2 * (5460.0 + 75.0 * x2);
 
   //printf("nom = %2.7f, denom = %2.7f\n", nom, denom);
 

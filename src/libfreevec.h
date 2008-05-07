@@ -49,7 +49,8 @@
 #define magic_bits32    0x07efefeff
 #define magic_bits64    (((unsigned long int) 0x7efefefe << 32) | 0xfefefeff)
 
-#define charmask16(c)   (uint16_t)((c) | ((c) << 8))
+#define charmask8(c)    ((uint8_t)(c & 0xff))
+#define charmask16(c)   (uint16_t)((charmask8(c)) | (charmask8(c) << 8))
 #define charmask32(c)   (uint32_t)((charmask16(c)) | (charmask16(c) << 16))
 #define charmask64(c)   (uint64_t)((charmask32(c)) | (charmask32(c) << 32))
 
