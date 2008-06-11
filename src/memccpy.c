@@ -24,13 +24,14 @@
 #include "macros/common.h"
 
 #ifdef VEC_GLIBC
-void *memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
+void *memccpy(void *dstpp, const void *srcpp, int c_in, size_t len) {
 #else
-void *vec_memccpy(void *dstpp, const void *srcpp, int c, size_t len) {
+void *vec_memccpy(void *dstpp, const void *srcpp, int c_in, size_t len) {
 #endif
 
   const uint8_t *src = (uint8_t *) srcpp;
   uint8_t *dst = (uint8_t *) dstpp;
+  uint8_t __attribute__ ((aligned(16))) c = c_in;
 
   if (len >= sizeof(uint32_t)) {
     uint32_t al = (uint32_t)(dst) % sizeof(uint32_t);

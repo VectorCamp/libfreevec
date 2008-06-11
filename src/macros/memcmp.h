@@ -128,7 +128,7 @@
                     vsrc2 = (vector uint8_t) vec_ld(0, (uint8_t *)src2l);    \
     if (!vec_all_eq(vsrc1, vsrc2)) {                                         \
       uint32_t __attribute__ ((aligned(16))) lwa[4];                         \
-      vsrc1 = vec_cmpeq(vsrc1, vsrc2);                                       \
+      vsrc1 = (vector uint8_t) vec_cmpeq(vsrc1, vsrc2);                      \
       vsrc1 = vec_nor(vsrc1, vsrc1);                                         \
       vec_st(vsrc1, 0, (uint8_t *) &lwa[0]);                                 \
       MEMCMP_SINGLE_WORD_ALIGNED_MASK(src1, src1l, src2, src2l, lwa[0]);     \

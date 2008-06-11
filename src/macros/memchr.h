@@ -102,7 +102,7 @@
   vector uint8_t vsrc = vec_ld(0, (uint8_t *)ptr32); \
   if (!vec_all_ne(vsrc, vmask)) {                    \
     uint32_t __attribute__ ((aligned(16))) lwa[4];   \
-    vsrc = vec_cmpeq(vsrc, vmask);                   \
+    vsrc = (vector uint8_t) vec_cmpeq(vsrc, vmask);  \
     vec_st(vsrc, 0, (uint8_t *) &lwa[0]);            \
     MEMCHR_SINGLE_WORD_MASK(ptr32, lwa[0]);          \
     ptr32++;                                         \
@@ -210,7 +210,7 @@
   vec = vec_ld(0, (uint8_t *)(ptr32) -16 );                      \
   if (!vec_all_ne(vec, vmask)) {                                 \
     uint32_t __attribute__ ((aligned(16))) lwa[4];               \
-    vec = vec_cmpeq(vec, vmask);                                 \
+    vec = (vector uint8_t) vec_cmpeq(vec, vmask);                \
     vec_st(vec, 0, (uint8_t *) &lwa[0]);                         \
     ptr32--;                                                     \
     MEMRCHR_BACKWARDS_SINGLE_WORD_MASK(ptr32, lwa[3]);           \

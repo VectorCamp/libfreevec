@@ -31,15 +31,16 @@ void *vec_memset(void *s, int p, size_t len) {
 #endif
   if (len) {
     uint8_t* ptr = s;
-    uint32_t __attribute__ ((aligned(16))) p32 = charmask32(p);
+    uint8_t __attribute__ ((aligned(16))) P = p;
+    uint32_t p32 = charmask32(P);
 
     uint32_t al = (uint32_t)(ptr) % sizeof(uint32_t);
     if (al)
-      MEMSET_UNTIL_WORD_ALIGNED(ptr, p, len, al);
+      MEMSET_UNTIL_WORD_ALIGNED(ptr, P, len, al);
 
     uint32_t *ptr32 = (uint32_t *)(ptr);
     if (len >= ALTIVECWORD_SIZE) {
-      FILL_VECTOR(p128, p32);
+      FILL_VECTOR(p128, P);
 
       // ptr is now 32-bit aligned, memset until ptr is altivec aligned
       al = (uint32_t) ptr32 % ALTIVECWORD_SIZE;
@@ -59,7 +60,7 @@ void *vec_memset(void *s, int p, size_t len) {
     MEMSET_REST_WORDS(ptr32, p32, len);
     ptr = (uint8_t *)ptr32;
     // Handle the remaining bytes
-    MEMSET_NIBBLE(ptr, p, len);
+    MEMSET_NIBBLE(ptr, P, len);
   }
   return s;
 }

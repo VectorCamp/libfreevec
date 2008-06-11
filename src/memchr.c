@@ -28,7 +28,8 @@ void *vec_memchr(void const *str, int c_in, size_t len) {
 #endif
   if (len) {
 
-    uint8_t *ptr = (uint8_t *) str, c = (uint8_t) c_in;
+    uint8_t *ptr = (uint8_t *) str;
+    uint8_t __attribute__ ((aligned(16))) c = c_in;
     uint32_t al = (uint32_t)(ptr) % sizeof(uint32_t);
 
     if (al)

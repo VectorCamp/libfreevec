@@ -24,12 +24,13 @@
 #include "macros/common.h"
 
 #ifdef VEC_GLIBC
-void *memrchr ( void const *str, int c, size_t len ) {
+void *memrchr ( void const *str, int c_in, size_t len ) {
 #else
-void *vec_memrchr ( void const *str, int c, size_t len ) {
+void *vec_memrchr ( void const *str, int c_in, size_t len ) {
 #endif
 
   uint8_t *ptr = ( uint8_t * ) ( str + len );
+  uint8_t __attribute__ ((aligned(16))) c = c_in;
   uint32_t al = ( uint32_t ) ( ptr ) % sizeof ( uint32_t );
   if ( al )
     MEMRCHR_BACKWARDS_UNTIL_WORD_ALIGNED ( ptr, c, len, al );

@@ -14,9 +14,9 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
+    <description/>
     <projectname>freevec</projectname>
-    <defaultencoding></defaultencoding>
+    <defaultencoding/>
   </general>
   <kdevautoproject>
     <general>
@@ -46,15 +46,15 @@
         <f77compiler>kdevg77options</f77compiler>
         <cflags>-g0 -O2</cflags>
         <envvars/>
-        <configargs></configargs>
-        <topsourcedir></topsourcedir>
+        <configargs/>
+        <topsourcedir/>
         <cppflags>-DHAVE_ALTIVEC_H</cppflags>
-        <ldflags></ldflags>
-        <ccompilerbinary></ccompilerbinary>
-        <cxxcompilerbinary></cxxcompilerbinary>
-        <f77compilerbinary></f77compilerbinary>
-        <cxxflags></cxxflags>
-        <f77flags></f77flags>
+        <ldflags/>
+        <ccompilerbinary/>
+        <cxxcompilerbinary/>
+        <f77compilerbinary/>
+        <cxxflags/>
+        <f77flags/>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -214,7 +214,7 @@
       <resolveIncludePaths>true</resolveIncludePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet></prefixGet>
+      <prefixGet/>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -241,11 +241,11 @@
   <kdevdebugger>
     <general>
       <programargs/>
-      <gdbpath></gdbpath>
-      <dbgshell></dbgshell>
-      <configGdbScript></configGdbScript>
-      <runShellScript></runShellScript>
-      <runGdbScript></runGdbScript>
+      <gdbpath/>
+      <dbgshell/>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>

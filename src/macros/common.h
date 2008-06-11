@@ -15,7 +15,7 @@
 #define HAS_ZERO_BYTE_2(v)    (((v) + 0xFEFEFEFFUL) & ((~v) & 0x80808080UL))
 
 // Helper macro, fills a vector with a given char
-#define FILL_VECTOR(vecname, p)                   \
+#define FILL_VECTOR(vecname, p)                  \
   vector uint8_t vecname = vec_lde(0, &p);       \
   vecname = vec_splat(vecname, 0);
 

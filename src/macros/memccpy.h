@@ -112,7 +112,7 @@
   if (!vec_all_ne(vsrc, vc)) {                                            \
     srcl = (uint32_t *)(src);                                             \
     uint32_t __attribute__ ((aligned(16))) lwa[4];                        \
-    vsrc = vec_cmpeq(vsrc, vc);                                           \
+    vsrc = (vector uint8_t) vec_cmpeq(vsrc, vc);                          \
     vec_st(vsrc, 0, (uint8_t *) &lwa[0]);                                 \
     MEMCCPY_SINGLE_WORD_FWD_ALIGNED_MASK(dst, dstl, src, srcl, lwa[0]);   \
     *dstl++ = *srcl++;                                                    \

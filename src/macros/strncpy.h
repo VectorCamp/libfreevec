@@ -62,8 +62,8 @@
 {                                                                               \
   vector uint8_t vsrc, MSQ, LSQ, vmask;                                         \
   vmask = vec_lvsl(0, src);                                                     \
-  MSQ = vec_ld(0, src);                                                         \
-  LSQ = vec_ld(15, src);                                                        \
+  MSQ = (vector uint8_t) vec_ld(0, src);                                        \
+  LSQ = (vector uint8_t) vec_ld(15, src);                                       \
   vsrc = vec_perm(MSQ, LSQ, vmask);                                             \
   if (!vec_all_ne(vsrc, vc)) {                                                  \
     srcl = (uint32_t *)(src -srcal);                                            \
