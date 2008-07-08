@@ -44,7 +44,7 @@ EXIT_FAILURE=1
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.5.26
-TIMESTAMP=" (1.1220.2.493 2008/02/01 16:58:18)"
+TIMESTAMP=" (1.1220.2.492 2008/01/30 06:40:56)"
 
 # Be Bourne compatible (taken from Autoconf:_AS_BOURNE_COMPATIBLE).
 if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then
@@ -281,21 +281,7 @@ func_infer_tag ()
 	    esac
 	    CC_quoted="$CC_quoted $arg"
 	  done
-	    # user sometimes does CC=<HOST>-gcc so we need to match that to 'gcc'
-	    trimedcc=`echo ${CC} | $SED -e "s/${host}-//g"`
-	    # and sometimes libtool has CC=<HOST>-gcc but user does CC=gcc
-	    extendcc=${host}-${CC}
-	    # and sometimes libtool has CC=<OLDHOST>-gcc but user has CC=<NEWHOST>-gcc  
-	    # (Gentoo-specific hack because we always export $CHOST)
-	    mungedcc=${CHOST-${host}}-${trimedcc}
 	    case "$@ " in
-	      "cc "* | " cc "* | "${host}-cc "* | " ${host}-cc "*|\
-	      "gcc "* | " gcc "* | "${host}-gcc "* | " ${host}-gcc "*)
-	      tagname=CC
-	      break ;;
-	      "$trimedcc "* | " $trimedcc "* | "`$echo $trimedcc` "* | " `$echo $trimedcc` "*|\
-	      "$extendcc "* | " $extendcc "* | "`$echo $extendcc` "* | " `$echo $extendcc` "*|\
-	      "$mungedcc "* | " $mungedcc "* | "`$echo $mungedcc` "* | " `$echo $mungedcc` "*|\
 	      " $CC "* | "$CC "* | " `$echo $CC` "* | "`$echo $CC` "* | " $CC_quoted"* | "$CC_quoted "* | " `$echo $CC_quoted` "* | "`$echo $CC_quoted` "*)
 	      # The compiler in the base compile command matches
 	      # the one in the tagged configuration.
@@ -902,7 +888,7 @@ if test -z "$show_help"; then
     # Lock this critical section if it is needed
     # We use this script file to make the link, it avoids creating a new file
     if test "$need_locks" = yes; then
-      until $run ln "$srcfile" "$lockfile" 2>/dev/null; do
+      until $run ln "$progpath" "$lockfile" 2>/dev/null; do
 	$show "Waiting for $lockfile to be removed"
 	sleep 2
       done
@@ -5482,11 +5468,6 @@ else
 	$echo >> $output "\
     if test \"\$libtool_execute_magic\" != \"$magic\"; then
       # Run the actual program with our arguments.
-
-      # Make sure env LD_LIBRARY_PATH does not mess us up
-      if test -n \"\${LD_LIBRARY_PATH+set}\"; then
-        export LD_LIBRARY_PATH=\$progdir:\$LD_LIBRARY_PATH
-      fi
 "
 	case $host in
 	# Backslashes separate directories on plain windows
