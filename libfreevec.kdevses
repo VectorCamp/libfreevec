@@ -1,0 +1,58 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
+ <DocsAndViews NumberOfDocuments="11" >
+  <Doc0 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/math/expf.c" >
+   <View0 Encoding="" line="0" Type="Source" />
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/math/CMakeLists.txt" >
+   <View0 Encoding="" Type="Source" />
+  </Doc1>
+  <Doc2 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/math/arch/scalar/exp.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/string/arch/scalar32/memcpy.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/string/arch/scalar64/memcpy.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/include/common.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/string/memcpy.c" >
+   <View0 Encoding="" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/include/altivec/prefetch.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/string/CMakeLists.txt" >
+   <View0 Encoding="" line="10" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/math/sinf.c" >
+   <View0 Encoding="" line="0" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/chryssoula/Development/Velox/trunk/src/math/cosf.c" >
+   <View0 Encoding="" line="0" Type="Source" />
+  </Doc10>
+ </DocsAndViews>
+ <pluginList>
+  <kdevdebugger>
+   <breakpointList/>
+   <showInternalCommands value="0" />
+  </kdevdebugger>
+  <kdevastyle>
+   <Extensions ext="*.cpp *.h *.hpp,*.c *.h,*.cxx *.hxx,*.c++ *.h++,*.cc *.hh,*.C *.H,*.diff ,*.inl,*.java,*.moc,*.patch,*.tlh,*.xpm" />
+   <AStyle IndentPreprocessors="0" FillCount="4" PadParenthesesOut="1" IndentNamespaces="1" IndentLabels="1" Fill="Tabs" MaxStatement="40" Brackets="Break" MinConditional="-1" IndentBrackets="0" PadParenthesesUn="1" BlockBreak="0" KeepStatements="1" KeepBlocks="1" BlockIfElse="0" IndentSwitches="1" PadOperators="0" FStyle="UserDefined" IndentCases="0" FillEmptyLines="0" BracketsCloseHeaders="0" BlockBreakAll="0" PadParenthesesIn="1" IndentClasses="1" IndentBlocks="0" FillForce="0" />
+  </kdevastyle>
+  <kdevbookmarks>
+   <bookmarks/>
+  </kdevbookmarks>
+  <kdevvalgrind>
+   <executable path="" params="" />
+   <valgrind path="" params="" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
+  </kdevvalgrind>
+ </pluginList>
+</KDevPrjSession>
