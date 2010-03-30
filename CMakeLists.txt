@@ -5,6 +5,16 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 cmake_minimum_required(VERSION 2.6)
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
+if(cmake_build_type_tolower STREQUAL "debug")
+  set(CMAKE_BUILD_TYPE "Debug")
+else()
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O2")
+
 if (CMAKE_SIZEOF_VOID_P MATCHES "8")
 	set(CMAKE_C_FLAGS "-fPIC -DLINUX64")
 	message("Enabling 64-bit support")
@@ -52,3 +62,8 @@ subdirs(src)
 #if(LIBFREEVEC_TESTS)
     add_subdirectory(test)
 #endif(LIBFREEVEC_TESTS)
+
+#option(LIBFREEVEC_BENCH "Enable/Disable Benchmarking" ON)
+#if(LIBFREEVEC_BENCH)
+    add_subdirectory(bench)
+#endif(LIBFREEVEC_BENCH)

@@ -40,12 +40,12 @@ void *run_memcpy_test(struct bench_conf *c) {
     test2 = realloc(test2, size + 16 +l);
     memset(test2, FILLCHAR, size);
 
+    printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
     arraysize = c->testdatasize / size;
     index1 = (arraysize - 2) * (rand() / (RAND_MAX + 1.0));
     test1 = (unsigned char *) ALIGN(&c->testdata[index1 *size] + 16) + k;
     test2a = (unsigned char *) ALIGN(test2+15) + l;
 
-    printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
     result1 = memcpy(test2a, test1, size);
     memset(test2, FILLCHAR, size + l);
     result2 = c->func(test2a, test1, size);
@@ -70,16 +70,17 @@ void *run_memcpy_test(struct bench_conf *c) {
     r *= (double)(c->max_size);
     size = c->min_size + (int) r;
     size /= 4;
+    size++;
 
     test2 = realloc(test2, size + 16 +l);
     memset(test2, FILLCHAR, size + l);
 
+    printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
     arraysize = c->testdatasize / size;
     index1 = (arraysize - 2) * (rand() / (RAND_MAX + 1.0));
     test1 = (unsigned char *) ALIGN(&c->testdata[index1 *size] + 16) + k;
     test2a = (unsigned char *) ALIGN(test2+15) + l;
 
-    printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
     result1 = memcpy(test2a, test1, size);
     memset(test2, FILLCHAR, size + l);
     result2 = c->func(test2a, test1, size);

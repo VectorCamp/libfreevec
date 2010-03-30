@@ -18,8 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#define DEBUG 1
-
 #define QMAKESTR(x) #x
 #define MAKESTR(x) QMAKESTR(x)
 #define SMASH(x,y) x/y
