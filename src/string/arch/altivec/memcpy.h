@@ -1,6 +1,5 @@
 /*********************************************************************************
- *   Copyright (C) 2009 by CODEX                                                 *
- *   Konstantinos Margaritis <markos@codex.gr>                                   *
+ *   Copyright (C) 2008-2010 by Konstantinos Margaritis <markos@codex.gr>        *
  *   All rights reserved.                                                        *
  *                                                                               *
  * Redistribution and use in source and binary forms, with or without            *

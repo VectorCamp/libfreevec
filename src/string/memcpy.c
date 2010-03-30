@@ -1,10 +1,29 @@
-/***************************************************************************
- *   Copyright (C) 2005-2007 by CODEX                                      *
- *   Konstantinos Margaritis <markos@codex.gr>                             *
- *                                                                         *
- *   This code is distributed under the LGPL license                       *
- *   See http://www.gnu.org/copyleft/lesser.html                           *
- ***************************************************************************/
+/*********************************************************************************
+ *   Copyright (C) 2008-2010 by Konstantinos Margaritis <markos@codex.gr>        *
+ *   All rights reserved.                                                        *
+ *                                                                               *
+ * Redistribution and use in source and binary forms, with or without            *
+ * modification, are permitted provided that the following conditions are met:   *
+ *  1. Redistributions of source code must retain the above copyright            *
+ *     notice, this list of conditions and the following disclaimer.             *
+ *  2. Redistributions in binary form must reproduce the above copyright         *
+ *     notice, this list of conditions and the following disclaimer in the       *
+ *     documentation and/or other materials provided with the distribution.      *
+ *  3. Neither the name of the Codex nor the                                     *
+ *     names of its contributors may be used to endorse or promote products      *
+ *     derived from this software without specific prior written permission.     *
+ *                                                                               *
+ * THIS SOFTWARE IS PROVIDED BY CODEX ''AS IS'' AND ANY                          *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED     *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE        *
+ * DISCLAIMED. IN NO EVENT SHALL CODEX BE LIABLE FOR ANY                         *
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES    *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  *
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND   *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT    *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS *
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                  *
+ *********************************************************************************/
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -17,20 +36,20 @@
 
 #include "common.h"
 
-#ifdef SIMD_ENGINE
-#define SIMD_MACROS_INC MAKEINC(SIMD_ENGINE)
+#ifdef LIBFREEVEC_SIMD_ENGINE
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
 #else
 #ifdef LINUX64
-#define SIMD_MACROS_INC MAKEINC(scalar64)
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar64)
 #else
-#define SIMD_MACROS_INC MAKEINC(scalar32)
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar32)
 #endif
 #endif
 
-#define SIMD_MACROS_MEMCPY_H MAKESTR(SIMD_MACROS_INC)
-#include SIMD_MACROS_MEMCPY_H
+#define LIBFREEVEC_SIMD_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
+#include LIBFREEVEC_SIMD_MACROS_MEMCPY_H
 
-#ifdef TEST_LIBC
+#ifdef LIBFREEVEC_BUILD_AS_LIBC
 void *memcpy(void *dstpp, const void *srcpp, size_t len) {
 #else
 void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
@@ -66,7 +85,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         word_t *dstl = (word_t *)(dst);
         const word_t *srcl = (word_t *)(src - srcoffset);
 
-#ifdef SIMD_ENGINE
+#ifdef LIBFREEVEC_SIMD_ENGINE
         // While we're not 16-byte aligned, move in 4-byte long steps.
         MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(dstl, srcl, len, srcoffset4, sh_l, sh_r);
         src = (uint8_t *) srcl + srcoffset4;
@@ -114,7 +133,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
     return dstpp;
 }
 
-#ifdef TEST_LIBC
+#ifdef LIBFREEVEC_BUILD_AS_LIBC
 void *memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
 #else
 void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
@@ -132,7 +151,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
         word_t *dstl = (word_t *)(dst);
         const word_t *srcl = (word_t *)(src);
 
-#ifdef SIMD_ENGINE
+#ifdef LIBFREEVEC_SIMD_ENGINE
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
         copy_fwd_rest_blocks_aligned(dstl, srcl, len);
 #endif

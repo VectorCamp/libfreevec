@@ -1,6 +1,5 @@
 /*********************************************************************************
- *   Copyright (C) 2009 by CODEX                                                 *
- *   Konstantinos Margaritis <markos@codex.gr>                                   *
+ *   Copyright (C) 2008-2010 by Konstantinos Margaritis <markos@codex.gr>        *
  *   All rights reserved.                                                        *
  *                                                                               *
  * Redistribution and use in source and binary forms, with or without            *
@@ -84,7 +83,10 @@ static inline void copy_fwd_rest_blocks_unaligned(word_t *d, word_t *s, int sl, 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, word_t *s, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % LOG_QUADPACKETSIZE > 0) {
-        UNROLL_PACKET(*d++ = *s++);
+        *d++ = *s++;
+        *d++ = *s++;
+        *d++ = *s++;
+        *d++ = *s++;
         blocks -= 4;
     }
 
@@ -97,7 +99,8 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, word_t *s, size_t blo
 static inline void copy_fwd_rest_blocks_unaligned(word_t *d, word_t *s, int sl, int sr, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
-        UNROLL_PACKET(*d++ = (*(s) << sl) | (*(s + 1) >> sr); s++;);
+        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
+        s++;
         blocks -= 4;
     }
 
