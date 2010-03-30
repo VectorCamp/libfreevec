@@ -63,18 +63,17 @@ static inline void copy_fwd_rest_bytes(uint8_t *d, uint8_t *s, size_t len) {
     }
 }
 
-static inline void copy_fwd_rest_words_aligned(word_t *d, word_t *s, size_t len) {
-    while (len > WORDSIZE) {
+static inline void copy_fwd_rest_words_aligned(word_t *d, const word_t *s, size_t l) {
+    while (l > 0) {
         *d++ = *s++;
-        len -= WORDSIZE;
+        l--;
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, word_t *s, int sl, int sr, size_t len) {
-    while (len > WORDSIZE) {
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
-        len -= WORDSIZE;
+static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t l) {
+    while (l > 0) {
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        l--;
     }
 }
 
