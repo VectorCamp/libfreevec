@@ -125,8 +125,8 @@ void *vec_strncmp(const uint8_t *src1pp, const uint8_t *src2pp, size_t len);
 void vec_bmove512(void *to, const void *from, uint32_t len);
 
 // math functions
-float vec_cosf(float x);
-float vec_sinf(float x);
-float vec_tanf(float x);
+float vcosf(float x);
+float vsinf(float x);
+float vtanf(float x);
 
 #endif

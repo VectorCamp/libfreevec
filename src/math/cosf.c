@@ -16,16 +16,21 @@
 #include "common.h"
 #include "math_common.h"
 
+#ifdef LIBFREEVEC_SIMD_ENGINE
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
+#else
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar)
+#endif
+
+#define LIBFREEVEC_SIMD_MACROS_TRIG_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
+#include LIBFREEVEC_SIMD_MACROS_TRIG_H
 #ifdef SIMD_ENGINE
 	#define SIMD_MACROS_INC MAKEINC(SIMD_ENGINE)
 #else
 	#define SIMD_MACROS_INC MAKEINC(scalar)
 #endif
 
-#define SIMD_MACROS_TRIG_H MAKESTR(SIMD_MACROS_INC)
-#include SIMD_MACROS_TRIG_H
-
-#ifdef TEST_LIBC
+#ifdef LIBFREEVEC_BUILD_AS_LIBC
 float cosf(float x) {
 #else
 float vec_cosf(float x) {
@@ -40,8 +45,8 @@ float vec_cosf(float x) {
 	x4 = x2 * x2;
 
 	// In the range [0..pi/4] we found that this Pade approximant gives exact results (3.5 * 10^-7)
-	nom   = 1.0 - x2 * 0.4563492063492063492  + x4 * 0.02070105820105820106;
-	denom = 1.0 + x2 * 0.04365079365079365079 + x4 * 0.0008597883597883597884;
+	nom   = 1.0 - x2 * 0.4563492063492063492  + x4 * 0.02070101020105820106;
+	denom = 1.0 + x2 * 0.04365079365079365079 + x4 * 0.0008597883597883597885;
 
 	float cosx = nom/denom;
 

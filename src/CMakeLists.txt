@@ -5,4 +5,4 @@ add_definitions(-Wall -O2 -finline-functions)
 
 include_directories(include)
 
-subdirs(string stdlib)
+subdirs(string stdlib math)

@@ -8,4 +8,4 @@ add_library(math_shared SHARED ${SOURCES})
 
 target_link_libraries(math_shared math_static)
 
-SET_TARGET_PROPERTIES(math_shared PROPERTIES COMPILE_FLAGS "-DTEST_LIBC")
+SET_TARGET_PROPERTIES(math_shared PROPERTIES COMPILE_FLAGS "-DLIBFREEVEC_BUILD_AS_LIBC")
