@@ -6,18 +6,31 @@
  *   See http://www.gnu.org/copyleft/lesser.html                           *
  ***************************************************************************/
 
+#ifndef LIBFREEVEC_MATH_SCALAR_TRIG_H
+#define LIBFREEVEC_MATH_SCALAR_TRIG_H
+
 #include <math.h>
 
+/*static float inline fmin(float a, float b) {
+    return a >= b ? b : a;
+}
+
+static float inline fmax(float a, float b) {
+    return a >= b ? a : b;
+}*/
+
 static inline float reduce_2pi(float x) {
-	return fmodf(x, TWO_PI);
+    return fmodf(x, TWO_PI);
 }
 
 static inline float reduce_pi_2(float x) {
-	x = fmodf(x, TWO_PI);
+    x = fmodf(x, TWO_PI);
 
-	x = fmin(x,  M_PI -x);
-	x = fmax(x, -M_PI -x);
-	x = fmin(x,  M_PI -x);
+    x = fmin(x,  M_PI -x);
+    x = fmax(x, -M_PI -x);
+    x = fmin(x,  M_PI -x);
 
-	return x;
+    return x;
 }
+
+#endif // LIBFREEVEC_MATH_SCALAR_TRIG_H

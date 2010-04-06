@@ -6,8 +6,6 @@
  *   See http://www.gnu.org/licenses/gpl-3.0.html                           *
  ***************************************************************************/
 
-#include "config.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -18,6 +16,8 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <unistd.h>
+
+#include "config.h"
 
 int main(int argc, char *argv[]) {
 

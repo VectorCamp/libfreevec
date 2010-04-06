@@ -29,9 +29,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "common.h"
 
-
+#include "arch/altivec.h"
 
 #define MEMCPY_FWD_UNTIL_DEST_IS_ALTIVEC_ALIGNED(d, s, len, srcofst, sh_l, sh_r)  \
   while (len >= sizeof(uint32_t) && ((uint32_t)(d) % ALTIVECWORD_SIZE)) {         \

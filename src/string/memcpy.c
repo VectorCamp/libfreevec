@@ -30,21 +30,9 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "libfreevec.h"
-
 #define MACROFILE memcpy.h
 
 #include "common.h"
-
-#ifdef LIBFREEVEC_SIMD_ENGINE
-#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
-#else
-#ifdef LINUX64
-#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar64)
-#else
-#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar32)
-#endif
-#endif
 
 #define LIBFREEVEC_SIMD_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
 #include LIBFREEVEC_SIMD_MACROS_MEMCPY_H
@@ -58,7 +46,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
     const uint8_t *src = srcpp;
     uint8_t *dst = dstpp;
 
-    if (len >= WORDSIZE) {
+    if (len >= sizeof(word_t)) {
         // Prefetch some stuff
         READ_PREFETCH_START1(src);
         WRITE_PREFETCH_START2(dst);
@@ -67,17 +55,17 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         // Copy until dst is word aligned
         int al = copy_fwd_until_dst_word_aligned(dst, src);
         if (al) {
-            src += WORDSIZE-al;
-            dst += WORDSIZE-al;
-            len -= WORDSIZE-al;
+            src += sizeof(word_t)-al;
+            dst += sizeof(word_t)-al;
+            len -= sizeof(word_t)-al;
         }
         debug("src = %016x, dst = %016x, len = %d, al = %d\n", src, dst, len, al);
 
         // Now dst is word aligned. We'll continue by word copying, but
         // for this we have to know the word-alignment of src also.
-        word_t srcoffset = ((word_t)(src) % WORDSIZE), sh_l, sh_r;
+        word_t srcoffset = ((word_t)(src) % sizeof(word_t)), sh_l, sh_r;
         sh_l = srcoffset * CHAR_BIT;
-        sh_r = CHAR_BIT * WORDSIZE - sh_l;
+        sh_r = CHAR_BIT * sizeof(word_t) - sh_l;
         
         debug("srcoffset = %d, sh_l = %d, sh_r = %d\n", srcoffset, sh_l, sh_r);
 
@@ -107,8 +95,8 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
-        int l = len / WORDSIZE;
-        len -= l * WORDSIZE;
+        int l = len / sizeof(word_t);
+        len -= l * sizeof(word_t);
         debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
 
         if (srcoffset == 0) {
@@ -142,7 +130,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
     const uint8_t *src = srcpp;
     uint8_t *dst = dstpp;
 
-    if (len >= WORDSIZE) {
+    if (len >= sizeof(word_t)) {
         // Prefetch some stuff
         READ_PREFETCH_START1(src);
         WRITE_PREFETCH_START2(dst);
@@ -158,12 +146,12 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
 
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
-        int l = len / WORDSIZE;
+        int l = len / sizeof(word_t);
         printf("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
         copy_fwd_rest_words_aligned(dstl, srcl, l);
         srcl += l;
         dstl += l;
-        len -= l * WORDSIZE;
+        len -= l * sizeof(word_t);
         // For the end copy we have to use char * pointers.
         src = (uint8_t *) srcl;
         dst = (uint8_t *) dstl;

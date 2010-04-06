@@ -7,6 +7,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_LIBFREEVEC")
 add_executable(test-memcpy test_memcpy.c run_memcpy_test.c common.c)
 add_executable(test-cosf test_cosf.c run_cosf_test.c common.c)
 
+#add_dependencies(test-cosf run_cosf_test.c test_cosf.c common.c)
+
 target_link_libraries(test-memcpy string_static)
 target_link_libraries(test-cosf math_static m)
 

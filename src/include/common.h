@@ -18,25 +18,31 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#ifndef LIBFREEVEC_COMMON_H
+#define LIBFREEVEC_COMMON_H
+
 #define QMAKESTR(x) #x
 #define MAKESTR(x) QMAKESTR(x)
 #define SMASH(x,y) x/y
 #define MAKEINC(x) SMASH(x,MACROFILE)
 
 #ifdef LINUX64
-#define WORDSIZE 8
 #define word_t  uint64_t
 #else
-#define WORDSIZE 4
 #define word_t  uint32_t
 #endif
 
-#define SIMD_PACKETSIZE     16
-#define QUADPACKET_SIZE     64
-// log2(64) = 6
-#define LOG_QUADPACKETSIZE  6
+#ifdef LIBFREEVEC_SIMD_ENGINE
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
+#else
+#ifdef LINUX64
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar64)
+#else
+#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar32)
+#endif
+#endif
 
-#define ptrdiff_t(a, b)     ((uint32_t)(a)-(uint32_t)(b))
+#define ptrdiff_t(a, b)     ((word_t)(a)-(word_t)(b))
 
 #define CMP_LT_OR_GT(a, b) ((a) - (b))
 
@@ -65,4 +71,5 @@
 #else
 #define debug
 #endif
-// kate: indent-mode cstyle; space-indent on; indent-width 4; replace-tabs on; 
+
+#endif // LIBFREEVEC_COMMON_H
