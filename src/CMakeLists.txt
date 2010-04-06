@@ -1,7 +1,7 @@
 #this is just a basic CMakeLists.txt, for more information see the cmake manpage
 
 #add definitions, compiler switches, etc.
-add_definitions(-Wall -O2 -finline-functions)
+add_definitions("-Wall -O2 -finline-functions")
 
 include_directories(include)
 

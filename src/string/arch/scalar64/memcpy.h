@@ -31,7 +31,7 @@
 #include <stddef.h>
 #include "common.h"
 
-#include "arch/scalar32.h"
+#include "arch/scalar64.h"
 
 static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, const uint8_t *s) {
     int dstal = ((word_t)d) % sizeof(word_t);
