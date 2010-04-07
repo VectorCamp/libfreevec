@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
         0,                     // no custom title
         MAXTHREADS,            // fork up to MAXTHREADS processes
         0,                     // current fork
-        100*LOOPS,                 // no of loops
+        1000*LOOPS,             // no of loops
         MINSIZE,               // min size
         MAXSIZE,               // max size
         0,                     // size
@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
         NULL                   // SQLite DB pointer
     };
 
-    conf.func = (void *)vec_cosf;
-    run_cosf_test(&conf);
+    conf.func = (void *)vec_exp;
+    run_exp_test(&conf);
 
     return EXIT_SUCCESS;
 }

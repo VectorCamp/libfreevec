@@ -19,47 +19,54 @@
 
 #include "config.h"
 
-int main ( int argc, char *argv[] ) {
+int main(int argc, char *argv[]) {
 
-  struct bench_conf conf = {
-    TABLEPREFIX_memcpy,   // title
-    "",                   // custom title
-    1,                    // do aligned
-    0,                    // no random
-    0,                    // no scalar
-    0,                    // do vector
-    1,                    // no db
-    0,                    // no custom title
-    MAXTHREADS,           // fork up to MAXTHREADS processes
-    0,                    // current fork
-    LOOPS,                // no of loops
-    MINSIZE,              // min size
-    MAXSIZE,              // max size
-    0,                    // size
-    NULL,                 // func()
-    NULL,                 // test buffer
-    RANDOMSIZE,           // test buffer size
-    NULL                  // SQLite DB pointer
-  };
+    struct bench_conf conf = {
+        TABLEPREFIX_memcpy,   // title
+        "",                   // custom title
+        1,                    // do aligned
+        0,                    // no random
+        0,                    // no scalar
+        0,                    // do vector
+        1,                    // no db
+        0,                    // no custom title
+        MAXTHREADS,           // fork up to MAXTHREADS processes
+        0,                    // current fork
+        LOOPS,                // no of loops
+        MINSIZE,              // min size
+        MAXSIZE,              // max size
+        0,                    // size
+        NULL,                 // func()
+        NULL,                 // test buffer
+        RANDOMSIZE,           // test buffer size
+        NULL                  // SQLite DB pointer
+    };
 
-  printf ( "test buffer size: %d\n", conf.testdatasize );
-  int randomdata = open ( "random.dat", O_RDONLY );
-  if ( !randomdata ) {
-    printf ( "Error! Could not open file random.dat!\n" );
-    exit ( 10 );
-  }
-  conf.testdata = mmap ( 0, conf.testdatasize, PROT_READ, MAP_PRIVATE, randomdata, 0 );
-  if ( conf.testdata == MAP_FAILED ) {
-    printf ( "Error! Could not mmap random.dat!\n" );
-    exit ( 10 );
-  }
+    printf("test buffer size: %d\n", conf.testdatasize);
+    int randomdata = open("random.dat", O_RDONLY);
+
+    if (!randomdata) {
+        printf("Error! Could not open file random.dat!\n");
+        exit(10);
+    }
+
+    conf.testdata = mmap(0, conf.testdatasize, PROT_READ, MAP_PRIVATE, randomdata, 0);
+
+    if (conf.testdata == MAP_FAILED) {
+        printf("Error! Could not mmap random.dat!\n");
+        exit(10);
+    }
 
 #ifdef HAVE_LIBFREEVEC
-  conf.func = ( void * ) vec_memcpy;
-  run_memcpy_test ( &conf );
+    conf.func = (void *) vec_memcpy;
+
+    run_memcpy_test(&conf);
+
 #endif
 
-  munmap ( conf.testdata, conf.testdatasize );
-  close ( randomdata );
-  return EXIT_SUCCESS;
+    munmap(conf.testdata, conf.testdatasize);
+
+    close(randomdata);
+
+    return EXIT_SUCCESS;
 }

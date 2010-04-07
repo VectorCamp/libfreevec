@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
         NULL                   // SQLite DB pointer
     };
 
-    conf.func = (void *)vec_cosf;
-    run_cosf_test(&conf);
+    conf.func = (void *)vec_cos;
+    run_cos_test(&conf);
 
     return EXIT_SUCCESS;
 }

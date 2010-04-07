@@ -131,4 +131,9 @@ float vec_sinf(float x);
 float vec_tanf(float x);
 float vec_expf(float x);
 
+double vec_cos(double x);
+double vec_sin(double x);
+double vec_tan(double x);
+double vec_exp(double x);
+
 #endif

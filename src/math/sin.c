@@ -26,16 +26,16 @@
 #include LIBFREEVEC_SIMD_MACROS_TRIG_H
 
 #ifdef LIBFREEVEC_BUILD_AS_LIBC
-float sinf(float x) {
+double sin(double x) {
 #else
-float vec_sinf(float x) {
+double vec_sin(double x) {
 #endif
 
     // First perform range reduction to x in the range [-2*pi..2*pi] and get the absolute,
     // so end range is [0.. 2*pi]
-    float x1 = reduce_pi_2f(x);
+    double x1 = reduce_pi_2(x);
 
-    float nom, denom;
+    double nom, denom;
 
     //if (x1 < M_PI_4) {
     // In the range [0..pi/4] we found that this Pade approximant gives exact results (3.5 * 10^-7)
@@ -49,7 +49,7 @@ float vec_sinf(float x) {
     //denom = 1.0 + 0.0367101 * x1 * x1      + 0.000688601 * x1 * x1 * x1 * x1 + 7.26193E-6 * x1 * x1 * x1 * x1 * x1 * x1;
     //}
 
-    float sinx = nom / denom;
+    double sinx = nom / denom;
 
     return sinx;
 }

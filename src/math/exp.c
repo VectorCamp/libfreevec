@@ -26,9 +26,9 @@
 #include LIBFREEVEC_SIMD_MACROS_EXP_H
 
 #ifdef LIBFREEVEC_BUILD_AS_LIBC
-float expf(float x) {
+double exp(double x) {
 #else
-float vec_expf(float x) {
+double vec_exp(double x) {
 #endif
 
     if (x > 127.0)
@@ -37,20 +37,20 @@ float vec_expf(float x) {
     if (x < -126.0)
         return 0.0;
 
-    float expx = 1.0;
-    float n  = floorf(x * M_1_LN2);
-    float x0 = n * M_LN2;
-    float b = x - x0;
+    double exp_x = 1.0;
+    double n  = floor(x * M_1_LN2);
+    double x0 = n * M_LN2;
+    double b = x - x0;
 
-    //debug("x = n *ln2 + b -> x = %5.7f, n = %3.0f, x0 = %5.7f, b = %1.7f\n", x, n, x0, b);
+    debug("x = n *ln2 + b -> x = %5.14f, n = %3.0f, x0 = %5.14f, b = %1.14f\n", x, n, x0, b);
     if (n != 0.0)
-        expx = powerof2f((uint32_t) n);
+        exp_x = powerof2((uint64_t) n);
 
-    //debug("exp(x0) = %f\n", expx);
+    debug("exp(x0) = %5.14f\n", exp_x);
 
     if (b != 0.0) {
-        float nom, denom;
-        float y1, y2, y3, y4, y5;
+        double nom, denom;
+        double y1, y2, y3, y4, y5;
         y1 = 0.5 * b;
         y2 = 0.111111111111 * b * b;
         y3 = 0.0138888888889 * b * b * b;
@@ -72,11 +72,11 @@ float vec_expf(float x) {
         //nom   = 30240.0 + 15120.0 * b + 3360.0 * x2 + 420.0 * x3 + 30.0 * x4 + x5;
         //denom = 30240.0 - 15120.0 * b + 3360.0 * x2 - 420.0 * x3 + 30.0 * x4 - x5;
 
-        expx *= nom / denom;
+        exp_x *= nom / denom;
 
-        //debug("exp(b) = %5.7f\n", nom/denom);
+        debug("exp(b) = %5.14f\n", nom/denom);
     }
 
-    //debug("exp(x) = %5.7f\n", expx);
-    return expx;
+    debug("exp(x) = %5.14f\n", exp_x);
+    return exp_x;
 }

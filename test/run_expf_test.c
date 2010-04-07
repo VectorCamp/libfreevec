@@ -36,7 +36,7 @@ void *run_expf_test(struct bench_conf *c) {
     ticspersec = (double) sysconf(_SC_CLK_TCK);
 
     for (l = 0; l < c->loops; l++) {
-        x[l] = 10 * M_LN2 * ((float)rand() / (float)RAND_MAX);
+        x[l] = 80 - 160 * ((float)rand() / (float)RAND_MAX);
     }
 
     // Calculate the minimum time spent on other instructions in the loop

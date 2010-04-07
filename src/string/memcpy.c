@@ -54,11 +54,13 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         debug("\nsrc = %016x, dst = %016x, len = %d\n", src, dst, len);
         // Copy until dst is word aligned
         int al = copy_fwd_until_dst_word_aligned(dst, src);
+
         if (al) {
-            src += sizeof(word_t)-al;
-            dst += sizeof(word_t)-al;
-            len -= sizeof(word_t)-al;
+            src += sizeof(word_t) - al;
+            dst += sizeof(word_t) - al;
+            len -= sizeof(word_t) - al;
         }
+
         debug("src = %016x, dst = %016x, len = %d, al = %d\n", src, dst, len, al);
 
         // Now dst is word aligned. We'll continue by word copying, but
@@ -66,7 +68,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         word_t srcoffset = ((word_t)(src) % sizeof(word_t)), sh_l, sh_r;
         sh_l = srcoffset * CHAR_BIT;
         sh_r = CHAR_BIT * sizeof(word_t) - sh_l;
-        
+
         debug("srcoffset = %d, sh_l = %d, sh_r = %d\n", srcoffset, sh_l, sh_r);
 
         // Take the word-aligned long pointers of src and dest.
@@ -101,14 +103,16 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
         if (srcoffset == 0) {
             copy_fwd_rest_words_aligned(dstl, srcl, l);
-            srcl += l;            
+            srcl += l;
             src = (uint8_t *) srcl;
         } else {
             copy_fwd_rest_words_unaligned(dstl, srcl, sh_l, sh_r, l);
             srcl += l;
             src = (uint8_t *) srcl + srcoffset;
         }
+
         dstl += l;
+
         // For the end copy we have to use char * pointers.
         dst = (uint8_t *) dstl;
     }
@@ -159,6 +163,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
 
     // Stop the prefetching
     PREFETCH_STOP1;
+
     PREFETCH_STOP2;
 
     debug("src = %016x, dst = %016x, len = %d\n", src, dst, len);
@@ -169,3 +174,4 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
     return dstpp;
 }
 
+// kate: indent-mode cstyle; space-indent on; indent-width 4; replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;

@@ -26,30 +26,29 @@
 #include LIBFREEVEC_SIMD_MACROS_TRIG_H
 
 #ifdef LIBFREEVEC_BUILD_AS_LIBC
-float sinf(float x) {
+double cos(double x) {
 #else
-float vec_sinf(float x) {
+double vec_cos(double x) {
 #endif
 
-    // First perform range reduction to x in the range [-2*pi..2*pi] and get the absolute,
-    // so end range is [0.. 2*pi]
-    float x1 = reduce_pi_2f(x);
+	// First perform range reduction to x in the range [-2*pi..2*pi] and get the absolute,
+	// so end range is [0.. 2*pi]
+	double x1 = reduce_pi_2(x);
 
-    float nom, denom;
+	double nom, denom;
 
-    //if (x1 < M_PI_4) {
-    // In the range [0..pi/4] we found that this Pade approximant gives exact results (3.5 * 10^-7)
-    //nom   = 166320.0 * x1 * x1 - 22260.0 * x1 * x1 * x1 + 551.0 * x1 * x1 * x1 * x1 * x1;
-    //denom = 166320.0           + 5460.0  * x1 * x1      + 75.0  * x1 * x1 * x1 * x1;
-    nom = x1  - 0.133838  * x1 * x1 * x1 + 0.00331289  * x1 * x1 * x1 * x1 * x1;
-    denom = 1.0 + 0.0328283 * x1 * x1      + 0.000450938 * x1 * x1 * x1 * x1;
-    //} else {
-    //P[6,6]
-    //nom   = x1  - 0.129957  * x1 * x1 * x1 + 0.00290358  * x1 * x1 * x1 * x1 * x1;
-    //denom = 1.0 + 0.0367101 * x1 * x1      + 0.000688601 * x1 * x1 * x1 * x1 + 7.26193E-6 * x1 * x1 * x1 * x1 * x1 * x1;
-    //}
+	// In the range [0..pi/4] we found that this Pade approximant gives very good results (3.5 * 10^-7)
+    if (x1 < M_PI_4) {
+        // Best accuracy so far P[4,4] unnormalized
+        nom   = 15120.0 - x1 * x1 * 6900.0 + x1 * x1 * x1 * x1 * 313.0;
+        denom = 15120.0 + x1 * x1 * 660.0  + x1 * x1 * x1 * x1 * 13.0;
+    } else {
+        //Pade[6,6]
+        nom   = 39251520.0 - 18471600.0 * x1 * x1 + 1075032.0 * x1 * x1 * x1 * x1 - 14615.0 * x1 * x1 * x1 * x1 * x1 * x1;
+        denom = 39251520.0 + 1154160.0  * x1 * x1 + 16632.0   * x1 * x1 * x1 * x1 + 127.0   * x1 * x1 * x1 * x1 * x1 * x1;
+    }
 
-    float sinx = nom / denom;
-
-    return sinx;
+	double cosx = nom/denom;
+    
+	return cosx;
 }

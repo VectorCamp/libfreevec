@@ -1,6 +1,6 @@
 #this is just a basic CMakeLists.txt, for more information see the cmake manpage
 
-set(SOURCES cosf.c sinf.c tanf.c coshf.c sinhf.c tanhf.c expf.c)
+set(SOURCES cosf.c sinf.c tanf.c coshf.c sinhf.c tanhf.c expf.c cos.c sin.c exp.c)
 
 include_directories(arch)
 add_library(math_static STATIC ${SOURCES})

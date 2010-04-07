@@ -21,29 +21,29 @@
 
 int main(int argc, char *argv[]) {
 
-  struct bench_conf conf = {
-    TABLEPREFIX_trigf,     // title
-    "",                    // custom title
-    1,                     // do aligned
-    0,                     // no random
-    0,                     // no scalar
-    0,                     // do vector
-    1,                     // no db
-    0,                     // no custom title
-    MAXTHREADS,            // fork up to MAXTHREADS processes
-    0,                     // current fork
-    100*LOOPS,                 // no of loops
-    MINSIZE,               // min size
-    MAXSIZE,               // max size
-    0,                     // size
-    NULL,                  // func()
-    NULL,                  // test buffer
-    RANDOMSIZE,            // test buffer size
-    NULL                   // SQLite DB pointer
-  };
+    struct bench_conf conf = {
+        TABLEPREFIX_trigf,     // title
+        "",                    // custom title
+        1,                     // do aligned
+        0,                     // no random
+        0,                     // no scalar
+        0,                     // do vector
+        1,                     // no db
+        0,                     // no custom title
+        MAXTHREADS,            // fork up to MAXTHREADS processes
+        0,                     // current fork
+        100*LOOPS,                 // no of loops
+        MINSIZE,               // min size
+        MAXSIZE,               // max size
+        0,                     // size
+        NULL,                  // func()
+        NULL,                  // test buffer
+        RANDOMSIZE,            // test buffer size
+        NULL                   // SQLite DB pointer
+    };
 
-  conf.func = (void *)vec_sinf;
-  run_sinf_test(&conf);
+    conf.func = (void *)vec_sinf;
+    run_sinf_test(&conf);
 
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

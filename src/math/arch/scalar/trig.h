@@ -19,12 +19,26 @@ static float inline fmax(float a, float b) {
     return a >= b ? a : b;
 }*/
 
-static inline float reduce_2pi(float x) {
+static inline float reduce_2pif(float x) {
     return fmodf(x, TWO_PI);
 }
 
-static inline float reduce_pi_2(float x) {
+static inline float reduce_pi_2f(float x) {
     x = fmodf(x, TWO_PI);
+
+    //x = fmin(x,  M_PI -x);
+    //x = fmax(x, -M_PI -x);
+    //x = fmin(x,  M_PI -x);
+
+    return x;
+}
+
+static inline double reduce_2pi(double x) {
+    return fmod(x, TWO_PI);
+}
+
+static inline double reduce_pi_2(double x) {
+    x = fmod(x, TWO_PI);
 
     //x = fmin(x,  M_PI -x);
     //x = fmax(x, -M_PI -x);
