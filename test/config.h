@@ -106,6 +106,7 @@ void *run_bmove512_test(struct bench_conf *c);
 void *run_trigf_test(struct bench_conf *c);
 
 void *vec_memcpy(void *dstpp, const void *srcpp, size_t len);
+void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len);
 void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len);
 void *mempcpy(void *dstpp, const void *srcpp, size_t len);
 void *vec_memcmp(void *src1pp, const void *src2pp, size_t len);
@@ -128,5 +129,6 @@ void vec_bmove512(void *to, const void *from, uint32_t len);
 float vec_cosf(float x);
 float vec_sinf(float x);
 float vec_tanf(float x);
+float vec_expf(float x);
 
 #endif

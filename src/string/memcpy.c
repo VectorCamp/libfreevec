@@ -147,7 +147,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
         int l = len / sizeof(word_t);
-        printf("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
+        debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
         copy_fwd_rest_words_aligned(dstl, srcl, l);
         srcl += l;
         dstl += l;
@@ -161,7 +161,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
     PREFETCH_STOP1;
     PREFETCH_STOP2;
 
-    printf("src = %016x, dst = %016x, len = %d\n", src, dst, len);
+    debug("src = %016x, dst = %016x, len = %d\n", src, dst, len);
 
     // Copy the remaining bytes
     copy_fwd_rest_bytes(dst, src, len);

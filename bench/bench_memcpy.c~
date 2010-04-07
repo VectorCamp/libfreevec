@@ -6,9 +6,6 @@
  *   See http://www.gnu.org/licenses/gpl-3.0.html                           *
  ***************************************************************************/
 
-#include "config.h"
-#include "bench_common.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -18,9 +15,12 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include "config.h"
+#include "bench_common.h"
+
 #define BENCHFUNC run_memcpy_bench
 #define SCALARFUNC memcpy
-#define VECTORFUNC vec_memcpy
+#define VECTORFUNC vec_memcpy_aligned
 
 void prepare_dbtable(struct bench_conf *conf) {
   int rc;

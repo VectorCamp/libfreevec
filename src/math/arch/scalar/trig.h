@@ -26,9 +26,9 @@ static inline float reduce_2pi(float x) {
 static inline float reduce_pi_2(float x) {
     x = fmodf(x, TWO_PI);
 
-    x = fmin(x,  M_PI -x);
-    x = fmax(x, -M_PI -x);
-    x = fmin(x,  M_PI -x);
+    //x = fmin(x,  M_PI -x);
+    //x = fmax(x, -M_PI -x);
+    //x = fmin(x,  M_PI -x);
 
     return x;
 }
