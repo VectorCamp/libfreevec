@@ -82,13 +82,13 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
         // Now, dst is 16byte aligned. We can use Altivec if len >= 16
 
-        if (((uint32_t)(src) % ALTIVECWORD_SIZE) == 0) {
+        if (((word_t)(src) % SIMD_PACKETSIZE) == 0) {
             copy_fwd_rest_blocks_aligned(dstl, src, len);
         } else {
             copy_fwd_rest_blocks_unaligned(dstl, src, len);
         }
 
-        srcl = (uint32_t *)(src - srcoffset4);
+        srcl = (word_t *)(src - srcoffset4);
 
         // Stop the prefetching
         PREFETCH_STOP1;
