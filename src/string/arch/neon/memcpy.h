@@ -42,7 +42,7 @@ static inline void copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
         *d++ = (*(s) << sh_l) | (*(s+1) >> sh_r);
         s++;
     }
-    len -= sizeof(word_t);
+    l -= sizeof(word_t);
   } 
 }
 

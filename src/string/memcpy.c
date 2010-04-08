@@ -77,8 +77,8 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
         // While we're not 16-byte aligned, move in 4-byte long steps.
-        copy_fwd_until_dst_simd_aligned(dstl, srcl, len, srcoffset4, sh_l, sh_r);
-        src = (uint8_t *) srcl + srcoffset4;
+        copy_fwd_until_dst_simd_aligned(dstl, srcl, len, srcoffset, sh_l, sh_r);
+        src = (uint8_t *) srcl + srcoffset;
 
         // Now, dst is 16byte aligned. We can use Altivec if len >= 16
 
@@ -88,7 +88,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
             copy_fwd_rest_blocks_unaligned(dstl, src, len);
         }
 
-        srcl = (word_t *)(src - srcoffset4);
+        srcl = (word_t *)(src - srcoffset);
 
         // Stop the prefetching
         PREFETCH_STOP1;
