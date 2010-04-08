@@ -85,7 +85,7 @@ void *run_exp_test(struct bench_conf *c) {
         diff1 = fabs(r1 - r2);
         rel = diff1/r1;
 
-        if (diff1 > 0.0000001) {
+        if (diff1 > 1E-14) {
             maxdiff1 = MAX(diff1, maxdiff1);
             maxrel = MAX(rel, maxrel);
             //printf("#1: l = %3d\tx = %02.14f, r1 = %02.14f, r2 = %02.14f, diff = %02.14f\n", l, x[l], r1, r2, diff1);
@@ -94,7 +94,7 @@ void *run_exp_test(struct bench_conf *c) {
         }
     }
 
-    printf("vec_exp fail/tot = %d/%d, maxdiff = %2.7f, maxrel = %5.7f\n", counter1, c->loops, maxdiff1, maxrel);
+    printf("vec_exp fail/tot = %d/%d, maxdiff = %2.14f, maxrel = %5.14f\n", counter1, c->loops, maxdiff1, maxrel);
 
     if (status)
         printf("\nAll tests have passed!\n");

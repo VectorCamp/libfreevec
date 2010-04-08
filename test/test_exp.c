@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
         0,                     // no custom title
         MAXTHREADS,            // fork up to MAXTHREADS processes
         0,                     // current fork
-        1000*LOOPS,             // no of loops
+        100*LOOPS,             // no of loops
         MINSIZE,               // min size
         MAXSIZE,               // max size
         0,                     // size

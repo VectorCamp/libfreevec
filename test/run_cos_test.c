@@ -84,15 +84,15 @@ void *run_cos_test(struct bench_conf *c) {
 
         diff1 = fabs(r1 - r2);
 
-        if (diff1 > 0.0000001) {
+        if (diff1 > 1E-14) {
             maxdiff1 = MAX(diff1, maxdiff1);
-            printf("#1: l = %3d\tx = %02.7f, r1 = %02.7f, r2 = %02.7f, diff = %02.7f\n", l, x[l], r1, r2, diff1);
+            //printf("#1: l = %3d\tx = %02.7f, r1 = %02.7f, r2 = %02.7f, diff = %02.7f\n", l, x[l], r1, r2, diff1);
             status = 0;
             counter1++;
         }
     }
 
-    printf("vec_cos fail/tot = %d/%d, maxdiff = %2.7f\n", counter1, c->loops, maxdiff1);
+    printf("vec_cos fail/tot = %d/%d, maxdiff = %2.14f\n", counter1, c->loops, maxdiff1);
 
     if (status)
         printf("\nAll tests have passed!\n");
