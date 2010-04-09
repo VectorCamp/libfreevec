@@ -38,6 +38,10 @@
 #define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
 #endif
 
+#ifdef LIBFREEVEC_ALTIVEC
+#include <altivec.h>
+#endif
+
 #define ptrdiff_t(a, b)     ((word_t)(a)-(word_t)(b))
 
 #define CMP_LT_OR_GT(a, b) ((a) - (b))

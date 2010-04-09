@@ -29,7 +29,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <altivec.h>
 
 #include "common.h"
 #include "arch/altivec.h"
