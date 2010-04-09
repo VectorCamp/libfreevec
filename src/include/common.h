@@ -28,8 +28,10 @@
 
 #ifdef LINUX64
 #define word_t  uint64_t
+#define LIBFREEVEC_SCALAR_MACROS_INC MAKEINC(scalar64)
 #else
 #define word_t  uint32_t
+#define LIBFREEVEC_SCALAR_MACROS_INC MAKEINC(scalar32)
 #endif
 
 #ifdef LIBFREEVEC_SIMD_ENGINE

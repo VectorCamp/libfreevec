@@ -29,9 +29,9 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "common.h"
-
 #include <altivec.h>
+
+#include "common.h"
 #include "arch/altivec.h"
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
