@@ -53,7 +53,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
         debug("\nsrc = %016x, dst = %016x, len = %d\n", src, dst, len);
         // Copy until dst is word aligned
-        int al = copy_fwd_until_dst_word_aligned(dst, src);
+        int al = copy_fwd_until_dst_word_aligned(dst, src), l;
 
         if (al) {
             src += sizeof(word_t) - al;
@@ -85,7 +85,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         }
 
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
-        int l = len / SIMD_PACKETSIZE;
+        l = len / SIMD_PACKETSIZE;
         len -= l * sizeof(word_t);
         if (((word_t)(src) % SIMD_PACKETSIZE) == 0) {
             copy_fwd_rest_blocks_aligned(dstl, srcl, l);
@@ -103,7 +103,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
 
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
-        int l = len / sizeof(word_t);
+        l = len / sizeof(word_t);
         len -= l * sizeof(word_t);
         debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
 
