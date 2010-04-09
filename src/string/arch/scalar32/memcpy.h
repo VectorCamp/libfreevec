@@ -74,7 +74,7 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
 }
 
 static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
-                                                word_t srcoffset4, int sh_l, int sh_r) {
+                                                word_t srcoffset4, int sl, int sr) {
     int dstal = ((word_t)d) % sizeof(SIMD_PACKETSIZE);
     if (srcoffset4 == 0) {
         switch (dstal) {
@@ -88,23 +88,23 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
     } else {
         switch (dstal) {
             case 4:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
                 s++;
             case 8:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
                 s++;
             case 12:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
                 s++;
         }
     } 
 }
 
 // Only define these if there is no SIMD_ENGINE defined
-#ifndef SIMD_ENGINE
+#ifndef LIBFREEVEC_SIMD_ENGINE
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
     // Unroll blocks of 4 words
-    while (blocks % LOG_QUADPACKETSIZE > 0) {
+    while (blocks % 4 > 0) {
         *d++ = *s++;
         *d++ = *s++;
         *d++ = *s++;
@@ -121,16 +121,16 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size
 static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         blocks -= 4;
     }
 
     while (blocks > 0) {
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         blocks--;
     }
 }
-#endif // SIMD_ENGINE
-// kate: indent-mode cstyle; space-indent on; indent-width 4; replace-tabs on; 
+#endif // LIBFREEVEC_SIMD_ENGINE

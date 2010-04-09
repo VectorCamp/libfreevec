@@ -102,7 +102,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
             copy_fwd_rest_blocks_aligned(dstl, srcl, l);
             srcl += l * WORDS_IN_PACKET;
         } else {
-            copy_fwd_rest_blocks_unaligned(dstl, srcl, srcoffset, sh_l, sh_r, l);
+            copy_fwd_rest_blocks_unaligned(dstl, srcl, sh_l, sh_r, l);
             srcl += l * WORDS_IN_PACKET;
         }
         dstl += l;
@@ -190,5 +190,3 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
 
     return dstpp;
 }
-
-// kate: indent-mode cstyle; space-indent on; indent-width 4; replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;  replace-tabs on;
