@@ -81,6 +81,8 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         const word_t *srcl = (word_t *)(src - srcoffset);
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
+        debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
+        
         // While we're not 16-byte aligned, move in 4-byte long steps.
         al = copy_fwd_until_dst_simd_aligned(dstl, srcl, srcoffset, sh_l, sh_r);
         if (al) {
@@ -88,7 +90,8 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
             dstl += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
             len -= SIMD_PACKETSIZE - al;
         }
-
+        debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
+        
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
         l = len / SIMD_PACKETSIZE;
         len -= l * sizeof(word_t);

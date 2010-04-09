@@ -34,17 +34,17 @@
 #include "arch/altivec.h"
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
-    vector unsigned char v1, v2, v3, v4;
+    vector uint8_t v1, v2, v3, v4;
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
-        v1 = vec_ld(0, (uint8_t *)s);
+        v1 = vec_ld(0,  (uint8_t *)s);
         v2 = vec_ld(16, (uint8_t *)s);
         v3 = vec_ld(32, (uint8_t *)s);
         v4 = vec_ld(48, (uint8_t *)s);
-        vec_st(v1, 0, (uint8_t *)d);
-        vec_st(v2, 0, (uint8_t *)d);
-        vec_st(v3, 0, (uint8_t *)d);
-        vec_st(v4, 0, (uint8_t *)d);
+        vec_st(v1, 0,  (uint8_t *)d);
+        vec_st(v2, 16, (uint8_t *)d);
+        vec_st(v3, 32, (uint8_t *)d);
+        vec_st(v4, 48, (uint8_t *)d);
         d += 16; s + 16;
         blocks -= 4;
     }
@@ -58,7 +58,7 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size
 }
 
 static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
-    vector unsigned char mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
+    vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
     mask = vec_lvsl(0, s);
     
     // Unroll blocks of 4 words
