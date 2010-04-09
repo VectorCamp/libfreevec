@@ -34,12 +34,6 @@
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
 #define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
-#else
-#ifdef LINUX64
-#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar64)
-#else
-#define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(scalar32)
-#endif
 #endif
 
 #define ptrdiff_t(a, b)     ((word_t)(a)-(word_t)(b))
