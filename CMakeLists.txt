@@ -46,7 +46,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
 
 		option(LIBFREEVEC_ALTIVEC "Enable/Disable AltiVec optimizations" OFF)
 		if(LIBFREEVEC_ALTIVEC)
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maltivec -mabi=altivec -DLIBFREEVEC_SIMD_ENGINE=altivec -DLIBFREEVEC_ALTIVEC")
+			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maltivec -mabi=altivec -flax-vector-conversions -DLIBFREEVEC_SIMD_ENGINE=altivec -DLIBFREEVEC_ALTIVEC")
 			message("Enabling AltiVec optimizations")
 		endif(LIBFREEVEC_ALTIVEC)
 
