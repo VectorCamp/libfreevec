@@ -97,7 +97,8 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
                 *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
                 s++;
         }
-    } 
+    }
+    return dstal;
 }
 
 // Only define these if there is no SIMD_ENGINE defined

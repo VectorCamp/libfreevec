@@ -31,9 +31,9 @@
 #include <stddef.h>
 #include "common.h"
 
+#include <altivec.h>
 #include "arch/altivec.h"
 
-#ifdef LIBFREEVEC_SIMD_ENGINE
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
@@ -84,4 +84,3 @@ static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, in
         blocks--;
     }
 }
-#endif

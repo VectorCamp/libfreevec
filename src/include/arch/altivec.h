@@ -1,5 +1,3 @@
-#include <altivec.h>
-
 #define SIMD_PACKETSIZE     16
 #define WORDS_IN_PACKET     4
 
