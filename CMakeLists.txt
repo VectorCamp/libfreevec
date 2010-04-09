@@ -6,7 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O2 -mcpu=cortex-a8")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O2 -finline-functions")
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 if(cmake_build_type_tolower STREQUAL "debug")
@@ -18,7 +18,7 @@ else()
 endif()
 
 if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-	set(CMAKE_C_FLAGS "-fPIC -DLINUX64")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -DLINUX64")
 	message("Enabling 64-bit support")
 endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 
@@ -60,12 +60,14 @@ endif(CMAKE_COMPILER_IS_GNUCC)
 
 subdirs(src)
 
-#option(LIBFREEVEC_TESTS "Enable/Disable Tests" ON)
-#if(LIBFREEVEC_TESTS)
+option(LIBFREEVEC_TESTS "Enable/Disable Tests" ON)
+if(LIBFREEVEC_TESTS)
     add_subdirectory(test)
-#endif(LIBFREEVEC_TESTS)
+    message("Enabling tests")
+endif()
 
-#option(LIBFREEVEC_BENCH "Enable/Disable Benchmarking" ON)
-#if(LIBFREEVEC_BENCH)
+option(LIBFREEVEC_BENCH "Enable/Disable Benchmarking" ON)
+if(LIBFREEVEC_BENCH)
     add_subdirectory(bench)
-#endif(LIBFREEVEC_BENCH)
+    message("Enabling benchmarks")
+endif()
