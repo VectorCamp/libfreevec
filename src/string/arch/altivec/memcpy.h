@@ -27,10 +27,12 @@
 
 /* $Id$ */
 
-#include "arch/altivec.h"
+#include <sys/types.h>
+#include <stdint.h>
+#include <altivec.h>
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
-    vector uint8_t v1, v2, v3, v4;
+    __vector uint8_t v1, v2, v3, v4;
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
         v1 = vec_ld(0,  (uint8_t *)s);
@@ -54,7 +56,7 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size
 }
 
 static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
-    vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
+    __vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
     mask = vec_lvsl(0, s);
     
     // Unroll blocks of 4 words

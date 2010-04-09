@@ -21,6 +21,15 @@
 #ifndef LIBFREEVEC_COMMON_H
 #define LIBFREEVEC_COMMON_H
 
+#include <sys/types.h>
+#include <stdint.h>
+#include <stddef.h>
+
+#ifdef LIBFREEVEC_ALTIVEC
+#include <altivec.h>
+#include "arch/altivec.h"
+#endif
+
 #define QMAKESTR(x) #x
 #define MAKESTR(x) QMAKESTR(x)
 #define SMASH(x,y) x/y
@@ -36,10 +45,6 @@
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
 #define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
-#endif
-
-#ifdef LIBFREEVEC_ALTIVEC
-#include <altivec.h>
 #endif
 
 #define ptrdiff_t(a, b)     ((word_t)(a)-(word_t)(b))
