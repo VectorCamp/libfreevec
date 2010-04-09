@@ -33,7 +33,7 @@
 
 #include "arch/altivec.h"
 
-#ifndef LIBFREEVEC_SIMD_ENGINE
+#ifdef LIBFREEVEC_SIMD_ENGINE
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
