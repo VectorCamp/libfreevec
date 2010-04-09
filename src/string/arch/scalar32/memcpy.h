@@ -37,13 +37,10 @@ static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, uint8_t *s) {
     int dstal = ((word_t)d) % sizeof(word_t);
 
     switch (dstal) {
-
         case 1:
             *d++ = *s++;
-
         case 2:
             *d++ = *s++;
-
         case 3:
             *d = *s;
     }
@@ -53,13 +50,10 @@ static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, uint8_t *s) {
 
 static inline void copy_fwd_rest_bytes(uint8_t *d, uint8_t *s, size_t len) {
     switch (len) {
-
         case 3:
             *d++ = *s++;
-
         case 2:
             *d++ = *s++;
-
         case 1:
             *d++ = *s++;
     }
@@ -77,6 +71,33 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
         *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         l--;
     }
+}
+
+static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
+                                                word_t srcoffset4, int sh_l, int sh_r) {
+    int dstal = ((word_t)d) % sizeof(SIMD_PACKETSIZE);
+    if (srcoffset4 == 0) {
+        switch (dstal) {
+            case 4:
+                *d++ = *s++;
+            case 8:
+                *d++ = *s++;
+            case 12:
+                *d++ = *s++;
+        }
+    } else {
+        switch (dstal) {
+            case 4:
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                s++;
+            case 8:
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                s++;
+            case 12:
+                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sh_l, sh_r);
+                s++;
+        }
+    } 
 }
 
 // Only define these if there is no SIMD_ENGINE defined

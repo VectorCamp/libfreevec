@@ -31,20 +31,7 @@
 #include <stddef.h>
 #include "common.h"
 
-#include "arch/altivec.h"
-
-static inline void copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
-                                                size_t l, word_t srcoffset4, int sh_l, int sh_r) {
-    while (l >= sizeof(word_t) && ((word_t)(d) % SIMD_PACKETSIZE)) {
-    if (srcoffset4 == 0) {
-        *d++ = *s++;
-    } else {
-        *d++ = (*(s) << sh_l) | (*(s+1) >> sh_r);
-        s++;
-    }
-    l -= sizeof(word_t);
-  } 
-}
+#include "arch/neon.h"
 
 #define MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(d, s, step)  \
 {                                                          \
