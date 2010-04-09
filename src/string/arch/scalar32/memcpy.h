@@ -33,7 +33,7 @@
 
 #include "arch/scalar32.h"
 
-static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, uint8_t *s) {
+static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, const uint8_t *s) {
     int dstal = ((word_t)d) % sizeof(word_t);
 
     switch (dstal) {
@@ -48,7 +48,7 @@ static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, uint8_t *s) {
     return dstal;
 }
 
-static inline void copy_fwd_rest_bytes(uint8_t *d, uint8_t *s, size_t len) {
+static inline void copy_fwd_rest_bytes(uint8_t *d, const uint8_t *s, size_t len) {
     switch (len) {
         case 3:
             *d++ = *s++;
@@ -102,7 +102,7 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
 
 // Only define these if there is no SIMD_ENGINE defined
 #ifndef SIMD_ENGINE
-static inline void copy_fwd_rest_blocks_aligned(word_t *d, word_t *s, size_t blocks) {
+static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % LOG_QUADPACKETSIZE > 0) {
         *d++ = *s++;
@@ -118,7 +118,7 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, word_t *s, size_t blo
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, word_t *s, int sl, int sr, size_t blocks) {
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
     // Unroll blocks of 4 words
     while (blocks % 4 > 0) {
         *d++ = (*(s) << sl) | (*(s + 1) >> sr);
