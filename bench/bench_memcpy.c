@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     if (conf.flag_nodb == 0) {
       prepare_dbtable(&conf);
     }
-    printf("\nAltiVec memcpy()\n\n");
+    printf("\nSIMD memcpy()\n\n");
 
     conf.func = (void *)VECTORFUNC;
     run_threaded_test(BENCHFUNC, &conf);

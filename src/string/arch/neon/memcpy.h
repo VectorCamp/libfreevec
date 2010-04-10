@@ -32,19 +32,31 @@
 #include <arm_neon.h>
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
-    uint8x16x4_t v4;
-    uint8x16_t v;
+    //uint8x16x4_t v4;
+    uint8x16_t v1, v2, v3, v4;
     // Unroll blocks of 4 words
     while (blocks > 4) {
-        v4 = vld4q_u8(s);
-        vst4q_u8((uint8_t *)d, v4);
-        d += 16; s += 4 * SIMD_PACKETSIZE;
+        v1 = vld1q_u8(s);
+        vst1q_u8((uint8_t *) d, v1);
+        d += 4; s += SIMD_PACKETSIZE;
+        v2 = vld1q_u8(s);
+        vst1q_u8((uint8_t *)d, v2);
+        d += 4; s += SIMD_PACKETSIZE;
+        v3 = vld1q_u8(s);
+        vst1q_u8((uint8_t *)d, v3);
+        d += 4; s += SIMD_PACKETSIZE;
+        v4 = vld1q_u8(s);
+        vst1q_u8((uint8_t *)d, v4);
+        d += 4; s += SIMD_PACKETSIZE;
+        //v4 = vld4q_u8(s);
+        //vst4q_u8((uint8_t *)d, v4);
+        //d += 16; s += 4 * SIMD_PACKETSIZE;
         blocks -= 4;
     }
 
     while (blocks > 0) {
-        v = vld1q_u8(s);
-        vst1q_u8((uint8_t *)d, v);
+        v1 = vld1q_u8(s);
+        vst1q_u8((uint8_t *)d, v1);
         d += 4; s += SIMD_PACKETSIZE;
         blocks--;
     }

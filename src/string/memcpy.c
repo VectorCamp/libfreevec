@@ -166,7 +166,7 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
-        copy_fwd_rest_blocks_aligned(dstl, srcl, len);
+        copy_fwd_rest_blocks_aligned(dstl, src, len);
 #endif
 
         // Copy the remaining bytes using word-copying

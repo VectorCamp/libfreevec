@@ -25,7 +25,7 @@ void show_conf_details(struct bench_conf *conf) {
   if (conf->flag_scalar)
     printf("Will do scalar (glibc) tests\n");
   if (conf->flag_vector)
-    printf("Will do vector (AltiVec/VMX) tests\n");
+    printf("Will do vector/SIMD (AltiVec/NEON/SSE) tests\n");
   if (conf->flag_custom)
     printf("Will do %s tests\n", conf->custom_title);
   if (conf->flag_nodb)
