@@ -1,7 +1,5 @@
 #define SIMD_PACKETSIZE     16
-#define QUADPACKET_SIZE     64
-// log2(64) = 6
-#define LOG_QUADPACKETSIZE  6
+#define WORDS_IN_PACKET     2
 
 #define READ_PREFETCH_START1(addr)
 #define READ_PREFETCH_START2(addr)

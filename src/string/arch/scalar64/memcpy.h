@@ -29,8 +29,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "common.h"
 
+#include "common.h"
 #include "arch/scalar64.h"
 
 static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, const uint8_t *s) {
@@ -102,41 +102,40 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
     }
 }
 
-// Only define these if there is no SIMD_ENGINE defined
-#ifndef SIMD_ENGINE
-static inline void copy_fwd_rest_blocks_aligned(word_t *d, word_t *s, size_t blocks) {
-    // Unroll blocks of 32 bytes
-    while (blocks % 4 > 0) {
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        blocks -= 4;
+static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
+                                                int srcoffset4, int sl, int sr) {
+    int dstal = ((int)d) % SIMD_PACKETSIZE;
+    if (srcoffset4 == 0) {
+        if (dstal == 8)
+            *d++ = *s++;
+    } else {
+        if (dstal == 8) {
+            *d = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
+            d++; s++;
+        }
     }
-    
+    return dstal;
+}
+
+// Only define these if there is no SIMD_ENGINE defined
+#ifndef LIBFREEVEC_SIMD_ENGINE
+static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *src, size_t blocks) {
+    word_t *s = (word_t)src;
+    // Unroll blocks of 4 words
     while (blocks > 0) {
+        *d++ = *s++;
         *d++ = *s++;
         blocks--;
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, word_t *s, int sl, int sr, size_t blocks) {
-    // Unroll blocks of 32 bytes
-    while (blocks % 4 > 0) {
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
-        blocks -= 4;
-    }
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *src, int srcoffset, int sl, int sr, size_t blocks) {
+    word_t *s = (word_t *)(src - srcoffset);
+    // Unroll blocks of 4 words
     while (blocks > 0) {
-        *d++ = (*(s) << sl) | (*(s + 1) >> sr);
-        s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         blocks--;
     }
 }
-#endif // SIMD_ENGINE
+#endif // LIBFREEVEC_SIMD_ENGINE
