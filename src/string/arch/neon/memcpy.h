@@ -27,56 +27,52 @@
 
 /* $Id$ */
 
+#include <sys/types.h>
 #include <stdint.h>
-#include <stddef.h>
-#include "common.h"
+#include <arm_neon.h>
 
-#include "arch/neon.h"
+static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
+    uint8x16x4_t v4;
+    uint8x16_t v;
+    // Unroll blocks of 4 words
+    while (blocks > 4) {
+        v4 = vld4q_u8(s);
+        vst4q_u8((uint8_t *)d, v4);
+        d += 16; s += 4 * SIMD_PACKETSIZE;
+        blocks -= 4;
+    }
 
-#define MEMCPY_SINGLEQUADWORD_ALTIVEC_ALIGNED(d, s, step)  \
-{                                                          \
-  vec_st((vector uint8_t) vec_ld(step, (uint8_t *)s),      \
-         step, (uint8_t *)d);                              \
+    while (blocks > 0) {
+        v = vld1q_u8(s);
+        vst1q_u8((uint8_t *)d, v);
+        d += 4; s += SIMD_PACKETSIZE;
+        blocks--;
+    }
 }
 
-#define MEMCPY_SINGLEQUADWORD_ALTIVEC_UNALIGNED(d, s, step)  \
-{                                                            \
-  vector uint8_t MSQ, LSQ, mask;                             \
-  mask = vec_lvsl(0, s);                                     \
-  MSQ = vec_ld(step, s);                                     \
-  LSQ = vec_ld(step+15, s);                                  \
-  vec_st(vec_perm(MSQ, LSQ, mask), step, (uint8_t *)d);      \
-}
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, int srcoffset, int sl, int sr, size_t blocks) {
+//    __vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
+    
+    // Unroll blocks of 4 words
+    while (blocks > 4) {
+/*        MSQ1 = vec_ld(0, s);
+        LSQ1 = vec_ld(15, s);
+        LSQ2 = vec_ld(31, s);
+        LSQ3 = vec_ld(47, s);
+        LSQ4 = vec_ld(63, s);
+        vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);
+        vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)d);
+        vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)d);
+        vec_st(vec_perm(LSQ3, LSQ4, mask), 48, (uint8_t *)d);*/
+        d += 16; s += 4 * SIMD_PACKETSIZE;
+        blocks -= 4;
+    }
 
-#define MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_ALIGNED(d, s, len)               \
-{                                                                         \
-  uint32_t blocks = len >> LOG_ALTIVECQUAD;                               \
-  len -= blocks << LOG_ALTIVECQUAD;                                       \
-  while (blocks--) {                                                      \
-    vec_st((vector uint8_t) vec_ld(0, (uint8_t *)s), 0, (uint8_t *)d);    \
-    vec_st((vector uint8_t) vec_ld(16, (uint8_t *)s), 16, (uint8_t *)d);  \
-    vec_st((vector uint8_t) vec_ld(32, (uint8_t *)s), 32, (uint8_t *)d);  \
-    vec_st((vector uint8_t) vec_ld(48, (uint8_t *)s), 48, (uint8_t *)d);  \
-    d += ALTIVECWORD_SIZE; s += QUAD_ALTIVECWORD;                         \
-  }                                                                       \
-}
-
-#define MEMCPY_FWD_LOOP_QUADWORD_ALTIVEC_UNALIGNED(d, s, len)  \
-{                                                              \
-  vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;           \
-  uint32_t blocks = len >> LOG_ALTIVECQUAD ;                   \
-  len -= blocks << LOG_ALTIVECQUAD;                            \
-  mask = vec_lvsl(0, s);                                       \
-  while (blocks--) {                                           \
-    MSQ1 = vec_ld(0, s);                                       \
-    LSQ1 = vec_ld(15, s);                                      \
-    LSQ2 = vec_ld(31, s);                                      \
-    LSQ3 = vec_ld(47, s);                                      \
-    LSQ4 = vec_ld(63, s);                                      \
-    vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);       \
-    vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)d);      \
-    vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)d);      \
-    vec_st(vec_perm(LSQ3, LSQ4, mask), 48, (uint8_t *)d);      \
-    d += ALTIVECWORD_SIZE; s += QUAD_ALTIVECWORD;              \
-  }                                                            \
+    while (blocks > 0) {
+/*        MSQ1 = vec_ld(0, s);
+        LSQ1 = vec_ld(15, s);
+        vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);*/
+        d += 4; s += SIMD_PACKETSIZE;
+        blocks--;
+    }
 }
