@@ -31,46 +31,46 @@
 #include <stdint.h>
 #include <altivec.h>
 
-static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
+static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
     __vector uint8_t v1, v2, v3, v4;
     // Unroll blocks of 4 words
-    while (blocks % 4 > 0) {
-        v1 = vec_ld(0,  (uint8_t *)s);
-        v2 = vec_ld(16, (uint8_t *)s);
-        v3 = vec_ld(32, (uint8_t *)s);
-        v4 = vec_ld(48, (uint8_t *)s);
+    while (blocks > 4) {
+        v1 = vec_ld(0,  s);
+        v2 = vec_ld(16, s);
+        v3 = vec_ld(32, s);
+        v4 = vec_ld(48, s);
         vec_st(v1, 0,  (uint8_t *)d);
         vec_st(v2, 16, (uint8_t *)d);
         vec_st(v3, 32, (uint8_t *)d);
         vec_st(v4, 48, (uint8_t *)d);
-        d += 16; s + 16;
+        d += 16; s += 4 * SIMD_PACKETSIZE;
         blocks -= 4;
     }
 
     while (blocks > 0) {
-        v1 = vec_ld(0, (uint8_t *)s);
+        v1 = vec_ld(0, s);
         vec_st(v1, 0, (uint8_t *)d);
-        d += 4; s + 4;
+        d += 4; s += SIMD_PACKETSIZE;
         blocks--;
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, int sl, int sr, size_t blocks) {
     __vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
     mask = vec_lvsl(0, s);
     
     // Unroll blocks of 4 words
-    while (blocks % 4 > 0) {
-        MSQ1 = vec_ld(0, (uint8_t *)s);
-        LSQ1 = vec_ld(15, (uint8_t *)s);
-        LSQ2 = vec_ld(31, (uint8_t *)s);
-        LSQ3 = vec_ld(47, (uint8_t *)s);
-        LSQ4 = vec_ld(63, (uint8_t *)s);
+    while (blocks > 4) {
+        MSQ1 = vec_ld(0, s);
+        LSQ1 = vec_ld(15, s);
+        LSQ2 = vec_ld(31, s);
+        LSQ3 = vec_ld(47, s);
+        LSQ4 = vec_ld(63, s);
         vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);
         vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)d);
         vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)d);
         vec_st(vec_perm(LSQ3, LSQ4, mask), 48, (uint8_t *)d);
-        d += 16; s += 16;
+        d += 16; s += 4 * SIMD_PACKETSIZE;
         blocks -= 4;
     }
 
@@ -78,7 +78,7 @@ static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, in
         MSQ1 = vec_ld(0, s);
         LSQ1 = vec_ld(15, s);
         vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);
-        d += 4; s + 4;
+        d += 4; s += SIMD_PACKETSIZE;
         blocks--;
     }
 }

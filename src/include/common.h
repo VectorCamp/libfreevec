@@ -65,7 +65,7 @@
 #define charmask32(c)   (uint32_t)((charmask16(c)) | (charmask16(c) << 16))
 #define charmask64(c)   (uint64_t)((charmask32(c)) | (charmask32(c) << 32))
 
-#ifdef __LITTLE_ENDIAN
+#if __BYTE_ORDER == __LITTLE_ENDIAN
 #define MERGE_SHIFTED_WORDS(a, b, sl, sr)      ((a) >> sl) | ((b) << sr)
 #else
 #define MERGE_SHIFTED_WORDS(a, b, sl, sr)      ((a) << sl) | ((b) >> sr)

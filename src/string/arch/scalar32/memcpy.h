@@ -34,7 +34,7 @@
 #include "arch/scalar32.h"
 
 static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, const uint8_t *s) {
-    int dstal = ((word_t)d) % sizeof(word_t);
+    int dstal = ((int)d) % sizeof(word_t);
 
     switch (dstal) {
         case 1:
@@ -74,8 +74,8 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
 }
 
 static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
-                                                word_t srcoffset4, int sl, int sr) {
-    int dstal = ((word_t)d) % sizeof(SIMD_PACKETSIZE);
+                                                int srcoffset4, int sl, int sr) {
+    int dstal = ((int)d) % SIMD_PACKETSIZE;
     if (srcoffset4 == 0) {
         switch (dstal) {
             case 4:
@@ -88,14 +88,14 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
     } else {
         switch (dstal) {
             case 4:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
-                s++;
+                *d = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
+                d++; s++;
             case 8:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
-                s++;
+                *d = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
+                d++; s++;
             case 12:
-                *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
-                s++;
+                *d = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr);
+                d++; s++;
         }
     }
     return dstal;
@@ -103,33 +103,25 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
 
 // Only define these if there is no SIMD_ENGINE defined
 #ifndef LIBFREEVEC_SIMD_ENGINE
-static inline void copy_fwd_rest_blocks_aligned(word_t *d, const word_t *s, size_t blocks) {
+static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *src, size_t blocks) {
+    word_t *s = (word_t)src;
     // Unroll blocks of 4 words
-    while (blocks % 4 > 0) {
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        blocks -= 4;
-    }
-
     while (blocks > 0) {
+        *d++ = *s++;
+        *d++ = *s++;
+        *d++ = *s++;
         *d++ = *s++;
         blocks--;
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const word_t *s, int sl, int sr, size_t blocks) {
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, int sl, int sr, size_t blocks) {
+    word_t *s = (word_t)src;
     // Unroll blocks of 4 words
-    while (blocks % 4 > 0) {
-        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
-        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
-        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
-        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
-        blocks -= 4;
-    }
-
     while (blocks > 0) {
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
+        *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
         blocks--;
     }

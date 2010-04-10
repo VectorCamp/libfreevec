@@ -32,10 +32,7 @@ void *run_memcpy_test(struct bench_conf *c) {
     printf("\n\n**** Same alignment test ****\n\n");
 
     for (i = 0; i < c->loops; i++) {
-        if (c->flag_aligned)
-            l = k = 0;
-        else
-            l = k = rand() & 15;
+        l = k = rand() & 15;
         r = (double)(rand()) / (double)(RAND_MAX);
         r *= (double)(c->max_size);
         size = c->min_size + (int) r;
@@ -71,12 +68,8 @@ void *run_memcpy_test(struct bench_conf *c) {
     printf("\n\n**** Random alignment test ****\n\n");
 
     for (i = 0; i < c->loops; i++) {
-        if (c->flag_aligned) {
-            l = k = rand() & 15;
-        } else {
-            l = rand() & 15;
-            k = rand() & 15;
-        }   
+        l = rand() & 15;
+        k = rand() & 15;
         r = (double)(rand()) / (double)(RAND_MAX);
         r *= (double)(c->max_size);
         size = c->min_size + (int) r;
