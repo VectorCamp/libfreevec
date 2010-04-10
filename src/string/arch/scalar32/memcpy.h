@@ -116,6 +116,7 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *src, s
 }
 
 static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *src, int srcoffset, int sl, int sr, size_t blocks) {
+    word_t *s = (word_t *)(src - srcoffset);
     // Unroll blocks of 4 words
     while (blocks > 0) {
         *d++ = MERGE_SHIFTED_WORDS(*(s), *(s + 1), sl, sr); s++;
