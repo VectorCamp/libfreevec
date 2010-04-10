@@ -55,7 +55,7 @@ static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, siz
     }
 }
 
-static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, int sl, int sr, size_t blocks) {
+static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, int srcoffset, int sl, int sr, size_t blocks) {
     __vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
     mask = vec_lvsl(0, s);
     

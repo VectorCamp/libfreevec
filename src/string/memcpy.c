@@ -105,7 +105,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
             copy_fwd_rest_blocks_aligned(dstl, src, l);
             src += l * SIMD_PACKETSIZE;
         } else {
-            copy_fwd_rest_blocks_unaligned(dstl, src, sh_l, sh_r, l);
+            copy_fwd_rest_blocks_unaligned(dstl, src, srcoffset, sh_l, sh_r, l);
             src += l * SIMD_PACKETSIZE;
         }
         srcl = (word_t *)(src - srcoffset);
