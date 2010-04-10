@@ -25,6 +25,17 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef LIBFREEVEC_SSE
+#include <emmintrin.h>
+#include <xmmintrin.h>
+#include "arch/sse.h"
+#endif
+
+#ifdef LIBFREEVEC_NEON
+#include <arm_neon.h>
+#include "arch/neon.h"
+#endif
+
 #ifdef LIBFREEVEC_ALTIVEC
 #include <altivec.h>
 #include "arch/altivec.h"
