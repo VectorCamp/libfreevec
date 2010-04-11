@@ -35,13 +35,11 @@
 
 #include "common.h"
 
-#define LIBFREEVEC_SCALAR_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SCALAR_MACROS_INC)
-#include LIBFREEVEC_SCALAR_MACROS_MEMCPY_H
+//#define LIBFREEVEC_SCALAR_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SCALAR_MACROS_INC)
+//#include LIBFREEVEC_SCALAR_MACROS_MEMCPY_H
 
-#ifdef LIBFREEVEC_SIMD_ENGINE
 #define LIBFREEVEC_SIMD_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
 #include LIBFREEVEC_SIMD_MACROS_MEMCPY_H
-#endif
 
 #ifdef LIBFREEVEC_BUILD_AS_LIBC
 void *memcpy(void *dstpp, const void *srcpp, size_t len) {
@@ -100,16 +98,15 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
         l = len / SIMD_PACKETSIZE;
         len -= l * SIMD_PACKETSIZE;
-        debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
+        debug("srcl = %016x, dstl = %016x, len = %d, l = %d, step = %d\n", srcl, dstl, len, l, l*WORDS_IN_PACKET);
         if (((word_t)(src) % SIMD_PACKETSIZE) == 0) {
             copy_fwd_rest_blocks_aligned(dstl, src, l);
-            src += l * SIMD_PACKETSIZE;
         } else {
             copy_fwd_rest_blocks_unaligned(dstl, src, srcoffset, sh_l, sh_r, l);
-            src += l * SIMD_PACKETSIZE;
         }
-        srcl = (word_t *)(src - srcoffset);
+	src += l*SIMD_PACKETSIZE;
         dstl += l * WORDS_IN_PACKET;
+        srcl = (word_t *)(src - srcoffset);
         }
         // Stop the prefetching
         PREFETCH_STOP1;

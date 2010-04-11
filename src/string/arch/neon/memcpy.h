@@ -31,34 +31,24 @@
 #include <stdint.h>
 #include <arm_neon.h>
 
+#include "scalar32/memcpy.h"
+
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
-    //uint8x16x4_t v4;
-    uint8x16_t v1, v2, v3, v4;
+    uint8x16x4_t v;
+    uint8x16_t v1;
     // Unroll blocks of 4 words
-    while (blocks > 4) {
-        v1 = vld1q_u8(s);
-        vst1q_u8((uint8_t *) d, v1);
-        d += 4; s += SIMD_PACKETSIZE;
-        v2 = vld1q_u8(s);
-        vst1q_u8((uint8_t *)d, v2);
-        d += 4; s += SIMD_PACKETSIZE;
-        v3 = vld1q_u8(s);
-        vst1q_u8((uint8_t *)d, v3);
-        d += 4; s += SIMD_PACKETSIZE;
-        v4 = vld1q_u8(s);
-        vst1q_u8((uint8_t *)d, v4);
-        d += 4; s += SIMD_PACKETSIZE;
-        //v4 = vld4q_u8(s);
-        //vst4q_u8((uint8_t *)d, v4);
-        //d += 16; s += 4 * SIMD_PACKETSIZE;
-        blocks -= 4;
-    }
+/*    while (blocks > 4) {
+        v = vld4q_u8(s);
+        vst4q_u8((uint8_t *) d, v);
+        d += 16; s += 4*SIMD_PACKETSIZE;
+	blocks -= 4;
+    }*/
 
     while (blocks > 0) {
         v1 = vld1q_u8(s);
-        vst1q_u8((uint8_t *)d, v1);
+        vst1q_u8((uint8_t *) d, v1);
         d += 4; s += SIMD_PACKETSIZE;
-        blocks--;
+	blocks--;
     }
 }
 
@@ -66,7 +56,7 @@ static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, i
 //    __vector uint8_t mask, MSQ1, LSQ1, LSQ2, LSQ3, LSQ4;
     
     // Unroll blocks of 4 words
-    while (blocks > 4) {
+//    while (blocks > 4) {
 /*        MSQ1 = vec_ld(0, s);
         LSQ1 = vec_ld(15, s);
         LSQ2 = vec_ld(31, s);
@@ -76,15 +66,15 @@ static inline void copy_fwd_rest_blocks_unaligned(word_t *d, const uint8_t *s, i
         vec_st(vec_perm(LSQ1, LSQ2, mask), 16, (uint8_t *)d);
         vec_st(vec_perm(LSQ2, LSQ3, mask), 32, (uint8_t *)d);
         vec_st(vec_perm(LSQ3, LSQ4, mask), 48, (uint8_t *)d);*/
-        d += 16; s += 4 * SIMD_PACKETSIZE;
-        blocks -= 4;
-    }
+//        d += 16; s += 4 * SIMD_PACKETSIZE;
+//        blocks -= 4;
+//    }
 
-    while (blocks > 0) {
+//    while (blocks > 0) {
 /*        MSQ1 = vec_ld(0, s);
         LSQ1 = vec_ld(15, s);
         vec_st(vec_perm(MSQ1, LSQ1, mask), 0, (uint8_t *)d);*/
-        d += 4; s += SIMD_PACKETSIZE;
-        blocks--;
-    }
+//        d += 4; s += SIMD_PACKETSIZE;
+//        blocks--;
+//    }
 }

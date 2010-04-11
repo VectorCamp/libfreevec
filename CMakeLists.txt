@@ -6,7 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_C_FLAGS_DEBUG "-g3 -DDEBUG")
-set(CMAKE_C_FLAGS_RELEASE "-g0 -O2 -finline-functions")
+set(CMAKE_C_FLAGS_RELEASE "-g0 -O3 -finline-functions")
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 if(cmake_build_type_tolower STREQUAL "debug")
@@ -53,8 +53,9 @@ if(CMAKE_COMPILER_IS_GNUCC)
 		endif(LIBFREEVEC_ALTIVEC)
 
 		option(LIBFREEVEC_NEON "Enable/Disable ARM NEON optimizations" OFF)
+
 		if(LIBFREEVEC_NEON)
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=neon -DLIBFREEVEC_SIMD_ENGINE=neon -DLIBFREEVEC_NEON")
+			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -DLIBFREEVEC_SIMD_ENGINE=neon -DLIBFREEVEC_NEON")
 			message("Enabling ARM NEON optimizations")
 		endif(LIBFREEVEC_NEON)
 	endif(CMAKE_SYSTEM_NAME MATCHES Linux)

@@ -36,7 +36,7 @@
 #include "arch/neon.h"
 #endif
 
-#ifdef LIBFREEVEC_ALTIVEC
+#ifdef LIBFREEVEC_ALTIVED
 #include <altivec.h>
 #include "arch/altivec.h"
 #endif
@@ -56,6 +56,8 @@
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
 #define LIBFREEVEC_SIMD_MACROS_INC MAKEINC(LIBFREEVEC_SIMD_ENGINE)
+#else
+#define LIBFREEVEC_SIMD_MACROS_INC LIBFREEVEC_SCALAR_MACROS_INC
 #endif
 
 #define ptrdiff_t(a, b)     ((word_t)(a)-(word_t)(b))
