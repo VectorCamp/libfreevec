@@ -25,7 +25,7 @@
 #define LIBFREEVEC_SIMD_MACROS_EXP_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
 #include LIBFREEVEC_SIMD_MACROS_EXP_H
 
-#ifdef LIBFREEVEC_BUILD_AS_LIBC
+#ifdef LIBFREEVEC_BUILD_AS_LIBM
 double exp(double x) {
 #else
 double vec_exp(double x) {

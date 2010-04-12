@@ -25,7 +25,7 @@
 #define LIBFREEVEC_SIMD_MACROS_TRIG_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
 #include LIBFREEVEC_SIMD_MACROS_TRIG_H
 
-#ifdef LIBFREEVEC_BUILD_AS_LIBC
+#ifdef LIBFREEVEC_BUILD_AS_LIBM
 double cos(double x) {
 #else
 double vec_cos(double x) {

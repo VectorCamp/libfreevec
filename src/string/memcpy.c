@@ -160,15 +160,20 @@ void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
         // Take the word-aligned long pointers of src and dest.
         word_t *dstl = (word_t *)(dst);
         const word_t *srcl = (word_t *)(src);
+        int l;
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
+        if (len >= SIMD_PACKETSIZE) { 
+        l = len / SIMD_PACKETSIZE;
+        len -= l * SIMD_PACKETSIZE;
         // Now, dst is 16byte aligned. We can use SIMD if len >= 16
-        copy_fwd_rest_blocks_aligned(dstl, src, len);
+        copy_fwd_rest_blocks_aligned(dstl, src, l);
+        }
 #endif
 
         // Copy the remaining bytes using word-copying
         // Handle alignment as appropriate
-        int l = len / sizeof(word_t);
+        l = len / sizeof(word_t);
         debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
         copy_fwd_rest_words_aligned(dstl, srcl, l);
         srcl += l;

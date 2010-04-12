@@ -34,7 +34,7 @@
 #include "scalar32/memcpy.h"
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
-    uint8x16x4_t v;
+//    uint8x16x4_t v;
     uint8x16_t v1;
     // Unroll blocks of 4 words
 /*    while (blocks > 4) {

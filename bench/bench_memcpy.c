@@ -22,6 +22,9 @@
 #define SCALARFUNC memcpy
 #define VECTORFUNC vec_memcpy
 
+void *memcpy_neon(void *dstpp, const void *srcpp, size_t len);
+void *memcpy_neon2(void *dstpp, const void *srcpp, size_t len);
+
 void prepare_dbtable(struct bench_conf *conf) {
   int rc;
   char *zErrMsg = 0;
