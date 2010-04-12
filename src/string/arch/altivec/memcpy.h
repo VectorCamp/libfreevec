@@ -27,16 +27,11 @@
 
 /* $Id$ */
 
-<<<<<<< local
-=======
 #include <sys/types.h>
 #include <stdint.h>
->>>>>>> other
 #include <altivec.h>
-<<<<<<< local
-#include "arch/altivec.h"
-=======
->>>>>>> other
+
+#include "scalar32/memcpy.h"
 
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
     __vector uint8_t v1, v2, v3, v4;
