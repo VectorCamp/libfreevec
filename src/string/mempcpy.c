@@ -39,13 +39,13 @@
 #include LIBFREEVEC_SIMD_MACROS_MEMCPY_H
 
 #ifdef LIBFREEVEC_BUILD_AS_LIBC
-void *memcpy(void *dstpp, const void *srcpp, size_t len) {
+void *mempcpy(void *dstpp, const void *srcpp, size_t len) {
 #else
-void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
+void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len) {
 #endif
 
     const uint8_t *src = srcpp;
-    uint8_t *dst = dstpp;
+    uint8_t *dst = dstpp, *dstlast = dstpp + len;
 
     if (len >= sizeof(word_t)) {
         // Prefetch some stuff
@@ -81,11 +81,9 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
        
         if (len >= SIMD_PACKETSIZE) { 
         // While we're not 16-byte aligned, move in 4-byte long steps.
-        
-        al = (word_t)dstl % SIMD_PACKETSIZE;
+        al = copy_fwd_until_dst_simd_aligned(dstl, srcl, srcoffset, sh_l, sh_r);
         debug("srcl = %016x, dstl = %016x, len = %d, al = %d\n", srcl, dstl, len, al);
         if (al) {
-            copy_fwd_until_dst_simd_aligned(dstl, srcl, srcoffset, al, sh_l, sh_r);
             srcl += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
             src = (uint8_t *) srcl + srcoffset;
             dstl += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
@@ -139,59 +137,5 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
     // Copy the remaining bytes
     copy_fwd_rest_bytes(dst, src, len);
 
-    return dstpp;
-}
-
-#ifdef LIBFREEVEC_BUILD_AS_LIBC
-void *memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
-#else
-void *vec_memcpy_aligned(void *dstpp, const void *srcpp, size_t len) {
-#endif
-
-    const uint8_t *src = srcpp;
-    uint8_t *dst = dstpp;
-
-    if (len >= sizeof(word_t)) {
-        // Prefetch some stuff
-        READ_PREFETCH_START1(src);
-        WRITE_PREFETCH_START2(dst);
-
-        // Take the word-aligned long pointers of src and dest.
-        word_t *dstl = (word_t *)(dst);
-        const word_t *srcl = (word_t *)(src);
-        int l;
-
-#ifdef LIBFREEVEC_SIMD_ENGINE
-        if (len >= SIMD_PACKETSIZE) { 
-        l = len / SIMD_PACKETSIZE;
-        len -= l * SIMD_PACKETSIZE;
-        // Now, dst is 16byte aligned. We can use SIMD if len >= 16
-        copy_fwd_rest_blocks_aligned(dstl, src, l);
-        }
-#endif
-
-        // Copy the remaining bytes using word-copying
-        // Handle alignment as appropriate
-        l = len / sizeof(word_t);
-        debug("srcl = %016x, dstl = %016x, len = %d, l = %d\n", srcl, dstl, len, l);
-        copy_fwd_rest_words_aligned(dstl, srcl, l);
-        srcl += l;
-        dstl += l;
-        len -= l * sizeof(word_t);
-        // For the end copy we have to use char * pointers.
-        src = (uint8_t *) srcl;
-        dst = (uint8_t *) dstl;
-    }
-
-    // Stop the prefetching
-    PREFETCH_STOP1;
-
-    PREFETCH_STOP2;
-
-    debug("src = %016x, dst = %016x, len = %d\n", src, dst, len);
-
-    // Copy the remaining bytes
-    copy_fwd_rest_bytes(dst, src, len);
-
-    return dstpp;
+    return dstlast;
 }

@@ -72,10 +72,8 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
     }
 }
 
-static inline size_t copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
-                                                int srcoffset4, int sl, int sr) {
-    size_t dstal = (word_t)d % SIMD_PACKETSIZE;
-    //printf("d = %08x, dstal = %d\n", d, dstal);
+static inline void copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
+                                                int srcoffset4, size_t dstal, int sl, int sr) {
     if (srcoffset4 == 0) {
         switch (dstal) {
             case 4:
@@ -98,13 +96,12 @@ static inline size_t copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
                 d++; s++;
         }
     }
-    return dstal;
 }
 
 // Only define these if there is no SIMD_ENGINE defined
 #ifndef LIBFREEVEC_SIMD_ENGINE
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *src, size_t blocks) {
-    word_t *s = (word_t)src;
+    word_t *s = (word_t *)src;
     // Unroll blocks of 4 words
     while (blocks > 0) {
         *d++ = *s++;

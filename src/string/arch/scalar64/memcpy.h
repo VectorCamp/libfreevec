@@ -102,9 +102,8 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
     }
 }
 
-static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
-                                                int srcoffset4, int sl, int sr) {
-    int dstal = ((int)d) % SIMD_PACKETSIZE;
+static inline void copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
+                                                int srcoffset4, size_t dstal, int sl, int sr) {
     if (srcoffset4 == 0) {
         if (dstal == 8)
             *d++ = *s++;
@@ -114,7 +113,6 @@ static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s,
             d++; s++;
         }
     }
-    return dstal;
 }
 
 // Only define these if there is no SIMD_ENGINE defined

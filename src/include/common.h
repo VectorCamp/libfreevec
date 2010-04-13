@@ -41,6 +41,16 @@
 #include "arch/altivec.h"
 #endif
 
+#define himagic         0x80808080L
+#define lomagic         0x01010101L
+#define magic_bits32    0x07efefeff
+#define magic_bits64    (((unsigned long int) 0x7efefefe << 32) | 0xfefefeff)
+
+#define charmask8(c)    ((uint8_t)(c & 0xff))
+#define charmask16(c)   (uint16_t)((charmask8(c)) | (charmask8(c) << 8))
+#define charmask32(c)   (uint32_t)((charmask16(c)) | (charmask16(c) << 16))
+#define charmask64(c)   (uint64_t)((charmask32(c)) | (charmask32(c) << 32))
+
 #define QMAKESTR(x) #x
 #define MAKESTR(x) QMAKESTR(x)
 #define SMASH(x,y) x/y
@@ -49,9 +59,11 @@
 #ifdef LINUX64
 #define word_t  uint64_t
 #define LIBFREEVEC_SCALAR_MACROS_INC MAKEINC(scalar64)
+#define charmask(c) charmask64(c)
 #else
 #define word_t  uint32_t
 #define LIBFREEVEC_SCALAR_MACROS_INC MAKEINC(scalar32)
+#define charmask(c) charmask32(c)
 #endif
 
 #ifdef LIBFREEVEC_SIMD_ENGINE
@@ -68,15 +80,7 @@
 
 #define DIFF(a, b) ((a)-(b))
 
-#define himagic         0x80808080L
-#define lomagic         0x01010101L
-#define magic_bits32    0x07efefeff
-#define magic_bits64    (((unsigned long int) 0x7efefefe << 32) | 0xfefefeff)
 
-#define charmask8(c)    ((uint8_t)(c & 0xff))
-#define charmask16(c)   (uint16_t)((charmask8(c)) | (charmask8(c) << 8))
-#define charmask32(c)   (uint32_t)((charmask16(c)) | (charmask16(c) << 16))
-#define charmask64(c)   (uint64_t)((charmask32(c)) | (charmask32(c) << 32))
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define MERGE_SHIFTED_WORDS(a, b, sl, sr)      ((a) >> sl) | ((b) << sr)
