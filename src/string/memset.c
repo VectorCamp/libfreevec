@@ -44,13 +44,14 @@ void *memset(void *s, int p, size_t len) {
 void *vec_memset(void *s, int p, size_t len) {
 #endif
 
-  if (len) {
+  if (len >= sizeof(word_t)) {
     uint8_t* ptr = s;
     uint8_t __attribute__ ((aligned(16))) P = p;
     word_t pw = charmask(P);
 
-    size_t al = memset_until_word_aligned(ptr, P, len);
+    size_t al = ((size_t)ptr) % sizeof(word_t);
     if (al) {
+      memset_until_word_aligned(ptr, P, len);
       ptr += al;
       len -= al;
     }
@@ -58,11 +59,10 @@ void *vec_memset(void *s, int p, size_t len) {
     int l;
     word_t *ptr_w = (word_t *)(ptr);
     if (len >= SIMD_PACKETSIZE) {
-
       // ptr is now word (32/64bit) aligned, memset until ptr is SIMD aligned
       al = (uint32_t) ptr_w % SIMD_PACKETSIZE;
       if (al) {
-        memset_word_until_simd_aligned(ptr_w, pw, len);
+        memset_word_until_simd_aligned(ptr_w, pw, al);
         ptr_w += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
         len -= SIMD_PACKETSIZE - al;
       }

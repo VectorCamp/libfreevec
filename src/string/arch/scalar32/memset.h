@@ -32,64 +32,43 @@
 
 #include "arch/scalar32.h"
 
-static inline int memset_fwd_until_dst_word_aligned(uint8_t *ptr, int p, size_t len) {
-  switch(len) {
+static inline void memset_fwd_until_dst_word_aligned(uint8_t *ptr, uint8_t c, size_t al) {
+  switch(al) {
   case 3:
-    *ptr++ = p;
+    *ptr++ = c;
   case 2:
-    *ptr++ = p;
+    *ptr++ = c;
   case 1:
-    *ptr++ = p;
+    *ptr++ = c;
   }
 }
 
-#define MEMSET_UNTIL_WORD_ALIGNED( ptr, p, len, al )  \
-{                                                      \
-  int l = MIN( len, sizeof(uint32_t) - al );           \
-  switch (l) {                                         \
-  case 3:                                              \
-    *ptr++ = p;                                        \
-  case 2:                                              \
-    *ptr++ = p;                                        \
-  case 1:                                              \
-    *ptr++ = p;                                        \
-    len -= l;                                          \
-  }                                                    \
+static inline void memset_fwd_until_simd_aligned(uint8_t *ptr_w, word_t w, size_t al) {
+  switch (al) {
+    case 4:
+      *ptr_w++ = w;
+    case 8:
+      *ptr_w++ = w;
+    case 12:
+      *ptr_w++ = w;
+  }
 }
 
-#define MEMSET_WORD_UNTIL_ALTIVEC_ALIGNED( ptr32, p32, len )  \
-{                                                              \
-  int l = (ALTIVECWORD_SIZE - al) / sizeof(uint32_t);          \
-  switch (l) {                                                 \
-    case 3:                                                    \
-      *ptr32++ = p32;                                          \
-    case 2:                                                    \
-      *ptr32++ = p32;                                          \
-    case 1:                                                    \
-      *ptr32++ = p32;                                          \
-      len -= l*sizeof(uint32_t);                               \
-  }                                                            \
+static inline void memset_rest_words(uint8_t *ptr_w, word_t w, size_t l) {
+  while (l--) {
+      *ptr_w++ = w;
+  }
 }
 
-#define MEMSET_REST_WORDS(ptr32, p32, len)  \
-{                                           \
-  int l = len / sizeof(uint32_t);           \
-  len -= l*sizeof(uint32_t);                \
-  while (l--) {                             \
-      *ptr32++ = p32;                       \
-  }                                         \
+static inline int memset_rest_bytes(uint8_t *ptr, uint8_t c, size_t len) {
+  switch(len) {
+  case 3:
+    *ptr++ = c;
+  case 2:
+    *ptr++ = c;
+  case 1:
+    *ptr++ = c;
+  }
 }
 
-#define MEMSET_REST_WORDS2(ptr32, p32, len)  \
-{                                           \
-  int l = len / sizeof(uint32_t);           \
-  switch (l) {                              \
-    case 3:                                 \
-      *ptr32++ = p32;                       \
-    case 2:                                 \
-      *ptr32++ = p32;                       \
-    case 1:                                 \
-      *ptr32++ = p32;                       \
-      len -= l*sizeof(uint32_t);            \
-  }                                         \
-}
+
