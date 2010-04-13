@@ -37,35 +37,24 @@
 #include "scalar32/memset.h"
 #endif
 
-static inline __vector uint8_t simdpacket_set_from_byte(const uint8_t p) {
-  __vector uint8_t v = vec_lde(0, &p);
+static inline __vector uint8_t simdpacket_set_from_byte(const uint8_t c) {
+  __vector uint8_t v = vec_lde(0, &c);
   return vec_splat(v, 0);
 }
 
-#define MEMSET_ALTIVECWORD(ptr32, vc, len)  \
-{                                           \
-  vec_st(vc, 0, (uint8_t *) ptr32);         \
-  ptr32 += 4; len -= ALTIVECWORD_SIZE;      \
-}
+static inline void memset_set_blocks(word_t *ptr_w, word_t pw, uint8_t c, size_t blocks) {
+  __vector uint8_t vc = simdpacket_set_from_byte(c);
+  while (blocks > 4) { 
+    vec_st(vc, 0, (uint8_t *)ptr_w); 
+    vec_st(vc, 16, (uint8_t *)ptr_w);
+    vec_st(vc, 32, (uint8_t *)ptr_w);
+    vec_st(vc, 48, (uint8_t *)ptr_w);
+    ptr_w += 4 * WORDS_IN_PACKET;
+    blocks -= 4;
+  }
 
-#define MEMSET_LOOP_ALTIVECWORD(ptr32, vc, len)  \
-{                                                \
-  while (len >= ALTIVECWORD_SIZE) {              \
-    MEMSET_ALTIVECWORD(ptr32, vc, len);          \
-  }                                              \
+  while (blocks--) {
+    vec_st(vc, 0, (uint8_t *)ptr_w); 
+    ptr_w += WORDS_IN_PACKET;
+  }
 }
-
-#define MEMSET_LOOP_QUADWORD(ptr32, vc, len)  \
-{                                             \
-  WRITE_PREFETCH_START2(ptr32);               \
-  uint32_t blocks = len >> LOG_ALTIVECQUAD;   \
-  len -= blocks << LOG_ALTIVECQUAD;           \
-  while (blocks--) {                          \
-    vec_st(vc, 0, (uint8_t *)ptr32);          \
-    vec_st(vc, 16, (uint8_t *)ptr32);         \
-    vec_st(vc, 32, (uint8_t *)ptr32);         \
-    vec_st(vc, 48, (uint8_t *)ptr32);         \
-    ptr32 += 16;                              \
-  }                                           \
-}
-

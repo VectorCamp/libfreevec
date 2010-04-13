@@ -54,7 +54,7 @@ static inline void memset_fwd_until_simd_aligned(uint8_t *ptr_w, word_t w, size_
   }
 }
 
-static inline void memset_rest_words(uint8_t *ptr_w, word_t w, size_t l) {
+static inline void memset_rest_words(word_t *ptr_w, word_t w, size_t l) {
   while (l--) {
       *ptr_w++ = w;
   }

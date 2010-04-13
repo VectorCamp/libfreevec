@@ -71,7 +71,7 @@ void *vec_memset(void *s, int p, size_t len) {
      
       l = len / SIMD_PACKETSIZE;
       len -= l * SIMD_PACKETSIZE; 
-      memset_loop_simdpacket(ptr_w, pw, l);
+      memset_set_blocks(ptr_w, pw, P, l);
       ptr_w += l * WORDS_IN_PACKET;
     }
     // memset the remaining words
