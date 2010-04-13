@@ -67,7 +67,7 @@ void *vec_memset(void *s, int p, size_t len) {
         len -= SIMD_PACKETSIZE - al;
       }
       // ptr is now 128-bit aligned
-      // Set 64-byte chunks at a time
+      // perform set using SIMD
      
       l = len / SIMD_PACKETSIZE;
       len -= l * SIMD_PACKETSIZE; 

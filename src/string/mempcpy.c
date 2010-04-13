@@ -81,9 +81,10 @@ void *vec_mempcpy(void *dstpp, const void *srcpp, size_t len) {
        
         if (len >= SIMD_PACKETSIZE) { 
         // While we're not 16-byte aligned, move in 4-byte long steps.
-        al = copy_fwd_until_dst_simd_aligned(dstl, srcl, srcoffset, sh_l, sh_r);
+        al = (word_t)dstl % SIMD_PACKETSIZE;
         debug("srcl = %016x, dstl = %016x, len = %d, al = %d\n", srcl, dstl, len, al);
         if (al) {
+            copy_fwd_until_dst_simd_aligned(dstl, srcl, srcoffset, al, sh_l, sh_r);
             srcl += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
             src = (uint8_t *) srcl + srcoffset;
             dstl += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
