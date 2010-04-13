@@ -50,14 +50,16 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
   // In odd lenghts, the last byte is useless
   len &= ~((size_t) 1);
 
-  if (len => sizeof(word_t)) {
-
+  if (len >= sizeof(word_t)) {
     // depending on the alignment we might have to use a carry byte or not
     uint8_t carry = 0, has_carry = 0;
 
     // Now we know that we have at least 4 bytes, handle the word-alignment
     // of dst again with a switch
-    swab_until_dst_word_aligned_find_carry(dst, src, len, carry, has_carry);
+    has_carry = swab_until_dst_word_aligned_find_carry(dst, src, len, &carry);
+    if (has_carry) {
+      dst++; src++; len--;
+    }
 
     // Take the shortword-aligned long pointers of src and dst.
     uint16_t *dst16 = (uint16_t *)(dst);
@@ -123,4 +125,3 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
   swab_rest_bytes(dst, src, len);
   return;
 }
-#endif
