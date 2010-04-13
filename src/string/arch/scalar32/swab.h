@@ -53,33 +53,28 @@ static inline int swab_until_dst_word_aligned_find_carry(uint8_t *dst, const uin
     return 0;
 }
 
-#define SWAB_WORD_UNTIL_ALTIVEC_ALIGNED_HAS_CARRY(dst16, src, len)  \
-  while (((uint32_t)(dst16) % 16) && len >= sizeof(uint16_t)) {     \
-    *dst16++ = ((uint16_t)carry << 8) | ((uint16_t)src[2]);         \
-    carry = src[1];                                                 \
-    src += sizeof(uint16_t);                                        \
-    len -= sizeof(uint16_t);                                        \
+static inline int swab_word_until_simd_aligned_has_carry(uint16_t *dst16, const uint8_t *src, size_t l, uint8_t *carry) {
+  size_t l0 = l;
+  while (((word_t)(dst16) % 16) && l-- > 0) {
+    *dst16++ = ((uint16_t)*carry << 8) | ((uint16_t)src[2]);
+    *carry = src[1];
+    src += sizeof(uint16_t);
   }
+  return l0 - l;
+}
 
-#define SWAB_WORD_UNTIL_ALTIVEC_ALIGNED_NO_CARRY(dst16, src, len)              \
-  while (((uint32_t)(dst16) % ALTIVECWORD_SIZE) && len >= sizeof(uint16_t)) {  \
-    *dst16++ = ((uint16_t)src[0]) | ((uint16_t)src[1] << 8);                   \
-    src += sizeof(uint16_t);                                                   \
-    len -= sizeof(uint16_t);                                                   \
+static inline void swab_rest_words_has_carry(uint16_t *dst16, const uint8_t *src, size_t l, uint8_t *carry) {
+  while (l--) {
+    *dst16++ = ((uint16_t)*carry << 8) | ((uint16_t)src[2]);
+    *carry = src[1];
+    src += sizeof(uint16_t);
   }
+}
 
-#define SWAB_REST_WORDS_HAS_CARRY(dst16, src, len)           \
-  while (len >= sizeof(uint16_t)) {                          \
-    *dst16++ = ((uint16_t)carry << 8) | ((uint16_t)src[2]);  \
-    carry = src[1];                                          \
-    src += sizeof(uint16_t);                                 \
-    len -= sizeof(uint16_t);                                 \
+static inline void swab_rest_words_no_carry(uint16_t *dst16, const uint8_t *src, size_t l) {
+  while (l--) {
+    *dst16++ = ((uint16_t)src[0]) | ((uint16_t)src[1] << 8);
+    src += sizeof(uint16_t);
   }
-
-#define SWAB_REST_WORDS_NO_CARRY(dst16, src, len)             \
-  while (len >= sizeof(uint16_t)) {                           \
-    *dst16++ = ((uint16_t)src[0]) | ((uint16_t)src[1] << 8);  \
-    src += sizeof(uint16_t);                                  \
-    len -= sizeof(uint16_t);                                  \
-  }
+}
 

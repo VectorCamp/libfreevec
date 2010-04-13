@@ -66,7 +66,11 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
 
     if (has_carry) {
       // While we're not 16-byte aligned, move in 4-byte long steps.
-      swab_word_until_simd_aligned_has_carry(dst16, src, len);
+      int l = len / sizeof(uint16_t);
+      len -= l * sizeof(uint16_t);
+      l = swab_word_until_simd_aligned_has_carry(dst16, src, l, &carry);
+      dst16 += l;
+      src += l * sizeof(uint16_t);
 
       // Now, dst is 16byte aligned. We can use SIMD if len >= 16 bytes
       if (len >= SIMD_PACKETSIZE) {
@@ -77,11 +81,17 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
         // Check for the alignment of src
         if ((word_t)(src) % SIMD_PACKETSIZE == 0) {
           // Now, both buffers are 16-byte aligned, just copy everything directly
-          swab_blocks_simd_aligned_has_carry(dst16, src, len, carry);
+          l = len / SIMD_PACKETSIZE;
+          len -= l * SIMD_PACKETSIZE;
+          swab_blocks_simd_aligned_has_carry(dst16, src, l, &carry);
         } else {
           // src is not 16-byte aligned so we have to a do little trick with SIMD
-          swab_blocks_simd_unaligned_has_carry(dst16, src, len, carry);
+          l = len / SIMD_PACKETSIZE;
+          len -= l * SIMD_PACKETSIZE;
+          swab_blocks_simd_unaligned_has_carry(dst16, src, l, &carry);
         }
+        dst16 += l * WORDS_IN_PACKET;
+        src += l * SIMD_PACKETSIZE;
         // Stop prefetching.
         PREFETCH_STOP1;
         PREFETCH_STOP2;
@@ -89,7 +99,7 @@ void vec_swab(void *srcpp, const void *dstpp, size_t len) {
 
       // Copy the remaining bytes using word-copying
       // Handle alignment as appropriate
-      swab_rest_words_has_carry(dst16, src, len);
+      swab_rest_words_has_carry(dst16, src, len, &carry);
 
       // And put the 'carry' byte in its place
       *((uint8_t *)dst16) = carry;
