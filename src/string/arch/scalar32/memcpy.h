@@ -72,9 +72,10 @@ static inline void copy_fwd_rest_words_unaligned(word_t *d, const word_t *s, int
     }
 }
 
-static inline int copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
+static inline size_t copy_fwd_until_dst_simd_aligned(word_t *d, const word_t *s, 
                                                 int srcoffset4, int sl, int sr) {
-    int dstal = ((int)d) % SIMD_PACKETSIZE;
+    size_t dstal = (word_t)d % SIMD_PACKETSIZE;
+    //printf("d = %08x, dstal = %d\n", d, dstal);
     if (srcoffset4 == 0) {
         switch (dstal) {
             case 4:

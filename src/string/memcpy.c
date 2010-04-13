@@ -35,9 +35,6 @@
 
 #include "common.h"
 
-//#define LIBFREEVEC_SCALAR_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SCALAR_MACROS_INC)
-//#include LIBFREEVEC_SCALAR_MACROS_MEMCPY_H
-
 #define LIBFREEVEC_SIMD_MACROS_MEMCPY_H MAKESTR(LIBFREEVEC_SIMD_MACROS_INC)
 #include LIBFREEVEC_SIMD_MACROS_MEMCPY_H
 
@@ -55,7 +52,7 @@ void *vec_memcpy(void *dstpp, const void *srcpp, size_t len) {
         READ_PREFETCH_START1(src);
         WRITE_PREFETCH_START2(dst);
 
-        debug("\nsrc = %016x, dst = %016x, len = %d\n", src, dst, len);
+        debug("\n1. src = %016x, dst = %016x, len = %d\n", src, dst, len);
         // Copy until dst is word aligned
         int al = copy_fwd_until_dst_word_aligned(dst, src), l;
 

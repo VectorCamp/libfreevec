@@ -39,7 +39,7 @@ void *run_memcpy_test(struct bench_conf *c) {
         size /= 4;
         size++;
 
-        test2 = realloc(test2, size + 16 + l);
+        test2 = realloc(test2, size + 8 + l);
         memset(test2, FILLCHAR, size);
 
         printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
@@ -76,7 +76,7 @@ void *run_memcpy_test(struct bench_conf *c) {
         size /= 4;
         size++;
 
-        test2 = realloc(test2, size + 16 + l);
+        test2 = realloc(test2, size + 8 + l);
         memset(test2, FILLCHAR, size + l);
 
         printf("size = %8d, src al. = %x, dst al. = %x \t......", size, k, l);
