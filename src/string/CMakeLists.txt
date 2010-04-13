@@ -1,6 +1,6 @@
 #this is just a basic CMakeLists.txt, for more information see the cmake manpage
 
-set(SOURCES memcpy.c mempcpy.c memset.c)
+set(SOURCES memcpy.c mempcpy.c memset.c swab.c)
 
 include_directories(arch)
 add_library(string_shared SHARED ${SOURCES})
