@@ -71,33 +71,6 @@ static inline int memset_fwd_until_dst_word_aligned(uint8_t *ptr, int p, size_t 
   }                                                            \
 }
 
-#define MEMSET_ALTIVECWORD(ptr32, vc, len)  \
-{                                           \
-  vec_st(vc, 0, (uint8_t *) ptr32);         \
-  ptr32 += 4; len -= ALTIVECWORD_SIZE;      \
-}
-
-#define MEMSET_LOOP_ALTIVECWORD(ptr32, vc, len)  \
-{                                                \
-  while (len >= ALTIVECWORD_SIZE) {              \
-    MEMSET_ALTIVECWORD(ptr32, vc, len);          \
-  }                                              \
-}
-
-#define MEMSET_LOOP_QUADWORD(ptr32, vc, len)  \
-{                                             \
-  WRITE_PREFETCH_START2(ptr32);               \
-  uint32_t blocks = len >> LOG_ALTIVECQUAD;   \
-  len -= blocks << LOG_ALTIVECQUAD;           \
-  while (blocks--) {                          \
-    vec_st(vc, 0, (uint8_t *)ptr32);          \
-    vec_st(vc, 16, (uint8_t *)ptr32);         \
-    vec_st(vc, 32, (uint8_t *)ptr32);         \
-    vec_st(vc, 48, (uint8_t *)ptr32);         \
-    ptr32 += 16;                              \
-  }                                           \
-}
-
 #define MEMSET_REST_WORDS(ptr32, p32, len)  \
 {                                           \
   int l = len / sizeof(uint32_t);           \

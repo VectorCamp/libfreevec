@@ -33,7 +33,7 @@
 #include "arch/scalar32.h"
 
 static inline int copy_fwd_until_dst_word_aligned(uint8_t *d, const uint8_t *s) {
-    int dstal = ((int)d) % sizeof(word_t);
+    size_t dstal = ((size_t)d) % sizeof(word_t);
 
     switch (dstal) {
         case 1:
