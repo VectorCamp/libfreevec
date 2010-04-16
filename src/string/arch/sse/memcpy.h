@@ -32,6 +32,12 @@
 #include <emmintrin.h>
 #include <xmmintrin.h>
 
+#ifdef LINUX64
+#include "scalar64/memcpy.h"
+#else
+#include "scalar32/memcpy.h"
+#endif
+
 static inline void copy_fwd_rest_blocks_aligned(word_t *d, const uint8_t *s, size_t blocks) {
     __m128i v1, v2, v3, v4;
     // Unroll blocks of 4 words
