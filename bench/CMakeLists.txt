@@ -16,5 +16,9 @@ find_library( SQLITE3_LIBRARY_RELEASE sqlite3 )
 include_directories(../test ${SQLITE3_INCLUDE_DIR})
 
 add_executable(bench-memcpy bench_memcpy.c run_memcpy_bench.c bench_common.c ${ASM_SRC})
+add_executable(bench-mempcpy bench_mempcpy.c run_mempcpy_bench.c bench_common.c ${ASM_SRC})
+add_executable(bench-memset bench_memset.c run_memset_bench.c bench_common.c ${ASM_SRC})
 
 target_link_libraries(bench-memcpy string_static ${SQLITE3_LIBRARY_RELEASE})
+target_link_libraries(bench-mempcpy string_static ${SQLITE3_LIBRARY_RELEASE})
+target_link_libraries(bench-memset string_static ${SQLITE3_LIBRARY_RELEASE})

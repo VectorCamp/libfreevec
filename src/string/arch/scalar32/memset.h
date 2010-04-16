@@ -34,16 +34,16 @@
 
 static inline void memset_fwd_until_dst_word_aligned(uint8_t *ptr, uint8_t c, size_t al) {
   switch(al) {
-  case 3:
+  case 1:
     *ptr++ = c;
   case 2:
     *ptr++ = c;
-  case 1:
+  case 3:
     *ptr++ = c;
   }
 }
 
-static inline void memset_fwd_until_simd_aligned(uint8_t *ptr_w, word_t w, size_t al) {
+static inline void memset_fwd_until_simd_aligned(word_t *ptr_w, word_t w, size_t al) {
   switch (al) {
     case 4:
       *ptr_w++ = w;
@@ -78,8 +78,7 @@ static inline void memset_set_blocks(word_t *ptr_w, word_t w, uint8_t c, size_t 
       *ptr_w++ = w;
       *ptr_w++ = w;
       *ptr_w++ = w;
-    ptr_w += WORDS_IN_PACKET;
-    blocks--;
+      blocks--;
   }
 }
 #endif

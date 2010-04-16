@@ -9,10 +9,12 @@ add_executable(test-memcpy test_memcpy.c run_memcpy_test.c common.c)
 add_executable(test-memcpy_aligned test_memcpy_aligned.c run_memcpy_test.c common.c)
 add_executable(test-mempcpy test_mempcpy.c run_mempcpy_test.c common.c)
 add_executable(test-memset test_memset.c run_memset_test.c common.c)
+add_executable(test-swab test_swab.c run_swab_test.c common.c)
 target_link_libraries(test-memcpy string_static)
 target_link_libraries(test-memcpy_aligned string_static)
 target_link_libraries(test-mempcpy string_static)
 target_link_libraries(test-memset string_static)
+target_link_libraries(test-swab string_static)
 
 # libmath float tests
 add_executable(test-cosf test_cosf.c run_cosf_test.c common.c)

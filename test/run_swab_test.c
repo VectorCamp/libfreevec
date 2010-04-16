@@ -18,7 +18,7 @@
 #include <math.h>
 #include <sys/mman.h>
 
-#include <config.h>
+#include "config.h"
 
 void *run_swab_test(struct bench_conf *c) {
   int i, k, l, index1, arraysize, size, status = 1;

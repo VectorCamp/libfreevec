@@ -25,16 +25,16 @@ void *run_memset_test(struct bench_conf *c) {
   double r;
 
   printf("title = %s, minsize = %d, maxsize = %d\n", c->benchtitle, c->min_size, c->max_size);
-  printf("\n\n**** Same alignment test ****\n\n");
   for (i = 0; i < c->loops; i++) {
     k = rand() & 15;
     r = (double)(rand()) / (double)(RAND_MAX);
     r *= (double)(c->max_size);
     size = c->min_size + (int) r;
     size /= 4;
+    size++;
 
     fillchar = rand();
-
+    printf("test1 = %016x, test2 = %016x, size = %d -> %d\n", test1, test2, size, size + 16 +k);
     test1 = realloc(test1, size + 16 +k);
     test2 = realloc(test2, size + 16 +k);
 

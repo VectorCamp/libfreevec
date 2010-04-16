@@ -44,25 +44,29 @@ void *memset(void *s, int p, size_t len) {
 void *vec_memset(void *s, int p, size_t len) {
 #endif
 
+  uint8_t* ptr = s;
+  uint8_t __attribute__ ((aligned(16))) P = p;
   if (len >= sizeof(word_t)) {
-    uint8_t* ptr = s;
-    uint8_t __attribute__ ((aligned(16))) P = p;
     word_t pw = charmask(P);
 
+    debug("\n1. ptr = %016x, pw = %016x, len = %d\n", ptr, pw, len);
     size_t al = ((size_t)ptr) % sizeof(word_t);
+    debug("al = %d\n", al);
     if (al) {
-      memset_until_word_aligned(ptr, P, len);
-      ptr += al;
-      len -= al;
+      memset_fwd_until_dst_word_aligned(ptr, P, al);
+      ptr += sizeof(word_t) - al;
+      len -= sizeof(word_t) - al;
     }
 
     int l;
     word_t *ptr_w = (word_t *)(ptr);
+    debug("ptr_w = %016x, ptr = %016x, pw = %016x, len = %d\n", ptr_w, ptr, pw, len);
     if (len >= SIMD_PACKETSIZE) {
       // ptr is now word (32/64bit) aligned, memset until ptr is SIMD aligned
-      al = (uint32_t) ptr_w % SIMD_PACKETSIZE;
+      al = (word_t) ptr_w % SIMD_PACKETSIZE;
+      debug("al = %d\n", al);
       if (al) {
-        memset_word_until_simd_aligned(ptr_w, pw, al);
+        memset_fwd_until_simd_aligned(ptr_w, pw, al);
         ptr_w += (SIMD_PACKETSIZE - al)/WORDS_IN_PACKET;
         len -= SIMD_PACKETSIZE - al;
       }
@@ -70,18 +74,21 @@ void *vec_memset(void *s, int p, size_t len) {
       // perform set using SIMD
      
       l = len / SIMD_PACKETSIZE;
+      debug("ptr_w = %016x, ptr = %016x, pw = %016x, len = %d, l = %d\n", ptr_w, ptr, pw, len, l);
       len -= l * SIMD_PACKETSIZE; 
       memset_set_blocks(ptr_w, pw, P, l);
       ptr_w += l * WORDS_IN_PACKET;
+      debug("ptr_w = %016x, ptr = %016x, pw = %016x, len = %d\n", ptr_w, ptr, pw, len);
     }
     // memset the remaining words
     l = len / sizeof(word_t);
-    len -= l; 
-    memset_rest_words(ptr_w, pw, len);
+    len -= l * sizeof(word_t); 
+    memset_rest_words(ptr_w, pw, l);
     ptr_w += l;
     ptr = (uint8_t *)ptr_w;
-    // Handle the remaining bytes
-    memset_rest_bytes(ptr, P, len);
+    debug("ptr_w = %016x, ptr = %016x, pw = %016x, len = %d\n", ptr_w, ptr, pw, len);
   }
+  // Handle the remaining bytes
+  memset_rest_bytes(ptr, P, len);
   return s;
 }
