@@ -72,7 +72,7 @@ static inline int memset_rest_bytes(uint8_t *ptr, uint8_t c, size_t len) {
 }
 // Only define these if there is no SIMD_ENGINE defined
 #ifndef LIBFREEVEC_SIMD_ENGINE
-static inline void memset_set_blocks(word_t *ptr_w, word_t pw, uint8_t c, size_t blocks) {
+static inline void memset_set_blocks(word_t *ptr_w, word_t w, uint8_t c, size_t blocks) {
   while (blocks) { 
       *ptr_w++ = w;
       *ptr_w++ = w;

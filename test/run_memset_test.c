@@ -16,7 +16,7 @@
 #include <math.h>
 #include <sys/mman.h>
 
-#include <config.h>
+#include "config.h"
 
 void *run_memset_test(struct bench_conf *c) {
 
