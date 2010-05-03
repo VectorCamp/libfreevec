@@ -34,6 +34,7 @@ void *run_swab_test(struct bench_conf *c) {
     r = (double)(rand()) / (double)(RAND_MAX);
     r *= (double)(c->max_size);
     size = c->min_size + (int32_t) r;
+    size++;
 
     test2 = realloc(test2, size + 16 +l);
     test3 = realloc(test3, size + 16 +l);
@@ -59,7 +60,7 @@ void *run_swab_test(struct bench_conf *c) {
       display_buf((char *)test1, size);
       printf("glibc swab():\n");
       display_buf((char *)test2a, size);
-      printf("glibc swab():\n");
+      printf("libfreevec swab():\n");
       display_buf((char *)test3a, size);
     }
   }
