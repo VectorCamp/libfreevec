@@ -55,10 +55,19 @@ static inline int swab_until_dst_word_aligned_find_carry(uint8_t *dst, const uin
 
 static inline int swab_word_until_simd_aligned_has_carry(uint16_t *dst16, const uint8_t *src, size_t l, uint8_t *carry) {
   size_t l0 = l;
-  while (((word_t)(dst16) % SIMD_PACKETSIZE) && l-- > 0) {
+  while (((word_t)(dst16) % SIMD_PACKETSIZE != 0) && l > 0) {
     *dst16++ = ((uint16_t)*carry << 8) | ((uint16_t)src[2]);
     *carry = src[1];
-    src += sizeof(uint16_t);
+    src += sizeof(uint16_t); l--;
+  }
+  return l0 - l;
+}
+
+static inline int swab_word_until_simd_aligned_no_carry(uint16_t *dst16, const uint8_t *src, size_t l) {
+  size_t l0 = l;
+  while (((word_t)(dst16) % SIMD_PACKETSIZE != 0) && l > 0) {
+    *dst16++ = ((uint16_t)src[0]) | ((uint16_t)src[1] << 8);
+    src += sizeof(uint16_t); l--;
   }
   return l0 - l;
 }

@@ -37,79 +37,77 @@
 #include "scalar32/swab.h"
 #endif
 
-#define SWAB_SINGLE_ALTIVEC_ALIGNED_NO_CARRY(vsrc, vdst, src, dst, vpermute_mask)  \
-{                                                                                  \
-  vsrc = vec_ld(0, (uint8_t *)src);                                                \
-  vdst = vec_perm(vsrc, vsrc, vpermute_mask);                                      \
-  vec_st(vdst, 0, (uint8_t *)dst);                                                 \
+typedef __vector uint8_t vuint8_t;
+
+static vuint8_t vdst_permmask_has_carry_al   = { 0, 1, 0, 3, 2, 5, 4, 7, 6,  9,  8, 11, 10, 13, 12, 15 };
+static vuint8_t vdst_permmask_has_carry_noal = { 0, 2, 1, 4, 3, 6, 5, 8, 7, 10,  9, 12, 11, 14, 13, 15 };
+static vuint8_t vdst_permmask_no_carry_al    = { 1, 0, 3, 2, 5, 4, 7, 6, 9,  8, 11, 10, 13, 12, 15, 14 };
+static vuint8_t vdst_permmask_no_carry_noal  = { 1, 0, 3, 2, 5, 4, 7, 6, 9,  8, 11, 10, 13, 12, 15, 14 };
+
+static inline void swab_single_simdpacket_aligned_no_carry(uint8_t *d, const uint8_t *s) {
+  vuint8_t vsrc, vdst;
+  vsrc = vec_ld(0, (uint8_t *)s);
+  vdst = vec_perm(vsrc, vsrc, vdst_permmask_no_carry_al);
+  vec_st(vdst, 0, (uint8_t *)d);
 }
 
-#define SWAB_SINGLE_ALTIVEC_ALIGNED_HAS_CARRY(vsrc, vdst, src, dst, vpermute_mask)  \
-{                                                                                   \
-  vsrc = vec_sld(vec_ld(0, (uint8_t *)src), vec_ld(16, (uint8_t *)src), 1);         \
-  vdst = vec_perm(vsrc, vsrc, vdst_permute_mask);                                   \
-  vec_st(vdst, 0, (uint8_t *)dst);                                                  \
+static inline void swab_single_simdpacket_aligned_has_carry(uint8_t *d, const uint8_t *s) {
+  vuint8_t vsrc, vdst;
+  vsrc = vec_sld(vec_ld(0, (uint8_t *)s), vec_ld(16, (uint8_t *)s), 1);
+  vdst = vec_perm(vsrc, vsrc, vdst_permmask_has_carry_al); 
+  vec_st(vdst, 0, (uint8_t *)d); 
 }
 
-#define SWAB_SINGLE_ALTIVEC_UNALIGNED(MSQ, LSQ, vsrc, vdst, src, dst, vpermute_mask)  \
-{                                                                                     \
-  MSQ = vec_ld(0, src);                                                               \
-  LSQ = vec_ld(15, src);                                                              \
-  vsrc = vec_perm(MSQ, LSQ, mask);                                                    \
-  vdst = vec_perm(vsrc, vsrc, vdst_permute_mask);                                     \
-  vec_st(vdst, 0, (unsigned char *)dst16);                                            \
+static inline void swab_single_simdpacket_unaligned(uint8_t *d, const uint8_t *s, vuint8_t perm_mask, vuint8_t align_mask) {
+  vuint8_t vsrc, vdst, MSQ, LSQ;
+  MSQ = vec_ld(0, s);
+  LSQ = vec_ld(15, s);
+  vsrc = vec_perm(MSQ, LSQ, align_mask);
+  vdst = vec_perm(vsrc, vsrc, perm_mask);
+  vec_st(vdst, 0, (uint8_t *)d);
 }
 
-#define SWAB_LOOP_ALTIVEC_ALIGNED_HAS_CARRY(dst16, src, len, carry)                        \
-{                                                                                          \
-  vector uint8_t vdst_permute_mask = {  0, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8,11,10,13,12,15 };  \
-  vector uint8_t vsrc, vdst;                                                               \
-  while (len >= ALTIVECWORD_SIZE) {                                                        \
-    SWAB_SINGLE_ALTIVEC_ALIGNED_HAS_CARRY(vsrc, vdst, src, dst16, vdst_permute_mask);      \
-    *((uint8_t *)dst16) = carry;                                                           \
-    carry = src[15];                                                                       \
-    dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START1(src);                                                              \
-    WRITE_PREFETCH_START2(dst);                                                             \
-  }                                                                                        \
+static inline void swab_blocks_simd_aligned_has_carry(uint16_t *dst16, const uint8_t *src, size_t l, uint8_t *carry) {
+  uint8_t *dst = (uint8_t *) dst16;
+  while (l > 0) { 
+    swab_single_simdpacket_aligned_has_carry(dst, src);
+    *dst = *carry;
+    *carry = src[15];
+    dst += SIMD_PACKETSIZE; src += SIMD_PACKETSIZE; l--;
+    READ_PREFETCH_START1(src);
+    WRITE_PREFETCH_START2(dst);
+  }
 }
 
-#define SWAB_LOOP_ALTIVEC_UNALIGNED_HAS_CARRY(dst16, src, len, carry)                           \
-{                                                                                               \
-  vector uint8_t vdst_permute_mask = { 0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 15 };  \
-  vector uint8_t vsrc, vdst, MSQ, LSQ, mask;                                                    \
-  mask = vec_lvsl(0, src);                                                                      \
-  while (len >= ALTIVECWORD_SIZE) {                                                             \
-    SWAB_SINGLE_ALTIVEC_UNALIGNED(MSQ, LSQ, vsrc, vdst, src, dst16, vdst_permute_mask);         \
-    dst = (uint8_t *)dst16;                                                                     \
-    dst[0] = carry; carry = src[15]; dst[15] = src[16];                                         \
-    dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                               \
-    READ_PREFETCH_START1(src);                                                                   \
-    WRITE_PREFETCH_START2(dst);                                                                  \
-  }                                                                                             \
+static inline void swab_blocks_simd_unaligned_has_carry(uint16_t *dst16, const uint8_t *src, size_t l, uint8_t *carry) {
+  uint8_t *dst = (uint8_t *) dst16;
+  vuint8_t align_mask = vec_lvsl(0, src);
+  while (l > 0) {
+    swab_single_simdpacket_unaligned(dst, src, vdst_permmask_has_carry_noal, align_mask);
+    dst[0] = *carry; *carry = src[15]; dst[15] = src[16]; 
+    dst += SIMD_PACKETSIZE; src += SIMD_PACKETSIZE; l--;
+    READ_PREFETCH_START1(src);
+    WRITE_PREFETCH_START2(dst);
+  }
 }
 
-#define SWAB_LOOP_ALTIVEC_ALIGNED_NO_CARRY(dst16, src, len)                                \
-{                                                                                          \
-  vector uint8_t vdst_permute_mask = {  1, 0, 3, 2, 5, 4, 7, 6, 9, 8,11,10,13,12,15,14 };  \
-  vector uint8_t vsrc, vdst;                                                               \
-  while (len >= ALTIVECWORD_SIZE) {                                                        \
-    SWAB_SINGLE_ALTIVEC_ALIGNED_NO_CARRY(vsrc, vdst, src, dst16, vdst_permute_mask);       \
-    dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START1(src);                                                              \
-    WRITE_PREFETCH_START2(dst);                                                             \
-  }                                                                                        \
+static inline void swab_blocks_simd_aligned_no_carry(uint16_t *dst16, const uint8_t *src, size_t l) {
+  uint8_t *dst = (uint8_t *) dst16;
+  while (l > 0) { 
+    swab_single_simdpacket_aligned_no_carry(dst, src);
+    dst += SIMD_PACKETSIZE; src += SIMD_PACKETSIZE; l--;
+    READ_PREFETCH_START1(src);
+    WRITE_PREFETCH_START2(dst);
+  }
 }
 
-#define SWAB_LOOP_ALTIVEC_UNALIGNED_NO_CARRY(dst16, src, len)                              \
-{                                                                                          \
-  vector uint8_t vdst_permute_mask = {  1, 0, 3, 2, 5, 4, 7, 6, 9, 8,11,10,13,12,15,14 };  \
-  vector uint8_t vsrc, vdst, MSQ, LSQ, mask;                                               \
-  mask = vec_lvsl(0, src);                                                                 \
-  while (len >= ALTIVECWORD_SIZE) {                                                        \
-    SWAB_SINGLE_ALTIVEC_UNALIGNED(MSQ, LSQ, vsrc, vdst, src, dst16, vdst_permute_mask);    \
-    dst16 += 8; src += ALTIVECWORD_SIZE; len -= ALTIVECWORD_SIZE;                          \
-    READ_PREFETCH_START1(src);                                                              \
-    WRITE_PREFETCH_START2(dst);                                                             \
-  }                                                                                        \
+static inline void swab_blocks_simd_unaligned_no_carry(uint16_t *dst16, const uint8_t *src, size_t l) {
+  uint8_t *dst = (uint8_t *) dst16;
+  vuint8_t align_mask = vec_lvsl(0, src);
+  while (l > 0) {
+    swab_single_simdpacket_unaligned(dst, src, vdst_permmask_no_carry_noal, align_mask);
+    dst += SIMD_PACKETSIZE; src += SIMD_PACKETSIZE; l--;
+    READ_PREFETCH_START1(src);
+    WRITE_PREFETCH_START2(dst);
+  }
 }
